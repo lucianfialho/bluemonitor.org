@@ -12,6 +12,21 @@ export async function GET() {
   return NextResponse.json(rows);
 }
 
+export async function PATCH(request: NextRequest) {
+  if (!(await isAuthenticated())) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const { id, status } = await request.json();
+  if (!["approved", "rejected", "pending"].includes(status)) {
+    return NextResponse.json({ error: "Invalid status" }, { status: 400 });
+  }
+
+  const sql = getDb();
+  await sql`UPDATE submissions SET status = ${status} WHERE id = ${id}`;
+  return NextResponse.json({ success: true });
+}
+
 export async function DELETE(request: NextRequest) {
   if (!(await isAuthenticated())) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
