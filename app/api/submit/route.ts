@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getDb } from "@/lib/db";
 
 export async function POST(request: NextRequest) {
   try {
@@ -21,14 +22,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log("[SERVICE_SUBMISSION]", JSON.stringify({
-      name,
-      url,
-      submittedAt: new Date().toISOString(),
-    }));
+    const sql = getDb();
+    await sql`
+      INSERT INTO submissions (name, url)
+      VALUES (${name}, ${url})
+    `;
 
     return NextResponse.json({ success: true });
-  } catch {
+  } catch (error) {
+    console.error("[SUBMIT_ERROR]", error);
     return NextResponse.json(
       { error: "Invalid request body" },
       { status: 400 }
