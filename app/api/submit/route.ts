@@ -29,7 +29,14 @@ export async function POST(request: NextRequest) {
     `;
 
     return NextResponse.json({ success: true });
-  } catch (error) {
+  } catch (error: unknown) {
+    const dbError = error as { code?: string };
+    if (dbError.code === "23505") {
+      return NextResponse.json(
+        { error: "This service has already been submitted" },
+        { status: 409 }
+      );
+    }
     console.error("[SUBMIT_ERROR]", error);
     return NextResponse.json(
       { error: "Invalid request body" },
