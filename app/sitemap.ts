@@ -1,7 +1,7 @@
 import { MetadataRoute } from "next";
 import { services, categories } from "@/lib/services";
 
-const BASE_URL = "https://bluemonitor.org";
+const BASE_URL = "https://www.bluemonitor.org";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const statusPages = services.map((service) => ({

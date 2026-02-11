@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { services, getServiceBySlug, getRelatedServices, getCategoryBySlug } from "@/lib/services";
 import StatusChecker from "@/components/StatusChecker";
+import ServiceIcon from "@/components/ServiceIcon";
 
 export async function generateStaticParams() {
   return services.map((service) => ({
@@ -103,7 +104,7 @@ export default async function StatusPage({
     "@type": "WebPage",
     name: `Is ${service.name} Down?`,
     description: `Check if ${service.name} is down right now. Real-time status monitoring, response time, and outage history for ${service.name}.`,
-    url: `https://bluemonitor.org/status/${service.slug}`,
+    url: `https://www.bluemonitor.org/status/${service.slug}`,
     mainEntity: {
       "@type": "FAQPage",
       mainEntity: [
@@ -159,7 +160,7 @@ export default async function StatusPage({
         <div className="mb-10 rounded-2xl border border-zinc-200 bg-white p-8 text-center dark:border-zinc-800 dark:bg-zinc-900">
           <div className="mb-4 flex justify-center">
             <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-zinc-100 text-2xl font-bold text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400">
-              {service.name.charAt(0)}
+              <ServiceIcon domain={service.domain} name={service.name} size={40} />
             </div>
           </div>
           <h1 className="mb-2 text-3xl font-bold text-zinc-900 dark:text-zinc-100 sm:text-4xl">

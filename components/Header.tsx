@@ -22,6 +22,12 @@ export default function Header() {
           >
             Services
           </Link>
+          <Link
+            href="/submit"
+            className="rounded-lg bg-blue-600 px-3.5 py-1.5 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+          >
+            Submit Service
+          </Link>
         </nav>
       </div>
     </header>

@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { services } from "@/lib/services";
+import ServiceIcon from "./ServiceIcon";
 
 export default function SearchBar() {
   const [query, setQuery] = useState("");
@@ -66,7 +67,7 @@ export default function SearchBar() {
               className="flex w-full items-center gap-3 px-4 py-2.5 text-left transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-800"
             >
               <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-zinc-100 text-sm font-bold text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400">
-                {service.name.charAt(0)}
+                <ServiceIcon domain={service.domain} name={service.name} size={20} />
               </div>
               <div>
                 <div className="text-sm font-medium text-zinc-900 dark:text-zinc-100">

@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: "/",
       disallow: "/api/",
     },
-    sitemap: "https://bluemonitor.org/sitemap.xml",
+    sitemap: "https://www.bluemonitor.org/sitemap.xml",
   };
 }

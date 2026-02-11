@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Service } from "@/lib/types";
+import ServiceIcon from "./ServiceIcon";
 
 export default function ServiceCard({ service }: { service: Service }) {
   return (
@@ -8,7 +9,7 @@ export default function ServiceCard({ service }: { service: Service }) {
       className="group flex items-center gap-4 rounded-xl border border-zinc-200 bg-white p-4 transition-all hover:border-blue-300 hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-blue-700"
     >
       <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-zinc-100 text-lg font-bold text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400">
-        {service.name.charAt(0)}
+        <ServiceIcon domain={service.domain} name={service.name} size={24} />
       </div>
       <div className="min-w-0 flex-1">
         <h3 className="truncate font-medium text-zinc-900 group-hover:text-blue-600 dark:text-zinc-100 dark:group-hover:text-blue-400">
