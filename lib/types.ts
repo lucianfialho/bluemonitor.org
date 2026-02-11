@@ -24,7 +24,8 @@ export type Category =
   | "entertainment"
   | "isp"
   | "dating"
-  | "logistics";
+  | "logistics"
+  | "travel";
 
 export interface CategoryInfo {
   slug: Category;
