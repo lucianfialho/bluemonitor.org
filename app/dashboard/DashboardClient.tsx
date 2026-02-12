@@ -174,6 +174,24 @@ export default function DashboardClient({
         </p>
       </div>
 
+      {/* Free plan banner */}
+      <div className="mb-8 flex items-center justify-between rounded-xl border border-blue-200 bg-blue-50 px-5 py-4 dark:border-blue-900 dark:bg-blue-950/40">
+        <div>
+          <p className="text-sm font-medium text-blue-900 dark:text-blue-100">
+            Free plan — 3 watchlist services, 2 webhooks, 60 API req/min
+          </p>
+          <p className="mt-0.5 text-xs text-blue-700 dark:text-blue-300">
+            Need more? Pro is coming soon with unlimited watchlist and priority alerts.
+          </p>
+        </div>
+        <Link
+          href="/pricing"
+          className="shrink-0 rounded-lg bg-blue-600 px-3.5 py-1.5 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+        >
+          View Plans
+        </Link>
+      </div>
+
       {/* Watchlist */}
       <section className="mb-8">
         <div className="mb-4 flex items-center justify-between">
