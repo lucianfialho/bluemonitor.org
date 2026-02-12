@@ -80,6 +80,26 @@ The endpoint must:
 3. Check database connectivity and critical dependencies
 4. Respond within 3 seconds (responses over 3s are marked as "slow")
 5. Return HTTP 200 for "ok" or "degraded", HTTP 503 for "error"
+6. NEVER expose sensitive data (connection strings, credentials, internal IPs, query results)
+7. Only return status ("ok" or "error"), latency in ms, and optional error message
+
+### Security
+
+The health endpoint is public by design (same pattern as Kubernetes liveness/readiness probes). It only returns operational status and latency — no sensitive data.
+
+To restrict access to BlueMonitor only, check the User-Agent header:
+
+```ts
+export async function GET(req: Request) {
+  const ua = req.headers.get("user-agent") || "";
+  if (!ua.includes("BlueMonitor")) {
+    return Response.json({ error: "Forbidden" }, { status: 403 });
+  }
+  // ... run checks
+}
+```
+
+This is optional. BlueMonitor always sends `User-Agent: BlueMonitor/1.0 (status check)`.
 
 ### Response Schema
 
