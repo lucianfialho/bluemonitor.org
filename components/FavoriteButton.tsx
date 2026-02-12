@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { SignedIn } from "@neondatabase/auth/react";
+import { trackWatchlistAdd } from "@/lib/analytics";
 
 export default function FavoriteButton({
   serviceId,
@@ -31,7 +32,8 @@ export default function FavoriteButton({
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ serviceId }),
         });
-        if (!res.ok) setFavorited(prev);
+        if (res.ok) trackWatchlistAdd();
+        else setFavorited(prev);
       }
     } catch {
       setFavorited(prev);

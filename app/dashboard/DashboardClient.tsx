@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import ServiceIcon from "@/components/ServiceIcon";
 import { Category } from "@/lib/types";
+import { trackWebhookCreate, trackWebhookTest, trackApiKeyCreate } from "@/lib/analytics";
 
 interface Webhook {
   id: number;
@@ -93,6 +94,7 @@ export default function DashboardClient({
     });
     const data = await res.json();
     if (data.key) {
+      trackApiKeyCreate();
       setCreatedKey(data.key);
       setNewKeyName("");
       fetchKeys();
@@ -119,6 +121,7 @@ export default function DashboardClient({
       body: JSON.stringify({ url: webhookUrl, type: webhookType, events: webhookEvents }),
     });
     if (res.ok) {
+      trackWebhookCreate();
       setWebhookUrl("");
       setWebhookEvents(["down"]);
       fetchWebhooks();
@@ -143,6 +146,7 @@ export default function DashboardClient({
   async function testWebhook(id: number) {
     setTestingWebhookId(id);
     await fetch(`/api/webhooks/${id}/test`, { method: "POST" });
+    trackWebhookTest();
     setTestingWebhookId(null);
   }
 
