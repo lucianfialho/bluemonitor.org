@@ -29,7 +29,7 @@ interface WatchlistService {
   name: string;
   domain: string;
   category: Category;
-  current_status: "up" | "down" | "slow" | null;
+  current_status: "up" | "down" | "slow" | "dead" | null;
   current_response_time: number | null;
   last_checked_at: string | null;
   added_at: string;
@@ -254,14 +254,18 @@ export default function DashboardClient({
                             ? "bg-green-500"
                             : service.current_status === "slow"
                               ? "bg-yellow-500"
-                              : "bg-red-500"
+                              : service.current_status === "dead"
+                                ? "bg-zinc-500"
+                                : "bg-red-500"
                         }`}
                         title={
                           service.current_status === "up"
                             ? "Operational"
                             : service.current_status === "slow"
                               ? "Slow"
-                              : "Down"
+                              : service.current_status === "dead"
+                                ? "Unresponsive"
+                                : "Down"
                         }
                       />
                     )}
@@ -319,8 +323,8 @@ export default function DashboardClient({
           </div>
           <div className="mb-3 flex items-center gap-4">
             <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">Events:</span>
-            {(["down", "slow", "recovered"] as const).map((event) => {
-              const isPro = event === "slow" || event === "recovered";
+            {(["down", "slow", "recovered", "dead", "resurrected"] as const).map((event) => {
+              const isPro = event !== "down";
               return (
                 <label
                   key={event}

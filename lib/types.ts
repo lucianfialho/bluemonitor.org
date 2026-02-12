@@ -7,7 +7,7 @@ export interface Service {
   checkUrl: string;
   keywords: string[];
   created_at?: string;
-  current_status?: "up" | "down" | "slow" | null;
+  current_status?: "up" | "down" | "slow" | "dead" | null;
   current_response_time?: number | null;
   last_checked_at?: string | null;
   status_page_url?: string | null;

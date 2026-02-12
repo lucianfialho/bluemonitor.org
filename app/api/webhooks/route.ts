@@ -3,7 +3,7 @@ import { authServer } from "@/lib/auth/server";
 import { getDb } from "@/lib/db";
 
 const VALID_TYPES = ["discord", "slack", "custom"];
-const VALID_EVENTS = ["down", "slow", "recovered"];
+const VALID_EVENTS = ["down", "slow", "recovered", "dead", "resurrected"];
 const FREE_EVENTS = ["down"];
 const MAX_WEBHOOKS = 2;
 

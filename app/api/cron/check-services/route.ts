@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
   const start = Date.now();
   const sql = getDb();
 
-  const services = (await sql`SELECT id, name, domain, current_status FROM services`) as ServiceRow[];
+  const services = (await sql`SELECT id, name, domain, current_status FROM services WHERE current_status IS NULL OR current_status != 'dead'`) as ServiceRow[];
   const total = services.length;
   const results: CheckResult[] = [];
   const BATCH_SIZE = 50;

@@ -15,6 +15,8 @@ interface WebhookRow {
 }
 
 function eventFromChange(change: StatusChange): string {
+  if (change.newStatus === "dead") return "dead";
+  if (change.previousStatus === "dead") return "resurrected";
   if (change.newStatus === "down") return "down";
   if (change.newStatus === "slow") return "slow";
   if (change.previousStatus === "down" || change.previousStatus === "slow")
@@ -27,11 +29,15 @@ function buildDiscordPayload(change: StatusChange, event: string) {
     down: 0xef4444,
     slow: 0xeab308,
     recovered: 0x22c55e,
+    dead: 0x374151,
+    resurrected: 0x3b82f6,
   };
   const titles: Record<string, string> = {
     down: "Service Down",
     slow: "Service Slow",
     recovered: "Service Recovered",
+    dead: "Service Unresponsive",
+    resurrected: "Service Resurrected",
   };
 
   return {
@@ -60,6 +66,8 @@ function buildSlackPayload(change: StatusChange, event: string) {
     down: ":red_circle:",
     slow: ":large_yellow_circle:",
     recovered: ":large_green_circle:",
+    dead: ":skull:",
+    resurrected: ":sparkles:",
   };
 
   return {
