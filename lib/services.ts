@@ -1,4 +1,4 @@
-import { Service, CategoryInfo, Category } from "./types";
+import { Service, CategoryInfo, Category, Incident } from "./types";
 import { getDb } from "./db";
 
 export const categories: CategoryInfo[] = [
@@ -86,4 +86,29 @@ export async function getServiceCountByCategory(category: string): Promise<numbe
   const sql = getDb();
   const rows = await sql`SELECT COUNT(*)::int as count FROM services WHERE category = ${category}`;
   return rows[0].count as number;
+}
+
+export async function getIncidentsBySlug(slug: string, limit = 10): Promise<Incident[]> {
+  const sql = getDb();
+  const rows = await sql`
+    SELECT i.*, s.name as service_name, s.slug as service_slug
+    FROM incidents i
+    JOIN services s ON s.id = i.service_id
+    WHERE s.slug = ${slug}
+    ORDER BY i.started_at DESC
+    LIMIT ${limit}
+  `;
+  return rows as unknown as Incident[];
+}
+
+export async function getRecentIncidents(limit = 50): Promise<Incident[]> {
+  const sql = getDb();
+  const rows = await sql`
+    SELECT i.*, s.name as service_name, s.slug as service_slug
+    FROM incidents i
+    JOIN services s ON s.id = i.service_id
+    ORDER BY i.started_at DESC
+    LIMIT ${limit}
+  `;
+  return rows as unknown as Incident[];
 }

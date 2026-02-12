@@ -23,6 +23,12 @@ export default function Header() {
             Services
           </Link>
           <Link
+            href="/incidents"
+            className="text-sm font-medium text-zinc-600 transition-colors hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
+          >
+            Incidents
+          </Link>
+          <Link
             href="/badge"
             className="text-sm font-medium text-zinc-600 transition-colors hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
           >

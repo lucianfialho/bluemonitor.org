@@ -55,3 +55,20 @@ export interface StatusCheck {
   status_code: number;
   checked_at: string;
 }
+
+export interface Incident {
+  id: number;
+  service_id: number;
+  source_id: string;
+  title: string;
+  description: string;
+  severity: "minor" | "major" | "critical";
+  status: "investigating" | "identified" | "monitoring" | "resolved";
+  started_at: string;
+  resolved_at: string | null;
+  source_url: string | null;
+  created_at: string;
+  // Joined fields
+  service_name?: string;
+  service_slug?: string;
+}

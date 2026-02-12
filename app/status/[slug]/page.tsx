@@ -1,9 +1,10 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { getServices, getServiceBySlug, getRelatedServices, getCategoryBySlug } from "@/lib/services";
+import { getServices, getServiceBySlug, getRelatedServices, getCategoryBySlug, getIncidentsBySlug } from "@/lib/services";
 import StatusChecker from "@/components/StatusChecker";
 import StatusTimeline from "@/components/StatusTimeline";
+import IncidentList from "@/components/IncidentList";
 import ServiceIcon from "@/components/ServiceIcon";
 
 export async function generateStaticParams() {
@@ -104,7 +105,10 @@ export default async function StatusPage({
     notFound();
   }
 
-  const related = await getRelatedServices(slug);
+  const [related, incidents] = await Promise.all([
+    getRelatedServices(slug),
+    getIncidentsBySlug(slug),
+  ]);
   const category = getCategoryBySlug(service.category);
 
   const faqStructuredData = {
@@ -262,6 +266,16 @@ export default async function StatusPage({
             Response times over 3 seconds indicate the service is slow, and connection failures or server errors indicate the service may be down.
           </p>
         </section>
+
+        {/* Recent Incidents */}
+        {service.feed_url && (
+          <section className="mb-10">
+            <h2 className="mb-4 text-xl font-semibold text-zinc-900 dark:text-zinc-100">
+              Recent Incidents
+            </h2>
+            <IncidentList incidents={incidents} />
+          </section>
+        )}
 
         {/* FAQ */}
         <div className="mb-10">
