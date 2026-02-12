@@ -6,7 +6,7 @@ export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ) {
-  const blocked = withRateLimit(request);
+  const blocked = await withRateLimit(request);
   if (blocked) return blocked;
 
   const { slug } = await params;

@@ -3,7 +3,7 @@ import { withRateLimit, apiResponse } from "@/lib/api-helpers";
 import { getDb } from "@/lib/db";
 
 export async function GET(request: NextRequest) {
-  const blocked = withRateLimit(request);
+  const blocked = await withRateLimit(request);
   if (blocked) return blocked;
 
   const { searchParams } = new URL(request.url);

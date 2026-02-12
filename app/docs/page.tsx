@@ -128,7 +128,7 @@ export default function DocsPage() {
         </h1>
         <p className="text-zinc-600 dark:text-zinc-400">
           Free REST API to monitor the status of 500+ services. No authentication
-          required.
+          required — optional API keys unlock higher rate limits.
         </p>
       </div>
 
@@ -142,14 +142,78 @@ export default function DocsPage() {
         </pre>
       </section>
 
+      {/* Authentication */}
+      <section className="mb-10">
+        <h2 className="mb-3 text-xl font-semibold text-zinc-900 dark:text-zinc-100">
+          Authentication
+        </h2>
+        <p className="mb-3 text-sm text-zinc-600 dark:text-zinc-400">
+          Authentication is <strong>optional</strong>. All endpoints work without an API
+          key, but authenticated requests get higher rate limits (300/min vs 60/min).
+        </p>
+        <p className="mb-3 text-sm text-zinc-600 dark:text-zinc-400">
+          To get an API key,{" "}
+          <Link href="/auth/sign-in" className="text-blue-600 hover:underline dark:text-blue-400">
+            sign in with GitHub
+          </Link>{" "}
+          and create one from your{" "}
+          <Link href="/dashboard" className="text-blue-600 hover:underline dark:text-blue-400">
+            dashboard
+          </Link>
+          .
+        </p>
+        <div className="mb-3">
+          <h4 className="mb-2 text-xs font-semibold uppercase tracking-wider text-zinc-500">
+            Example
+          </h4>
+          <pre className="overflow-x-auto rounded-lg bg-zinc-950 p-3 text-sm text-green-400">
+            <code>{`curl -H "Authorization: Bearer bm_your_api_key" \\
+  https://www.bluemonitor.org/api/v1/services`}</code>
+          </pre>
+        </div>
+        <div className="overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-800">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900">
+                <th className="px-4 py-2 text-left font-medium text-zinc-700 dark:text-zinc-300">
+                  Tier
+                </th>
+                <th className="px-4 py-2 text-left font-medium text-zinc-700 dark:text-zinc-300">
+                  Rate Limit
+                </th>
+                <th className="px-4 py-2 text-left font-medium text-zinc-700 dark:text-zinc-300">
+                  Auth Required
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800">
+              <tr>
+                <td className="px-4 py-2 text-zinc-900 dark:text-zinc-100">Anonymous</td>
+                <td className="px-4 py-2 text-zinc-600 dark:text-zinc-400">60 req/min per IP</td>
+                <td className="px-4 py-2 text-zinc-600 dark:text-zinc-400">No</td>
+              </tr>
+              <tr>
+                <td className="px-4 py-2 text-zinc-900 dark:text-zinc-100">Authenticated</td>
+                <td className="px-4 py-2 text-zinc-600 dark:text-zinc-400">300 req/min per key</td>
+                <td className="px-4 py-2 text-zinc-600 dark:text-zinc-400">
+                  <code className="text-xs">Authorization: Bearer bm_...</code>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
       {/* Rate Limiting */}
       <section className="mb-10">
         <h2 className="mb-3 text-xl font-semibold text-zinc-900 dark:text-zinc-100">
           Rate Limiting
         </h2>
         <p className="mb-3 text-sm text-zinc-600 dark:text-zinc-400">
-          All endpoints are rate limited to <strong>60 requests per minute</strong> per
-          IP address. Rate limit information is included in response headers:
+          All endpoints are rate limited. Anonymous requests are limited to{" "}
+          <strong>60 requests per minute</strong> per IP, and authenticated requests to{" "}
+          <strong>300 per minute</strong> per API key. Rate limit information is included
+          in response headers:
         </p>
         <div className="overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-800">
           <table className="w-full text-sm">
@@ -463,6 +527,12 @@ export default function DocsPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800">
+              <tr>
+                <td className="px-4 py-2 font-mono">401</td>
+                <td className="px-4 py-2 text-zinc-600 dark:text-zinc-400">
+                  Invalid API key
+                </td>
+              </tr>
               <tr>
                 <td className="px-4 py-2 font-mono">404</td>
                 <td className="px-4 py-2 text-zinc-600 dark:text-zinc-400">

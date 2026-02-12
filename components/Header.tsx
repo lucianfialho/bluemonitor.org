@@ -1,4 +1,5 @@
 import Link from "next/link";
+import HeaderAuth from "./HeaderAuth";
 
 export default function Header() {
   return (
@@ -46,6 +47,7 @@ export default function Header() {
           >
             Submit Service
           </Link>
+          <HeaderAuth />
         </nav>
       </div>
     </header>
