@@ -36,6 +36,12 @@ export default function Header() {
             API
           </Link>
           <Link
+            href="/developers"
+            className="text-sm font-medium text-zinc-600 transition-colors hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
+          >
+            Developers
+          </Link>
+          <Link
             href="/pricing"
             className="text-sm font-medium text-zinc-600 transition-colors hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
           >
