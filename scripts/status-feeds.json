@@ -1,0 +1,1432 @@
+[
+  {
+    "serviceId": 411,
+    "slug": "1password",
+    "name": "1Password",
+    "domain": "1password.com",
+    "statusPageUrl": "https://status.1password.com",
+    "feedUrl": "https://status.1password.com/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 111,
+    "slug": "ark-survival",
+    "name": "ARK Survival",
+    "domain": "playark.com",
+    "statusPageUrl": "https://playark.com/status",
+    "feedUrl": "https://playark.com/status/feed/rss",
+    "apiUrl": null,
+    "provider": "custom"
+  },
+  {
+    "serviceId": 336,
+    "slug": "att",
+    "name": "AT&T",
+    "domain": "att.com",
+    "statusPageUrl": "https://att.statuspage.io",
+    "feedUrl": "https://att.statuspage.io/history.rss",
+    "apiUrl": "https://att.statuspage.io/api/v2/summary.json",
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 212,
+    "slug": "aws",
+    "name": "AWS",
+    "domain": "aws.amazon.com",
+    "statusPageUrl": "https://status.aws.amazon.com",
+    "feedUrl": "https://status.aws.amazon.com/rss/all.rss",
+    "apiUrl": null,
+    "provider": "aws"
+  },
+  {
+    "serviceId": 302,
+    "slug": "affirm",
+    "name": "Affirm",
+    "domain": "affirm.com",
+    "statusPageUrl": "https://status.affirm.com",
+    "feedUrl": "https://status.affirm.com/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 422,
+    "slug": "allegiant",
+    "name": "Allegiant Air",
+    "domain": "allegiantair.com",
+    "statusPageUrl": "https://allegiantair.statuspage.io",
+    "feedUrl": "https://allegiantair.statuspage.io/history.rss",
+    "apiUrl": "https://allegiantair.statuspage.io/api/v2/summary.json",
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 284,
+    "slug": "ally-bank",
+    "name": "Ally Bank",
+    "domain": "ally.com",
+    "statusPageUrl": "https://ally.statuspage.io",
+    "feedUrl": "https://ally.statuspage.io/history.rss",
+    "apiUrl": "https://ally.statuspage.io/api/v2/summary.json",
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 81,
+    "slug": "among-us",
+    "name": "Among Us",
+    "domain": "innersloth.com",
+    "statusPageUrl": "https://innersloth.com/status",
+    "feedUrl": "https://innersloth.com/status/feed/rss",
+    "apiUrl": null,
+    "provider": "custom"
+  },
+  {
+    "serviceId": 162,
+    "slug": "asana",
+    "name": "Asana",
+    "domain": "asana.com",
+    "statusPageUrl": "https://status.asana.com",
+    "feedUrl": "https://status.asana.com/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 220,
+    "slug": "atlassian",
+    "name": "Atlassian",
+    "domain": "atlassian.com",
+    "statusPageUrl": "https://status.atlassian.com",
+    "feedUrl": "https://status.atlassian.com/history.rss",
+    "apiUrl": "https://status.atlassian.com/api/v2/summary.json",
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 362,
+    "slug": "bandlab",
+    "name": "BandLab",
+    "domain": "bandlab.com",
+    "statusPageUrl": "https://status.bandlab.com",
+    "feedUrl": "https://status.bandlab.com/history.rss",
+    "apiUrl": "https://status.bandlab.com/api/v2/summary.json",
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 213,
+    "slug": "blackboard",
+    "name": "Blackboard",
+    "domain": "blackboard.com",
+    "statusPageUrl": "https://status.blackboard.com",
+    "feedUrl": "https://status.blackboard.com/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 200,
+    "slug": "blooket",
+    "name": "Blooket",
+    "domain": "blooket.com",
+    "statusPageUrl": "https://blooket.statuspage.io",
+    "feedUrl": "https://blooket.statuspage.io/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 26,
+    "slug": "bolt",
+    "name": "Bolt.new",
+    "domain": "bolt.new",
+    "statusPageUrl": "https://status.bolt.new",
+    "feedUrl": "https://status.bolt.new/history.rss",
+    "apiUrl": "https://status.bolt.new/api/v2/summary.json",
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 182,
+    "slug": "box",
+    "name": "Box",
+    "domain": "box.com",
+    "statusPageUrl": "https://status.box.com",
+    "feedUrl": "https://status.box.com/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 185,
+    "slug": "canva",
+    "name": "Canva",
+    "domain": "canva.com",
+    "statusPageUrl": "https://canva.statuspage.io",
+    "feedUrl": "https://canva.statuspage.io/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 190,
+    "slug": "canvas",
+    "name": "Canvas",
+    "domain": "instructure.com",
+    "statusPageUrl": "https://status.instructure.com",
+    "feedUrl": "https://status.instructure.com/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 8,
+    "slug": "character-ai",
+    "name": "Character AI",
+    "domain": "character.ai",
+    "statusPageUrl": "https://status.character.ai",
+    "feedUrl": "https://status.character.ai/history.rss",
+    "apiUrl": "https://status.character.ai/api/v2/summary.json",
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 309,
+    "slug": "chime",
+    "name": "Chime",
+    "domain": "chime.com",
+    "statusPageUrl": "https://status.chime.com",
+    "feedUrl": "https://status.chime.com/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 404,
+    "slug": "chromecast",
+    "name": "Chromecast",
+    "domain": "store.google.com",
+    "statusPageUrl": "https://store.statuspage.io",
+    "feedUrl": "https://store.statuspage.io/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 2,
+    "slug": "claude",
+    "name": "Claude",
+    "domain": "claude.ai",
+    "statusPageUrl": "https://status.claude.ai",
+    "feedUrl": "https://status.claude.ai/history.rss",
+    "apiUrl": "https://status.claude.ai/api/v2/summary.json",
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 222,
+    "slug": "cloudflare",
+    "name": "Cloudflare",
+    "domain": "cloudflare.com",
+    "statusPageUrl": "https://cloudflare.statuspage.io",
+    "feedUrl": "https://cloudflare.statuspage.io/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 44,
+    "slug": "cohere",
+    "name": "Cohere",
+    "domain": "cohere.com",
+    "statusPageUrl": "https://status.cohere.com",
+    "feedUrl": "https://status.cohere.com/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 119,
+    "slug": "coin-master",
+    "name": "Coin Master",
+    "domain": "coinmaster.com",
+    "statusPageUrl": "https://coinmaster.statuspage.io",
+    "feedUrl": "https://coinmaster.statuspage.io/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 322,
+    "slug": "coinbase",
+    "name": "Coinbase",
+    "domain": "coinbase.com",
+    "statusPageUrl": "https://status.coinbase.com",
+    "feedUrl": "https://status.coinbase.com/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 180,
+    "slug": "confluence",
+    "name": "Confluence",
+    "domain": "atlassian.com",
+    "statusPageUrl": "https://status.atlassian.com",
+    "feedUrl": "https://status.atlassian.com/history.rss",
+    "apiUrl": "https://status.atlassian.com/api/v2/summary.json",
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 31,
+    "slug": "copy-ai",
+    "name": "Copy.ai",
+    "domain": "copy.ai",
+    "statusPageUrl": "https://status.copy.ai",
+    "feedUrl": "https://status.copy.ai/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 217,
+    "slug": "coursera",
+    "name": "Coursera",
+    "domain": "coursera.org",
+    "statusPageUrl": "https://status.coursera.org",
+    "feedUrl": "https://status.coursera.org/history.rss",
+    "apiUrl": "https://status.coursera.org/api/v2/summary.json",
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 321,
+    "slug": "cox",
+    "name": "Cox",
+    "domain": "cox.com",
+    "statusPageUrl": "https://cox.statuspage.io",
+    "feedUrl": "https://cox.statuspage.io/history.rss",
+    "apiUrl": "https://cox.statuspage.io/api/v2/summary.json",
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 5,
+    "slug": "cursor",
+    "name": "Cursor",
+    "domain": "cursor.com",
+    "statusPageUrl": "https://status.cursor.com",
+    "feedUrl": "https://status.cursor.com/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 408,
+    "slug": "daily-pay",
+    "name": "DailyPay",
+    "domain": "dailypay.com",
+    "statusPageUrl": "https://status.dailypay.com",
+    "feedUrl": "https://status.dailypay.com/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 17,
+    "slug": "deepseek",
+    "name": "DeepSeek",
+    "domain": "deepseek.com",
+    "statusPageUrl": "https://status.deepseek.com",
+    "feedUrl": "https://status.deepseek.com/history.rss",
+    "apiUrl": "https://status.deepseek.com/api/v2/summary.json",
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 268,
+    "slug": "depop",
+    "name": "Depop",
+    "domain": "depop.com",
+    "statusPageUrl": "https://depopstatus.com",
+    "feedUrl": "https://depopstatus.com/history.rss",
+    "apiUrl": "https://depopstatus.com/api/v2/summary.json",
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 45,
+    "slug": "descript",
+    "name": "Descript",
+    "domain": "descript.com",
+    "statusPageUrl": "https://status.descript.com",
+    "feedUrl": "https://status.descript.com/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 243,
+    "slug": "discord",
+    "name": "Discord",
+    "domain": "discord.com",
+    "statusPageUrl": "https://status.discord.com",
+    "feedUrl": "https://status.discord.com/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 419,
+    "slug": "discover",
+    "name": "Discover",
+    "domain": "discover.com",
+    "statusPageUrl": "https://discover.statuspage.io",
+    "feedUrl": "https://discover.statuspage.io/history.rss",
+    "apiUrl": "https://discover.statuspage.io/api/v2/summary.json",
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 324,
+    "slug": "dish-network",
+    "name": "Dish Network",
+    "domain": "dish.com",
+    "statusPageUrl": "https://dish.statuspage.io",
+    "feedUrl": "https://dish.statuspage.io/history.rss",
+    "apiUrl": "https://dish.statuspage.io/api/v2/summary.json",
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 181,
+    "slug": "docusign",
+    "name": "DocuSign",
+    "domain": "docusign.com",
+    "statusPageUrl": "https://status.docusign.com",
+    "feedUrl": "https://status.docusign.com/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 313,
+    "slug": "doordash",
+    "name": "DoorDash",
+    "domain": "doordash.com",
+    "statusPageUrl": "https://doordash.statuspage.io",
+    "feedUrl": "https://doordash.statuspage.io/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 236,
+    "slug": "dropbox",
+    "name": "Dropbox",
+    "domain": "dropbox.com",
+    "statusPageUrl": "https://status.dropbox.com",
+    "feedUrl": "https://status.dropbox.com/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 186,
+    "slug": "duolingo",
+    "name": "Duolingo",
+    "domain": "duolingo.com",
+    "statusPageUrl": "https://status.duolingo.com",
+    "feedUrl": "https://status.duolingo.com/history.rss",
+    "apiUrl": "https://status.duolingo.com/api/v2/summary.json",
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 20,
+    "slug": "elevenlabs",
+    "name": "ElevenLabs",
+    "domain": "elevenlabs.io",
+    "statusPageUrl": "https://status.elevenlabs.io",
+    "feedUrl": "https://status.elevenlabs.io/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 54,
+    "slug": "epic-games",
+    "name": "Epic Games",
+    "domain": "epicgames.com",
+    "statusPageUrl": "https://status.epicgames.com",
+    "feedUrl": "https://status.epicgames.com/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 263,
+    "slug": "etsy",
+    "name": "Etsy",
+    "domain": "etsy.com",
+    "statusPageUrl": "https://www.etsystatus.com",
+    "feedUrl": "https://www.etsystatus.com/history.rss",
+    "apiUrl": "https://www.etsystatus.com/api/v2/summary.json",
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 269,
+    "slug": "eventbrite",
+    "name": "Eventbrite",
+    "domain": "eventbrite.com",
+    "statusPageUrl": "https://eventbrite.statuspage.io",
+    "feedUrl": "https://eventbrite.statuspage.io/history.rss",
+    "apiUrl": "https://eventbrite.statuspage.io/api/v2/summary.json",
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 240,
+    "slug": "figma",
+    "name": "Figma",
+    "domain": "figma.com",
+    "statusPageUrl": "https://status.figma.com",
+    "feedUrl": "https://status.figma.com/history.rss",
+    "apiUrl": "https://status.figma.com/api/v2/summary.json",
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 214,
+    "slug": "firebase",
+    "name": "Firebase",
+    "domain": "firebase.google.com",
+    "statusPageUrl": "https://status.firebase.google.com",
+    "feedUrl": "https://status.firebase.google.com/feed.atom",
+    "apiUrl": null,
+    "provider": "atom"
+  },
+  {
+    "serviceId": 357,
+    "slug": "fitbit",
+    "name": "Fitbit",
+    "domain": "fitbit.com",
+    "statusPageUrl": "https://status.fitbit.com",
+    "feedUrl": "https://status.fitbit.com/feed.atom",
+    "apiUrl": null,
+    "provider": "atom"
+  },
+  {
+    "serviceId": 67,
+    "slug": "fortnite",
+    "name": "Fortnite",
+    "domain": "fortnite.com",
+    "statusPageUrl": "https://fortnite.statuspage.io",
+    "feedUrl": "https://fortnite.statuspage.io/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 449,
+    "slug": "garmin-connect",
+    "name": "Garmin Connect",
+    "domain": "connect.garmin.com",
+    "statusPageUrl": "https://connect.statuspage.io",
+    "feedUrl": "https://connect.statuspage.io/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 4,
+    "slug": "gemini",
+    "name": "Gemini",
+    "domain": "gemini.google.com",
+    "statusPageUrl": "https://gemini.statuspage.io",
+    "feedUrl": "https://gemini.statuspage.io/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 216,
+    "slug": "github",
+    "name": "GitHub",
+    "domain": "github.com",
+    "statusPageUrl": "https://status.github.com",
+    "feedUrl": "https://status.github.com/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 11,
+    "slug": "github-copilot",
+    "name": "GitHub Copilot",
+    "domain": "github.com",
+    "statusPageUrl": "https://status.github.com",
+    "feedUrl": "https://status.github.com/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 226,
+    "slug": "google-ads",
+    "name": "Google Ads",
+    "domain": "ads.google.com",
+    "statusPageUrl": "https://ads.statuspage.io",
+    "feedUrl": "https://ads.statuspage.io/history.rss",
+    "apiUrl": "https://ads.statuspage.io/api/v2/summary.json",
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 330,
+    "slug": "google-fi",
+    "name": "Google Fi",
+    "domain": "fi.google.com",
+    "statusPageUrl": "https://fi.statuspage.io",
+    "feedUrl": "https://fi.statuspage.io/history.rss",
+    "apiUrl": "https://fi.statuspage.io/api/v2/summary.json",
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 420,
+    "slug": "google-play",
+    "name": "Google Play Store",
+    "domain": "play.google.com",
+    "statusPageUrl": "https://status.play.google.com",
+    "feedUrl": "https://status.play.google.com/feed.atom",
+    "apiUrl": null,
+    "provider": "atom"
+  },
+  {
+    "serviceId": 174,
+    "slug": "grammarly",
+    "name": "Grammarly",
+    "domain": "grammarly.com",
+    "statusPageUrl": "https://status.grammarly.com",
+    "feedUrl": "https://status.grammarly.com/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 29,
+    "slug": "groq",
+    "name": "Groq",
+    "domain": "groq.com",
+    "statusPageUrl": "https://groqstatus.com",
+    "feedUrl": "https://groqstatus.com/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 35,
+    "slug": "heygen",
+    "name": "HeyGen",
+    "domain": "heygen.com",
+    "statusPageUrl": "https://status.heygen.com",
+    "feedUrl": "https://status.heygen.com/history.rss",
+    "apiUrl": "https://status.heygen.com/api/v2/summary.json",
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 178,
+    "slug": "hubspot",
+    "name": "HubSpot",
+    "domain": "hubspot.com",
+    "statusPageUrl": "https://status.hubspot.com",
+    "feedUrl": "https://status.hubspot.com/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 27,
+    "slug": "hugging-face",
+    "name": "Hugging Face",
+    "domain": "huggingface.co",
+    "statusPageUrl": "https://status.huggingface.co",
+    "feedUrl": "https://status.huggingface.co/feed.atom",
+    "apiUrl": null,
+    "provider": "atom"
+  },
+  {
+    "serviceId": 110,
+    "slug": "hypixel",
+    "name": "Hypixel",
+    "domain": "hypixel.net",
+    "statusPageUrl": "https://status.hypixel.net",
+    "feedUrl": "https://status.hypixel.net/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 33,
+    "slug": "ideogram",
+    "name": "Ideogram",
+    "domain": "ideogram.ai",
+    "statusPageUrl": "https://status.ideogram.ai",
+    "feedUrl": "https://status.ideogram.ai/history.rss",
+    "apiUrl": "https://status.ideogram.ai/api/v2/summary.json",
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 24,
+    "slug": "janitor-ai",
+    "name": "Janitor AI",
+    "domain": "janitorai.com",
+    "statusPageUrl": "https://status.janitorai.com",
+    "feedUrl": "https://status.janitorai.com/feed/rss",
+    "apiUrl": null,
+    "provider": "custom"
+  },
+  {
+    "serviceId": 34,
+    "slug": "jasper-ai",
+    "name": "Jasper",
+    "domain": "jasper.ai",
+    "statusPageUrl": "https://status.jasper.com",
+    "feedUrl": "https://status.jasper.com/history.rss",
+    "apiUrl": "https://status.jasper.com/api/v2/summary.json",
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 187,
+    "slug": "jira",
+    "name": "Jira",
+    "domain": "atlassian.com",
+    "statusPageUrl": "https://status.atlassian.com",
+    "feedUrl": "https://status.atlassian.com/history.rss",
+    "apiUrl": "https://status.atlassian.com/api/v2/summary.json",
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 201,
+    "slug": "khan-academy",
+    "name": "Khan Academy",
+    "domain": "khanacademy.org",
+    "statusPageUrl": "https://status.khanacademy.org",
+    "feedUrl": "https://status.khanacademy.org/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 406,
+    "slug": "kraken",
+    "name": "Kraken",
+    "domain": "kraken.com",
+    "statusPageUrl": "https://status.kraken.com",
+    "feedUrl": "https://status.kraken.com/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 9,
+    "slug": "leonardo-ai",
+    "name": "Leonardo AI",
+    "domain": "leonardo.ai",
+    "statusPageUrl": "https://leonardo.statuspage.io",
+    "feedUrl": "https://leonardo.statuspage.io/history.rss",
+    "apiUrl": "https://leonardo.statuspage.io/api/v2/summary.json",
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 42,
+    "slug": "linkedin",
+    "name": "LinkedIn",
+    "domain": "linkedin.com",
+    "statusPageUrl": "https://linkedin.statuspage.io",
+    "feedUrl": "https://linkedin.statuspage.io/history.rss",
+    "apiUrl": "https://linkedin.statuspage.io/api/v2/summary.json",
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 22,
+    "slug": "lovable",
+    "name": "Lovable",
+    "domain": "lovable.dev",
+    "statusPageUrl": "https://status.lovable.dev",
+    "feedUrl": "https://status.lovable.dev/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 50,
+    "slug": "luma-ai",
+    "name": "Luma AI",
+    "domain": "lumalabs.ai",
+    "statusPageUrl": "https://status.lumalabs.ai",
+    "feedUrl": "https://status.lumalabs.ai/feed.atom",
+    "apiUrl": null,
+    "provider": "atom"
+  },
+  {
+    "serviceId": 433,
+    "slug": "lyft",
+    "name": "Lyft",
+    "domain": "lyft.com",
+    "statusPageUrl": "https://lyft.statuspage.io",
+    "feedUrl": "https://lyft.statuspage.io/history.rss",
+    "apiUrl": "https://lyft.statuspage.io/api/v2/summary.json",
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 434,
+    "slug": "mangadex",
+    "name": "MangaDex",
+    "domain": "mangadex.org",
+    "statusPageUrl": "https://status.mangadex.org",
+    "feedUrl": "https://status.mangadex.org/history.rss",
+    "apiUrl": "https://status.mangadex.org/api/v2/summary.json",
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 156,
+    "slug": "mangafire",
+    "name": "MangaFire",
+    "domain": "mangafire.to",
+    "statusPageUrl": "https://mangafire.statuspage.io",
+    "feedUrl": "https://mangafire.statuspage.io/history.rss",
+    "apiUrl": "https://mangafire.statuspage.io/api/v2/summary.json",
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 132,
+    "slug": "hbo-max",
+    "name": "Max (HBO)",
+    "domain": "max.com",
+    "statusPageUrl": "https://max.statuspage.io",
+    "feedUrl": "https://max.statuspage.io/history.rss",
+    "apiUrl": "https://max.statuspage.io/api/v2/summary.json",
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 283,
+    "slug": "mcdonalds",
+    "name": "McDonald's",
+    "domain": "mcdonalds.com",
+    "statusPageUrl": "https://mcdonalds.statuspage.io",
+    "feedUrl": "https://mcdonalds.statuspage.io/history.rss",
+    "apiUrl": "https://mcdonalds.statuspage.io/api/v2/summary.json",
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 3,
+    "slug": "copilot",
+    "name": "Microsoft Copilot",
+    "domain": "copilot.microsoft.com",
+    "statusPageUrl": "https://copilot.statuspage.io",
+    "feedUrl": "https://copilot.statuspage.io/history.rss",
+    "apiUrl": "https://copilot.statuspage.io/api/v2/summary.json",
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 166,
+    "slug": "teams",
+    "name": "Microsoft Teams",
+    "domain": "teams.microsoft.com",
+    "statusPageUrl": "https://teams.statuspage.io",
+    "feedUrl": "https://teams.statuspage.io/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 7,
+    "slug": "midjourney",
+    "name": "Midjourney",
+    "domain": "midjourney.com",
+    "statusPageUrl": "https://midjourney.statuspage.io",
+    "feedUrl": "https://midjourney.statuspage.io/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 175,
+    "slug": "monday",
+    "name": "Monday.com",
+    "domain": "monday.com",
+    "statusPageUrl": "https://status.monday.com",
+    "feedUrl": "https://status.monday.com/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 366,
+    "slug": "myfitnesspal",
+    "name": "MyFitnessPal",
+    "domain": "myfitnesspal.com",
+    "statusPageUrl": "https://status.myfitnesspal.com",
+    "feedUrl": "https://status.myfitnesspal.com/history.rss",
+    "apiUrl": "https://status.myfitnesspal.com/api/v2/summary.json",
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 410,
+    "slug": "nordvpn",
+    "name": "NordVPN",
+    "domain": "nordvpn.com",
+    "statusPageUrl": "https://status.nordvpn.com",
+    "feedUrl": "https://status.nordvpn.com/feed.atom",
+    "apiUrl": null,
+    "provider": "atom"
+  },
+  {
+    "serviceId": 122,
+    "slug": "osrs",
+    "name": "Old School RuneScape",
+    "domain": "oldschool.runescape.com",
+    "statusPageUrl": "https://oldschool.statuspage.io",
+    "feedUrl": "https://oldschool.statuspage.io/history.rss",
+    "apiUrl": "https://oldschool.statuspage.io/api/v2/summary.json",
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 412,
+    "slug": "onlyfans",
+    "name": "OnlyFans",
+    "domain": "onlyfans.com",
+    "statusPageUrl": "https://onlyfans.statuspage.io",
+    "feedUrl": "https://onlyfans.statuspage.io/history.rss",
+    "apiUrl": "https://onlyfans.statuspage.io/api/v2/summary.json",
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 23,
+    "slug": "openai",
+    "name": "OpenAI",
+    "domain": "openai.com",
+    "statusPageUrl": "https://status.openai.com",
+    "feedUrl": "https://status.openai.com/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 16,
+    "slug": "otter-ai",
+    "name": "Otter.ai",
+    "domain": "otter.ai",
+    "statusPageUrl": "https://status.otter.ai",
+    "feedUrl": "https://status.otter.ai/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 205,
+    "slug": "overleaf",
+    "name": "Overleaf",
+    "domain": "overleaf.com",
+    "statusPageUrl": "https://status.overleaf.com",
+    "feedUrl": "https://status.overleaf.com/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 373,
+    "slug": "patreon",
+    "name": "Patreon",
+    "domain": "patreon.com",
+    "statusPageUrl": "https://status.patreon.com",
+    "feedUrl": "https://status.patreon.com/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 253,
+    "slug": "paypal",
+    "name": "PayPal",
+    "domain": "paypal.com",
+    "statusPageUrl": "https://status.paypal.com",
+    "feedUrl": "https://status.paypal.com/feed/rss",
+    "apiUrl": null,
+    "provider": "custom"
+  },
+  {
+    "serviceId": 10,
+    "slug": "perplexity",
+    "name": "Perplexity",
+    "domain": "perplexity.ai",
+    "statusPageUrl": "https://status.perplexity.com",
+    "feedUrl": "https://status.perplexity.com/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 21,
+    "slug": "pinterest",
+    "name": "Pinterest",
+    "domain": "pinterest.com",
+    "statusPageUrl": "https://status.pinterest.com",
+    "feedUrl": "https://status.pinterest.com/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 355,
+    "slug": "pirate-ship",
+    "name": "Pirate Ship",
+    "domain": "pirateship.com",
+    "statusPageUrl": "https://status.pirateship.com",
+    "feedUrl": "https://status.pirateship.com/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 133,
+    "slug": "plex",
+    "name": "Plex",
+    "domain": "plex.tv",
+    "statusPageUrl": "https://status.plex.tv",
+    "feedUrl": "https://status.plex.tv/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 118,
+    "slug": "pluto-tv",
+    "name": "Pluto TV",
+    "domain": "pluto.tv",
+    "statusPageUrl": "https://pluto.statuspage.io",
+    "feedUrl": "https://pluto.statuspage.io/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 32,
+    "slug": "poe",
+    "name": "Poe",
+    "domain": "poe.com",
+    "statusPageUrl": "https://status.poe.com",
+    "feedUrl": "https://status.poe.com/history.rss",
+    "apiUrl": "https://status.poe.com/api/v2/summary.json",
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 439,
+    "slug": "pokerstars",
+    "name": "PokerStars",
+    "domain": "pokerstars.com",
+    "statusPageUrl": "https://pokerstars.statuspage.io",
+    "feedUrl": "https://pokerstars.statuspage.io/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 260,
+    "slug": "poshmark",
+    "name": "Poshmark",
+    "domain": "poshmark.com",
+    "statusPageUrl": "https://status.poshmark.com",
+    "feedUrl": "https://status.poshmark.com/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 245,
+    "slug": "protonmail",
+    "name": "ProtonMail",
+    "domain": "proton.me",
+    "statusPageUrl": "https://status.proton.me",
+    "feedUrl": "https://status.proton.me/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 440,
+    "slug": "real-debrid",
+    "name": "Real-Debrid",
+    "domain": "real-debrid.com",
+    "statusPageUrl": "https://status.real-debrid.com",
+    "feedUrl": "https://status.real-debrid.com/feed.atom",
+    "apiUrl": null,
+    "provider": "atom"
+  },
+  {
+    "serviceId": 46,
+    "slug": "reddit",
+    "name": "Reddit",
+    "domain": "reddit.com",
+    "statusPageUrl": "https://reddit.statuspage.io",
+    "feedUrl": "https://reddit.statuspage.io/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 28,
+    "slug": "replicate",
+    "name": "Replicate",
+    "domain": "replicate.com",
+    "statusPageUrl": "https://status.replicate.com",
+    "feedUrl": "https://status.replicate.com/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 382,
+    "slug": "ring",
+    "name": "Ring",
+    "domain": "ring.com",
+    "statusPageUrl": "https://status.ring.com",
+    "feedUrl": "https://status.ring.com/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 287,
+    "slug": "robinhood",
+    "name": "Robinhood",
+    "domain": "robinhood.com",
+    "statusPageUrl": "https://status.robinhood.com",
+    "feedUrl": "https://status.robinhood.com/history.rss",
+    "apiUrl": "https://status.robinhood.com/api/v2/summary.json",
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 25,
+    "slug": "runway",
+    "name": "Runway",
+    "domain": "runwayml.com",
+    "statusPageUrl": "https://status.runwayml.com",
+    "feedUrl": "https://status.runwayml.com/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 115,
+    "slug": "samsung",
+    "name": "Samsung",
+    "domain": "samsung.com",
+    "statusPageUrl": "https://samsung.statuspage.io",
+    "feedUrl": "https://samsung.statuspage.io/history.rss",
+    "apiUrl": "https://samsung.statuspage.io/api/v2/summary.json",
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 168,
+    "slug": "shipstation",
+    "name": "ShipStation",
+    "domain": "shipstation.com",
+    "statusPageUrl": "https://status.shipstation.com",
+    "feedUrl": "https://status.shipstation.com/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 163,
+    "slug": "slack",
+    "name": "Slack",
+    "domain": "slack.com",
+    "statusPageUrl": "https://status.slack.com",
+    "feedUrl": "https://status.slack.com/feed/rss",
+    "apiUrl": null,
+    "provider": "custom"
+  },
+  {
+    "serviceId": 171,
+    "slug": "smartsheet",
+    "name": "Smartsheet",
+    "domain": "smartsheet.com",
+    "statusPageUrl": "https://status.smartsheet.com",
+    "feedUrl": "https://status.smartsheet.com/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 49,
+    "slug": "snapchat",
+    "name": "Snapchat",
+    "domain": "snapchat.com",
+    "statusPageUrl": "https://snapchat.statuspage.io",
+    "feedUrl": "https://snapchat.statuspage.io/history.rss",
+    "apiUrl": "https://snapchat.statuspage.io/api/v2/summary.json",
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 230,
+    "slug": "snowflake",
+    "name": "Snowflake",
+    "domain": "snowflake.com",
+    "statusPageUrl": "https://status.snowflake.com",
+    "feedUrl": "https://status.snowflake.com/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 425,
+    "slug": "southwest-airlines",
+    "name": "Southwest Airlines",
+    "domain": "southwest.com",
+    "statusPageUrl": "https://southwest.statuspage.io",
+    "feedUrl": "https://southwest.statuspage.io/history.rss",
+    "apiUrl": "https://southwest.statuspage.io/api/v2/summary.json",
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 121,
+    "slug": "spotify",
+    "name": "Spotify",
+    "domain": "spotify.com",
+    "statusPageUrl": "https://spotify.statuspage.io",
+    "feedUrl": "https://spotify.statuspage.io/history.rss",
+    "apiUrl": "https://spotify.statuspage.io/api/v2/summary.json",
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 207,
+    "slug": "squarespace",
+    "name": "Squarespace",
+    "domain": "squarespace.com",
+    "statusPageUrl": "https://status.squarespace.com",
+    "feedUrl": "https://status.squarespace.com/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 14,
+    "slug": "stability-ai",
+    "name": "Stability AI",
+    "domain": "stability.ai",
+    "statusPageUrl": "https://status.stability.ai",
+    "feedUrl": "https://status.stability.ai/history.rss",
+    "apiUrl": "https://status.stability.ai/api/v2/summary.json",
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 61,
+    "slug": "steam",
+    "name": "Steam",
+    "domain": "store.steampowered.com",
+    "statusPageUrl": "https://store.statuspage.io",
+    "feedUrl": "https://store.statuspage.io/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 349,
+    "slug": "straight-talk",
+    "name": "Straight Talk",
+    "domain": "straighttalk.com",
+    "statusPageUrl": "https://straighttalk.statuspage.io",
+    "feedUrl": "https://straighttalk.statuspage.io/history.rss",
+    "apiUrl": "https://straighttalk.statuspage.io/api/v2/summary.json",
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 388,
+    "slug": "strava",
+    "name": "Strava",
+    "domain": "strava.com",
+    "statusPageUrl": "https://status.strava.com",
+    "feedUrl": "https://status.strava.com/history.rss",
+    "apiUrl": "https://status.strava.com/api/v2/summary.json",
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 290,
+    "slug": "stripe",
+    "name": "Stripe",
+    "domain": "stripe.com",
+    "statusPageUrl": "https://www.stripestatus.com",
+    "feedUrl": "https://www.stripestatus.com/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 169,
+    "slug": "surveymonkey",
+    "name": "SurveyMonkey",
+    "domain": "surveymonkey.com",
+    "statusPageUrl": "https://status.surveymonkey.com",
+    "feedUrl": "https://status.surveymonkey.com/history.rss",
+    "apiUrl": "https://status.surveymonkey.com/api/v2/summary.json",
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 38,
+    "slug": "synthesia",
+    "name": "Synthesia",
+    "domain": "synthesia.io",
+    "statusPageUrl": "https://status.synthesia.io",
+    "feedUrl": "https://status.synthesia.io/history.rss",
+    "apiUrl": "https://status.synthesia.io/api/v2/summary.json",
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 267,
+    "slug": "target",
+    "name": "Target",
+    "domain": "target.com",
+    "statusPageUrl": "https://target.statuspage.io",
+    "feedUrl": "https://target.statuspage.io/history.rss",
+    "apiUrl": "https://target.statuspage.io/api/v2/summary.json",
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 13,
+    "slug": "together-ai",
+    "name": "Together AI",
+    "domain": "together.ai",
+    "statusPageUrl": "https://status.together.ai",
+    "feedUrl": "https://status.together.ai/feed.atom",
+    "apiUrl": null,
+    "provider": "atom"
+  },
+  {
+    "serviceId": 172,
+    "slug": "trello",
+    "name": "Trello",
+    "domain": "trello.com",
+    "statusPageUrl": "https://status.trello.com",
+    "feedUrl": "https://status.trello.com/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 202,
+    "slug": "turnitin",
+    "name": "Turnitin",
+    "domain": "turnitin.com",
+    "statusPageUrl": "https://turnitin.statuspage.io",
+    "feedUrl": "https://turnitin.statuspage.io/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 145,
+    "slug": "twitch",
+    "name": "Twitch",
+    "domain": "twitch.tv",
+    "statusPageUrl": "https://status.twitch.tv",
+    "feedUrl": "https://status.twitch.tv/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 312,
+    "slug": "uber",
+    "name": "Uber",
+    "domain": "uber.com",
+    "statusPageUrl": "https://uber.statuspage.io",
+    "feedUrl": "https://uber.statuspage.io/history.rss",
+    "apiUrl": "https://uber.statuspage.io/api/v2/summary.json",
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 12,
+    "slug": "udio",
+    "name": "Udio",
+    "domain": "udio.com",
+    "statusPageUrl": "https://status.udio.com",
+    "feedUrl": "https://status.udio.com/feed.atom",
+    "apiUrl": null,
+    "provider": "atom"
+  },
+  {
+    "serviceId": 441,
+    "slug": "united-airlines",
+    "name": "United Airlines",
+    "domain": "united.com",
+    "statusPageUrl": "https://united.statuspage.io",
+    "feedUrl": "https://united.statuspage.io/history.rss",
+    "apiUrl": "https://united.statuspage.io/api/v2/summary.json",
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 102,
+    "slug": "vrchat",
+    "name": "VRChat",
+    "domain": "vrchat.com",
+    "statusPageUrl": "https://status.vrchat.com",
+    "feedUrl": "https://status.vrchat.com/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 210,
+    "slug": "vercel",
+    "name": "Vercel",
+    "domain": "vercel.com",
+    "statusPageUrl": "https://vercel.statuspage.io",
+    "feedUrl": "https://vercel.statuspage.io/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 327,
+    "slug": "verizon",
+    "name": "Verizon",
+    "domain": "verizon.com",
+    "statusPageUrl": "https://verizon.statuspage.io",
+    "feedUrl": "https://verizon.statuspage.io/history.rss",
+    "apiUrl": "https://verizon.statuspage.io/api/v2/summary.json",
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 150,
+    "slug": "vimeo",
+    "name": "Vimeo",
+    "domain": "vimeo.com",
+    "statusPageUrl": "https://status.vimeo.com",
+    "feedUrl": "https://status.vimeo.com/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 279,
+    "slug": "walmart",
+    "name": "Walmart",
+    "domain": "walmart.com",
+    "statusPageUrl": "https://walmart.statuspage.io",
+    "feedUrl": "https://walmart.statuspage.io/history.rss",
+    "apiUrl": "https://walmart.statuspage.io/api/v2/summary.json",
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 372,
+    "slug": "webtoons",
+    "name": "Webtoons",
+    "domain": "webtoons.com",
+    "statusPageUrl": "https://webtoons.statuspage.io",
+    "feedUrl": "https://webtoons.statuspage.io/history.rss",
+    "apiUrl": "https://webtoons.statuspage.io/api/v2/summary.json",
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 396,
+    "slug": "wikipedia",
+    "name": "Wikipedia",
+    "domain": "wikipedia.org",
+    "statusPageUrl": "https://www.wikipediastatus.com",
+    "feedUrl": "https://www.wikipediastatus.com/history.rss",
+    "apiUrl": "https://www.wikipediastatus.com/api/v2/summary.json",
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 30,
+    "slug": "windsurf",
+    "name": "Windsurf",
+    "domain": "codeium.com",
+    "statusPageUrl": "https://status.codeium.com",
+    "feedUrl": "https://status.codeium.com/feed.atom",
+    "apiUrl": null,
+    "provider": "atom"
+  },
+  {
+    "serviceId": 233,
+    "slug": "wix",
+    "name": "Wix",
+    "domain": "wix.com",
+    "statusPageUrl": "https://status.wix.com",
+    "feedUrl": "https://status.wix.com/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 63,
+    "slug": "world-of-warcraft",
+    "name": "World of Warcraft",
+    "domain": "worldofwarcraft.blizzard.com",
+    "statusPageUrl": "https://worldofwarcraft.statuspage.io",
+    "feedUrl": "https://worldofwarcraft.statuspage.io/history.rss",
+    "apiUrl": "https://worldofwarcraft.statuspage.io/api/v2/summary.json",
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 398,
+    "slug": "yts",
+    "name": "YTS",
+    "domain": "yts.mx",
+    "statusPageUrl": "https://yts.statuspage.io",
+    "feedUrl": "https://yts.statuspage.io/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 221,
+    "slug": "zapier",
+    "name": "Zapier",
+    "domain": "zapier.com",
+    "statusPageUrl": "https://status.zapier.com",
+    "feedUrl": "https://status.zapier.com/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 165,
+    "slug": "zoom",
+    "name": "Zoom",
+    "domain": "zoom.us",
+    "statusPageUrl": "https://status.zoom.us",
+    "feedUrl": "https://status.zoom.us/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  },
+  {
+    "serviceId": 229,
+    "slug": "npm",
+    "name": "npm",
+    "domain": "npmjs.com",
+    "statusPageUrl": "https://status.npmjs.com",
+    "feedUrl": "https://status.npmjs.com/history.rss",
+    "apiUrl": null,
+    "provider": "statuspage"
+  }
+]
