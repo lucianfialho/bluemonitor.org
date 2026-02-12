@@ -1,0 +1,101 @@
+# BlueMonitor — Status Badge Installation Guide
+
+BlueMonitor is a real-time status monitoring service. The badge shows live status of any website: Operational (green), Slow (yellow), Down (red), or Pending (blue).
+
+Badge endpoint: https://www.bluemonitor.org/api/badge/{slug}
+Status page: https://www.bluemonitor.org/status/{slug}
+
+The slug is the domain with dots replaced by hyphens. Examples:
+- chatgpt → chat-openai-com
+- google.com → google-com
+- api.example.com → api-example-com
+
+If the slug doesn't exist yet, the badge auto-registers the service as "Pending" for approval.
+
+## Query Parameters
+
+- `theme=dark` — Dark background variant (default: light)
+
+## HTML
+
+```html
+<a href="https://www.bluemonitor.org/status/{slug}" target="_blank" rel="noopener">
+  <img src="https://www.bluemonitor.org/api/badge/{slug}" alt="Status on BlueMonitor" height="36" />
+</a>
+```
+
+## Markdown
+
+```markdown
+[![Status on BlueMonitor](https://www.bluemonitor.org/api/badge/{slug})](https://www.bluemonitor.org/status/{slug})
+```
+
+## React / Next.js
+
+```tsx
+function StatusBadge({ slug }: { slug: string }) {
+  return (
+    <a href={`https://www.bluemonitor.org/status/${slug}`} target="_blank" rel="noopener">
+      <img src={`https://www.bluemonitor.org/api/badge/${slug}`} alt="Status on BlueMonitor" height={36} />
+    </a>
+  );
+}
+```
+
+## Vue
+
+```vue
+<template>
+  <a :href="`https://www.bluemonitor.org/status/${slug}`" target="_blank" rel="noopener">
+    <img :src="`https://www.bluemonitor.org/api/badge/${slug}`" alt="Status on BlueMonitor" height="36" />
+  </a>
+</template>
+
+<script setup>
+defineProps({ slug: String });
+</script>
+```
+
+## Svelte
+
+```svelte
+<script>
+  export let slug;
+</script>
+
+<a href="https://www.bluemonitor.org/status/{slug}" target="_blank" rel="noopener">
+  <img src="https://www.bluemonitor.org/api/badge/{slug}" alt="Status on BlueMonitor" height="36" />
+</a>
+```
+
+## Common Slugs
+
+- chatgpt → `chatgpt`
+- claude → `claude`
+- github → `github`
+- vercel → `vercel`
+- openai → `openai`
+- google → `google`
+- stripe → `stripe`
+- aws → `aws`
+
+Full list: https://www.bluemonitor.org/sitemap.xml
+
+## Badge Generator
+
+Interactive badge generator with live preview and copy-paste code:
+https://www.bluemonitor.org/badge
+
+## API Reference
+
+### GET /api/badge/{slug}
+Returns a PNG image (280x36) with the current status of the service.
+Cache: 5 minutes (s-maxage=300).
+
+### GET /api/check/{domain}
+Returns JSON with real-time status check result.
+Response: `{ status: "up"|"down"|"slow", responseTime: number, statusCode: number, checkedAt: string }`
+
+### GET /api/status-history/{slug}
+Returns JSON array with the last 24 hours of status checks.
+Response: `[{ status, response_time, status_code, checked_at }]`
