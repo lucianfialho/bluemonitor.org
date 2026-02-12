@@ -8,6 +8,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
     <NeonAuthUIProvider
       authClient={authClient}
       social={{ providers: ["github"] }}
+      credentials={false}
     >
       {children}
     </NeonAuthUIProvider>
