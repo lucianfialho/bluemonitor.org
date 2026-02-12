@@ -5,6 +5,15 @@ import Link from "next/link";
 import ServiceIcon from "@/components/ServiceIcon";
 import { Category } from "@/lib/types";
 
+interface Webhook {
+  id: number;
+  url: string;
+  type: "discord" | "slack" | "custom";
+  events: string[];
+  active: boolean;
+  created_at: string;
+}
+
 interface ApiKey {
   id: number;
   name: string;
@@ -39,6 +48,14 @@ export default function DashboardClient({
   const [watchlist, setWatchlist] = useState<WatchlistService[]>([]);
   const [watchlistLoading, setWatchlistLoading] = useState(true);
 
+  const [webhooks, setWebhooks] = useState<Webhook[]>([]);
+  const [webhooksLoading, setWebhooksLoading] = useState(true);
+  const [webhookUrl, setWebhookUrl] = useState("");
+  const [webhookType, setWebhookType] = useState<"discord" | "slack" | "custom">("discord");
+  const [webhookEvents, setWebhookEvents] = useState<string[]>(["down", "recovered"]);
+  const [creatingWebhook, setCreatingWebhook] = useState(false);
+  const [testingWebhookId, setTestingWebhookId] = useState<number | null>(null);
+
   const fetchKeys = useCallback(async () => {
     const res = await fetch("/api/keys");
     const data = await res.json();
@@ -53,10 +70,18 @@ export default function DashboardClient({
     setWatchlistLoading(false);
   }, []);
 
+  const fetchWebhooks = useCallback(async () => {
+    const res = await fetch("/api/webhooks");
+    const data = await res.json();
+    setWebhooks(data.webhooks || []);
+    setWebhooksLoading(false);
+  }, []);
+
   useEffect(() => {
     fetchKeys();
     fetchWatchlist();
-  }, [fetchKeys, fetchWatchlist]);
+    fetchWebhooks();
+  }, [fetchKeys, fetchWatchlist, fetchWebhooks]);
 
   async function createKey() {
     setCreating(true);
@@ -83,6 +108,48 @@ export default function DashboardClient({
   async function removeFromWatchlist(serviceId: number) {
     setWatchlist((prev) => prev.filter((s) => s.id !== serviceId));
     await fetch(`/api/watchlist/${serviceId}`, { method: "DELETE" });
+  }
+
+  async function createWebhook() {
+    if (!webhookUrl) return;
+    setCreatingWebhook(true);
+    const res = await fetch("/api/webhooks", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ url: webhookUrl, type: webhookType, events: webhookEvents }),
+    });
+    if (res.ok) {
+      setWebhookUrl("");
+      setWebhookEvents(["down", "recovered"]);
+      fetchWebhooks();
+    }
+    setCreatingWebhook(false);
+  }
+
+  async function deleteWebhook(id: number) {
+    setWebhooks((prev) => prev.filter((w) => w.id !== id));
+    await fetch(`/api/webhooks/${id}`, { method: "DELETE" });
+  }
+
+  async function toggleWebhook(id: number, active: boolean) {
+    setWebhooks((prev) => prev.map((w) => (w.id === id ? { ...w, active } : w)));
+    await fetch(`/api/webhooks/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ active }),
+    });
+  }
+
+  async function testWebhook(id: number) {
+    setTestingWebhookId(id);
+    await fetch(`/api/webhooks/${id}/test`, { method: "POST" });
+    setTestingWebhookId(null);
+  }
+
+  function toggleEvent(event: string) {
+    setWebhookEvents((prev) =>
+      prev.includes(event) ? prev.filter((e) => e !== event) : [...prev, event]
+    );
   }
 
   return (
@@ -191,6 +258,128 @@ export default function DashboardClient({
                     <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+
+      {/* Webhooks */}
+      <section className="mb-8">
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+            Webhooks
+          </h2>
+          <span className="text-xs text-zinc-500 dark:text-zinc-400">
+            {webhooks.length}/5 max
+          </span>
+        </div>
+
+        <div className="mb-4 rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
+          <div className="mb-3 flex flex-col gap-3 sm:flex-row">
+            <input
+              type="url"
+              placeholder="Webhook URL"
+              value={webhookUrl}
+              onChange={(e) => setWebhookUrl(e.target.value)}
+              className="flex-1 rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-blue-500 focus:outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100"
+            />
+            <select
+              value={webhookType}
+              onChange={(e) => setWebhookType(e.target.value as "discord" | "slack" | "custom")}
+              className="rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 focus:border-blue-500 focus:outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100"
+            >
+              <option value="discord">Discord</option>
+              <option value="slack">Slack</option>
+              <option value="custom">Custom</option>
+            </select>
+          </div>
+          <div className="mb-3 flex items-center gap-4">
+            <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">Events:</span>
+            {(["down", "slow", "recovered"] as const).map((event) => (
+              <label key={event} className="flex items-center gap-1.5 text-sm text-zinc-700 dark:text-zinc-300">
+                <input
+                  type="checkbox"
+                  checked={webhookEvents.includes(event)}
+                  onChange={() => toggleEvent(event)}
+                  className="rounded border-zinc-300 text-blue-600 focus:ring-blue-500 dark:border-zinc-600"
+                />
+                {event}
+              </label>
+            ))}
+          </div>
+          <button
+            onClick={createWebhook}
+            disabled={creatingWebhook || !webhookUrl || webhookEvents.length === 0 || webhooks.length >= 5}
+            className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
+          >
+            {creatingWebhook ? "Adding..." : "Add Webhook"}
+          </button>
+        </div>
+
+        {webhooksLoading ? (
+          <div className="rounded-xl border border-zinc-200 bg-white px-5 py-8 text-center text-sm text-zinc-500 dark:border-zinc-800 dark:bg-zinc-900">
+            Loading...
+          </div>
+        ) : webhooks.length === 0 ? (
+          <div className="rounded-xl border border-dashed border-zinc-300 bg-white px-5 py-8 text-center dark:border-zinc-700 dark:bg-zinc-900">
+            <p className="text-sm text-zinc-500 dark:text-zinc-400">
+              Add a webhook to get notified when services in your watchlist change status.
+            </p>
+          </div>
+        ) : (
+          <div className="divide-y divide-zinc-200 rounded-xl border border-zinc-200 bg-white dark:divide-zinc-800 dark:border-zinc-800 dark:bg-zinc-900">
+            {webhooks.map((wh) => (
+              <div
+                key={wh.id}
+                className="flex items-center justify-between gap-3 px-5 py-3"
+              >
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <span className={`inline-block rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase ${
+                      wh.type === "discord"
+                        ? "bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300"
+                        : wh.type === "slack"
+                          ? "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300"
+                          : "bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
+                    }`}>
+                      {wh.type}
+                    </span>
+                    <span className="truncate text-sm text-zinc-900 dark:text-zinc-100">
+                      {wh.url}
+                    </span>
+                  </div>
+                  <p className="mt-0.5 text-xs text-zinc-500">
+                    Events: {wh.events.join(", ")} · Created{" "}
+                    {new Date(wh.created_at).toLocaleDateString()}
+                  </p>
+                </div>
+                <div className="flex shrink-0 items-center gap-1">
+                  <button
+                    onClick={() => toggleWebhook(wh.id, !wh.active)}
+                    className={`rounded-md px-2 py-1 text-xs font-medium transition-colors ${
+                      wh.active
+                        ? "text-green-600 hover:bg-green-50 dark:text-green-400 dark:hover:bg-green-950"
+                        : "text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800"
+                    }`}
+                    title={wh.active ? "Disable" : "Enable"}
+                  >
+                    {wh.active ? "On" : "Off"}
+                  </button>
+                  <button
+                    onClick={() => testWebhook(wh.id)}
+                    disabled={testingWebhookId === wh.id}
+                    className="rounded-md px-2 py-1 text-xs font-medium text-blue-600 transition-colors hover:bg-blue-50 disabled:opacity-50 dark:text-blue-400 dark:hover:bg-blue-950"
+                  >
+                    {testingWebhookId === wh.id ? "Sending..." : "Test"}
+                  </button>
+                  <button
+                    onClick={() => deleteWebhook(wh.id)}
+                    className="rounded-md px-2 py-1 text-xs font-medium text-red-600 transition-colors hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950"
+                  >
+                    Delete
+                  </button>
+                </div>
               </div>
             ))}
           </div>

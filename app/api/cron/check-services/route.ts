@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
 import { checkService } from "@/lib/check-service";
+import { notifyStatusChanges, StatusChange } from "@/lib/notify-webhooks";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -8,6 +9,8 @@ export const maxDuration = 60;
 interface ServiceRow {
   id: number;
   domain: string;
+  name: string;
+  current_status: string | null;
 }
 
 interface CheckResult {
@@ -26,7 +29,7 @@ export async function GET(request: NextRequest) {
   const start = Date.now();
   const sql = getDb();
 
-  const services = (await sql`SELECT id, domain FROM services`) as ServiceRow[];
+  const services = (await sql`SELECT id, name, domain, current_status FROM services`) as ServiceRow[];
   const total = services.length;
   const results: CheckResult[] = [];
   const BATCH_SIZE = 50;
@@ -88,6 +91,25 @@ export async function GET(request: NextRequest) {
       ) AS bulk
       WHERE services.id = bulk.id
     `;
+
+    // Detect status changes and notify webhooks
+    const serviceMap = new Map(services.map((s) => [s.id, s]));
+    const changes: StatusChange[] = [];
+    for (const r of results) {
+      const svc = serviceMap.get(r.serviceId);
+      if (svc && svc.current_status && svc.current_status !== r.status) {
+        changes.push({
+          serviceId: r.serviceId,
+          serviceName: svc.name,
+          domain: svc.domain,
+          previousStatus: svc.current_status,
+          newStatus: r.status,
+        });
+      }
+    }
+    if (changes.length > 0) {
+      notifyStatusChanges(changes).catch(() => {});
+    }
   }
 
   const summary = {

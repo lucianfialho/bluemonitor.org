@@ -1,12 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
 import { checkService } from "@/lib/check-service";
+import { notifyStatusChanges, StatusChange } from "@/lib/notify-webhooks";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 30;
 
 interface ServiceRow {
   id: number;
+  name: string;
   domain: string;
 }
 
@@ -19,7 +21,7 @@ export async function GET(request: NextRequest) {
   const sql = getDb();
 
   const services = (await sql`
-    SELECT id, domain FROM services WHERE current_status = 'down'
+    SELECT id, name, domain FROM services WHERE current_status = 'down'
   `) as ServiceRow[];
 
   if (services.length === 0) {
@@ -75,12 +77,33 @@ export async function GET(request: NextRequest) {
     `;
   }
 
-  const recovered = results.filter((r) => r.status !== "down").length;
+  const recoveredResults = results.filter((r) => r.status !== "down");
   const stillDown = results.filter((r) => r.status === "down").length;
+
+  // Notify webhooks for recovered services
+  if (recoveredResults.length > 0) {
+    const serviceMap = new Map(services.map((s) => [s.id, s]));
+    const changes: StatusChange[] = [];
+    for (const r of recoveredResults) {
+      const svc = serviceMap.get(r.serviceId);
+      if (!svc) continue;
+      changes.push({
+        serviceId: r.serviceId,
+        serviceName: svc.name,
+        domain: svc.domain,
+        previousStatus: "down",
+        newStatus: r.status,
+      });
+    }
+
+    if (changes.length > 0) {
+      notifyStatusChanges(changes).catch(() => {});
+    }
+  }
 
   return NextResponse.json({
     checked: results.length,
-    recovered,
+    recovered: recoveredResults.length,
     stillDown,
   });
 }
