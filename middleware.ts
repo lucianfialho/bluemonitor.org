@@ -15,8 +15,8 @@ export default async function middleware(request: NextRequest) {
 
   // Redirect logged-in users away from auth pages
   if (pathname === "/auth/sign-in" || pathname === "/auth/sign-up") {
-    const sessionCookie = request.cookies.get("better-auth.session_token")
-      || request.cookies.get("__Secure-better-auth.session_token");
+    const sessionCookie = request.cookies.get("__Secure-neon-auth.session_token")
+      || request.cookies.get("neon-auth.session_token");
     if (sessionCookie) {
       return NextResponse.redirect(new URL("/dashboard", request.url));
     }
