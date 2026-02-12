@@ -59,7 +59,7 @@ export default function DevelopersPage() {
         <h2 className="mb-6 text-center text-xl font-semibold text-zinc-900 dark:text-zinc-100">
           What your AI will do
         </h2>
-        <div className="grid gap-6 sm:grid-cols-2">
+        <div className="grid gap-6 sm:grid-cols-3">
           <div className="rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
             <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-green-100 text-lg font-bold text-green-600 dark:bg-green-950 dark:text-green-400">
               1
@@ -84,6 +84,20 @@ export default function DevelopersPage() {
               A live badge on your site showing Operational, Slow, or Down.
               Updates every 5 minutes. Works in HTML, Markdown, and any
               framework.
+            </p>
+          </div>
+          <div className="rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
+            <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-purple-100 text-lg font-bold text-purple-600 dark:bg-purple-950 dark:text-purple-400">
+              3
+            </div>
+            <h3 className="mb-1 font-medium text-zinc-900 dark:text-zinc-100">
+              Push heartbeats (optional)
+            </h3>
+            <p className="text-sm text-zinc-500 dark:text-zinc-400">
+              Instead of exposing a public health endpoint, push status to
+              BlueMonitor via{" "}
+              <code className="text-xs">POST /api/v1/heartbeat</code>. More
+              secure for private services.
             </p>
           </div>
         </div>
@@ -142,6 +156,27 @@ export default function DevelopersPage() {
                   We fall back to a HEAD request on your root domain. We can only
                   tell if the server responds and how fast — no internal
                   diagnostics.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
+            <div className="flex items-start gap-4">
+              <div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-purple-100 dark:bg-purple-950">
+                <svg className="h-4 w-4 text-purple-600 dark:text-purple-400" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="font-medium text-zinc-900 dark:text-zinc-100">
+                  Push monitoring (heartbeat)
+                </h3>
+                <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                  Your service pushes health data to BlueMonitor via{" "}
+                  <code className="text-xs">POST /api/v1/heartbeat</code>. No
+                  public endpoint needed — works for private services behind
+                  firewalls. If we stop receiving heartbeats for 10 minutes, the
+                  service is marked as down.
                 </p>
               </div>
             </div>

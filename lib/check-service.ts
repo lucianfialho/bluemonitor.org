@@ -1,5 +1,23 @@
 import { StatusCheckResult, HealthEndpointResponse } from "./types";
 
+export function determineStatusFromHealth(
+  healthData: HealthEndpointResponse | null,
+  httpStatus: number,
+  responseTime: number
+): StatusCheckResult["status"] {
+  const hasFailedCheck =
+    healthData?.checks &&
+    Object.values(healthData.checks).some((c) => c.status === "error");
+
+  if (httpStatus >= 500 || healthData?.status === "error" || hasFailedCheck) {
+    return "down";
+  }
+  if (healthData?.status === "degraded" || responseTime > 3000) {
+    return "slow";
+  }
+  return "up";
+}
+
 async function tryHealthEndpoint(
   domain: string,
   timeout: number
@@ -39,20 +57,7 @@ async function tryHealthEndpoint(
       return { ok: false };
     }
 
-    // Determine status from health response
-    let status: StatusCheckResult["status"] = "up";
-    const hasFailedCheck =
-      healthData?.checks &&
-      Object.values(healthData.checks).some((c) => c.status === "error");
-
-    if (res.status >= 500 || healthData?.status === "error" || hasFailedCheck) {
-      status = "down";
-    } else if (
-      healthData?.status === "degraded" ||
-      responseTime > 3000
-    ) {
-      status = "slow";
-    }
+    const status = determineStatusFromHealth(healthData, res.status, responseTime);
 
     return {
       ok: true,

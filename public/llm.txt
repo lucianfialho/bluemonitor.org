@@ -251,6 +251,148 @@ async def health():
 
 After creating the health endpoint, add a status badge to your site so users can see your service status in real-time. See the badge section above.
 
+## Push Monitoring (Heartbeat)
+
+Instead of exposing a public `/api/health` endpoint for BlueMonitor to pull, your service can **push** heartbeats directly. This is more secure (no public health endpoint needed) and works well for services behind firewalls or private networks.
+
+**How it works:**
+1. Your service runs health checks internally
+2. It POSTs the results to BlueMonitor every few minutes
+3. If BlueMonitor stops receiving heartbeats for 10 minutes, the service is marked as down
+
+**Requirements:**
+- A BlueMonitor API key (create one from the dashboard)
+- The service must already be in your watchlist (no auto-creation)
+
+### Endpoint: POST /api/v1/heartbeat?domain={your-domain}
+
+**Headers:**
+- `Authorization: Bearer bm_your_api_key`
+- `Content-Type: application/json`
+
+**Body:** Same schema as the health endpoint response:
+
+```json
+{
+  "status": "ok",
+  "timestamp": "2026-02-12T12:00:00.000Z",
+  "checks": {
+    "database": { "status": "ok", "latency": 5 },
+    "redis": { "status": "ok", "latency": 2 }
+  }
+}
+```
+
+**Response:**
+
+```json
+{
+  "ok": true,
+  "service": "My App",
+  "status": "up",
+  "response_time": 5,
+  "checked_at": "2026-02-12T12:00:00.000Z"
+}
+```
+
+### Next.js (Vercel Cron + Heartbeat)
+
+Create `app/api/cron/heartbeat/route.ts`:
+
+```ts
+import { db } from "@/lib/db"; // adjust to your setup
+
+async function checkDependency(name: string, fn: () => Promise<void>) {
+  const start = Date.now();
+  try {
+    await fn();
+    return { status: "ok" as const, latency: Date.now() - start };
+  } catch (err) {
+    return {
+      status: "error" as const,
+      latency: Date.now() - start,
+      message: err instanceof Error ? err.message : "Unknown error",
+    };
+  }
+}
+
+export async function GET() {
+  const checks = {
+    database: await checkDependency("database", async () => {
+      await db`SELECT 1`;
+    }),
+  };
+
+  const hasError = Object.values(checks).some((c) => c.status === "error");
+  const status = hasError ? "error" : "ok";
+
+  // Push heartbeat to BlueMonitor
+  await fetch("https://www.bluemonitor.org/api/v1/heartbeat?domain=myapp.com", {
+    method: "POST",
+    headers: {
+      "Authorization": "Bearer bm_your_api_key",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ status, timestamp: new Date().toISOString(), checks }),
+  });
+
+  return Response.json({ ok: true });
+}
+```
+
+Add to `vercel.json`:
+
+```json
+{
+  "crons": [{ "path": "/api/cron/heartbeat", "schedule": "*/5 * * * *" }]
+}
+```
+
+### Node.js (setInterval)
+
+```ts
+async function sendHeartbeat() {
+  // Run your health checks
+  const checks: Record<string, { status: string; latency: number }> = {};
+
+  const dbStart = Date.now();
+  try {
+    await db.query("SELECT 1");
+    checks.database = { status: "ok", latency: Date.now() - dbStart };
+  } catch {
+    checks.database = { status: "error", latency: Date.now() - dbStart };
+  }
+
+  const hasError = Object.values(checks).some((c) => c.status === "error");
+
+  await fetch("https://www.bluemonitor.org/api/v1/heartbeat?domain=myapp.com", {
+    method: "POST",
+    headers: {
+      "Authorization": "Bearer bm_your_api_key",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      status: hasError ? "error" : "ok",
+      timestamp: new Date().toISOString(),
+      checks,
+    }),
+  });
+}
+
+// Send heartbeat every 5 minutes
+setInterval(sendHeartbeat, 5 * 60 * 1000);
+sendHeartbeat(); // Send immediately on startup
+```
+
+### curl (testing)
+
+```bash
+curl -X POST "https://www.bluemonitor.org/api/v1/heartbeat?domain=myapp.com" \
+  -H "Authorization: Bearer bm_your_api_key" \
+  -H "Content-Type: application/json" \
+  -d '{"status":"ok","checks":{"database":{"status":"ok","latency":5}}}'
+```
+
 ## Common Slugs
 
 - chatgpt → `chatgpt`

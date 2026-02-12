@@ -11,6 +11,7 @@ interface ServiceRow {
   domain: string;
   name: string;
   current_status: string | null;
+  last_heartbeat_at: string | null;
 }
 
 interface CheckResult {
@@ -29,7 +30,13 @@ export async function GET(request: NextRequest) {
   const start = Date.now();
   const sql = getDb();
 
-  const services = (await sql`SELECT id, name, domain, current_status FROM services WHERE current_status IS NULL OR current_status != 'dead'`) as ServiceRow[];
+  // Skip services with recent heartbeats (they report their own status)
+  const services = (await sql`
+    SELECT id, name, domain, current_status, last_heartbeat_at
+    FROM services
+    WHERE (current_status IS NULL OR current_status != 'dead')
+      AND (last_heartbeat_at IS NULL OR last_heartbeat_at < NOW() - INTERVAL '10 minutes')
+  `) as ServiceRow[];
   const total = services.length;
   const results: CheckResult[] = [];
   const BATCH_SIZE = 50;
@@ -112,6 +119,48 @@ export async function GET(request: NextRequest) {
     }
   }
 
+  // Detect stale heartbeats: services that used to send heartbeats but stopped
+  const staleServices = (await sql`
+    SELECT id, name, domain, current_status
+    FROM services
+    WHERE last_heartbeat_at IS NOT NULL
+      AND last_heartbeat_at < NOW() - INTERVAL '10 minutes'
+      AND current_status IS NOT NULL
+      AND current_status NOT IN ('down', 'dead')
+  `) as ServiceRow[];
+
+  if (staleServices.length > 0) {
+    const staleIds = staleServices.map((s) => s.id);
+    const staleStatuses = staleServices.map(() => "down");
+    const staleNow = new Date().toISOString();
+
+    await sql`
+      INSERT INTO status_checks (service_id, status, response_time, status_code, checked_at)
+      SELECT * FROM unnest(
+        ${staleIds}::int[],
+        ${staleStatuses}::varchar[],
+        ${staleServices.map(() => 0)}::int[],
+        ${staleServices.map(() => 0)}::smallint[],
+        ${staleServices.map(() => staleNow)}::timestamptz[]
+      )
+    `;
+
+    await sql`
+      UPDATE services
+      SET current_status = 'down', current_response_time = 0, last_checked_at = NOW()
+      WHERE id = ANY(${staleIds}::int[])
+    `;
+
+    const staleChanges: StatusChange[] = staleServices.map((s) => ({
+      serviceId: s.id,
+      serviceName: s.name,
+      domain: s.domain,
+      previousStatus: s.current_status!,
+      newStatus: "down",
+    }));
+    notifyStatusChanges(staleChanges).catch(() => {});
+  }
+
   const summary = {
     up: results.filter((r) => r.status === "up").length,
     down: results.filter((r) => r.status === "down").length,
@@ -121,6 +170,7 @@ export async function GET(request: NextRequest) {
   return NextResponse.json({
     checked: results.length,
     total,
+    staleHeartbeats: staleServices.length,
     elapsed: Date.now() - start,
     summary,
   });

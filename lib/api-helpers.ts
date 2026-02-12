@@ -33,6 +33,28 @@ async function validateApiKey(key: string): Promise<boolean> {
   }
 }
 
+export async function extractApiKeyOwner(
+  request: NextRequest
+): Promise<{ userId: string; apiKey: string } | null> {
+  const apiKey = getApiKey(request);
+  if (!apiKey) return null;
+
+  try {
+    const sql = getDb();
+    const rows = await sql`SELECT user_id FROM api_keys WHERE key = ${apiKey}`;
+    if (rows.length === 0) return null;
+
+    // Update last_used_at in background
+    sql`UPDATE api_keys SET last_used_at = NOW() WHERE key = ${apiKey}`.catch(
+      () => {}
+    );
+
+    return { userId: rows[0].user_id as string, apiKey };
+  } catch {
+    return null;
+  }
+}
+
 export async function withRateLimit(
   request: NextRequest
 ): Promise<NextResponse | null> {

@@ -16,6 +16,7 @@ function Endpoint({
   description,
   params,
   query,
+  body,
   example,
   response,
 }: {
@@ -24,6 +25,7 @@ function Endpoint({
   description: string;
   params?: { name: string; description: string }[];
   query?: { name: string; description: string; default?: string }[];
+  body?: string;
   example: string;
   response: string;
 }) {
@@ -31,7 +33,13 @@ function Endpoint({
     <div className="rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
       <div className="border-b border-zinc-200 px-5 py-4 dark:border-zinc-800">
         <div className="flex items-center gap-3">
-          <span className="rounded-md bg-green-100 px-2 py-0.5 text-xs font-bold text-green-700 dark:bg-green-900 dark:text-green-300">
+          <span
+            className={`rounded-md px-2 py-0.5 text-xs font-bold ${
+              method === "POST"
+                ? "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300"
+                : "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300"
+            }`}
+          >
             {method}
           </span>
           <code className="text-sm font-medium text-zinc-900 dark:text-zinc-100">
@@ -86,6 +94,17 @@ function Endpoint({
                 </div>
               ))}
             </div>
+          </div>
+        )}
+
+        {body && (
+          <div>
+            <h4 className="mb-2 text-xs font-semibold uppercase tracking-wider text-zinc-500">
+              Request Body
+            </h4>
+            <pre className="overflow-x-auto rounded-lg bg-zinc-950 p-3 text-sm text-zinc-300">
+              <code>{body}</code>
+            </pre>
           </div>
         )}
 
@@ -419,6 +438,37 @@ export default function DocsPage() {
       "source_url": "https://status.anthropic.com/..."
     }
   ]
+}`}
+          />
+          <Endpoint
+            method="POST"
+            path="/api/v1/heartbeat?domain=:domain"
+            description="Push a heartbeat from your service. Requires API key. Service must be in your watchlist."
+            query={[
+              {
+                name: "domain",
+                description:
+                  "The domain of your service (e.g., myapp.com)",
+              },
+            ]}
+            body={`{
+  "status": "ok",
+  "timestamp": "2026-02-12T12:00:00.000Z",
+  "checks": {
+    "database": { "status": "ok", "latency": 5 },
+    "redis": { "status": "ok", "latency": 2 }
+  }
+}`}
+            example={`curl -X POST "https://www.bluemonitor.org/api/v1/heartbeat?domain=myapp.com" \\
+  -H "Authorization: Bearer bm_your_api_key" \\
+  -H "Content-Type: application/json" \\
+  -d '{"status":"ok","checks":{"database":{"status":"ok","latency":5}}}'`}
+            response={`{
+  "ok": true,
+  "service": "My App",
+  "status": "up",
+  "response_time": 5,
+  "checked_at": "2026-02-12T12:00:00.000Z"
 }`}
           />
         </div>

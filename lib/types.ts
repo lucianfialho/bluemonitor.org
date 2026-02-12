@@ -10,6 +10,7 @@ export interface Service {
   current_status?: "up" | "down" | "slow" | "dead" | null;
   current_response_time?: number | null;
   last_checked_at?: string | null;
+  last_heartbeat_at?: string | null;
   status_page_url?: string | null;
   feed_url?: string | null;
   feed_api_url?: string | null;
