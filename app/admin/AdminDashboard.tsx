@@ -64,7 +64,7 @@ export default function AdminDashboard() {
     );
   }
 
-  async function handlePromote(id: number, category: string) {
+  async function handleApprove(id: number, category: string) {
     const res = await fetch("/api/admin/submissions", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
@@ -183,38 +183,30 @@ export default function AdminDashboard() {
                 </div>
                 <div className="flex shrink-0 gap-2">
                   {sub.status !== "approved" && (
-                    <>
+                    <div className="relative">
                       <button
-                        onClick={() => handleStatusChange(sub.id, "approved")}
+                        onClick={() => setPromotingId(promotingId === sub.id ? null : sub.id)}
                         className="rounded-lg border border-green-200 px-3 py-1.5 text-sm text-green-600 transition-colors hover:bg-green-50 dark:border-green-800 dark:text-green-400 dark:hover:bg-green-950"
                       >
                         Approve
                       </button>
-                      <div className="relative">
-                        <button
-                          onClick={() => setPromotingId(promotingId === sub.id ? null : sub.id)}
-                          className="rounded-lg border border-blue-200 px-3 py-1.5 text-sm text-blue-600 transition-colors hover:bg-blue-50 dark:border-blue-800 dark:text-blue-400 dark:hover:bg-blue-950"
-                        >
-                          Add to Site
-                        </button>
-                        {promotingId === sub.id && (
-                          <div className="absolute right-0 top-full z-10 mt-1 w-56 rounded-lg border border-zinc-200 bg-white py-1 shadow-lg dark:border-zinc-700 dark:bg-zinc-900">
-                            <p className="px-3 py-1.5 text-xs font-medium text-zinc-500">
-                              Select category:
-                            </p>
-                            {CATEGORIES.map((cat) => (
-                              <button
-                                key={cat.slug}
-                                onClick={() => handlePromote(sub.id, cat.slug)}
-                                className="block w-full px-3 py-1.5 text-left text-sm text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800"
-                              >
-                                {cat.name}
-                              </button>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    </>
+                      {promotingId === sub.id && (
+                        <div className="absolute right-0 top-full z-10 mt-1 w-56 rounded-lg border border-zinc-200 bg-white py-1 shadow-lg dark:border-zinc-700 dark:bg-zinc-900">
+                          <p className="px-3 py-1.5 text-xs font-medium text-zinc-500">
+                            Select category:
+                          </p>
+                          {CATEGORIES.map((cat) => (
+                            <button
+                              key={cat.slug}
+                              onClick={() => handleApprove(sub.id, cat.slug)}
+                              className="block w-full px-3 py-1.5 text-left text-sm text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800"
+                            >
+                              {cat.name}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   )}
                   {sub.status !== "rejected" && (
                     <button
