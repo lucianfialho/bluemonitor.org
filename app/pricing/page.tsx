@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import WaitlistForm from "./WaitlistForm";
 
 export const metadata: Metadata = {
   title: "Pricing",
@@ -135,26 +136,3 @@ export default function PricingPage() {
   );
 }
 
-function WaitlistForm() {
-  return (
-    <form
-      action="https://formspree.io/f/xvgzjqkl"
-      method="POST"
-      className="flex gap-2"
-    >
-      <input
-        type="email"
-        name="email"
-        required
-        placeholder="you@email.com"
-        className="min-w-0 flex-1 rounded-lg border border-zinc-300 bg-white px-3 py-2.5 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-blue-500 focus:outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100"
-      />
-      <button
-        type="submit"
-        className="shrink-0 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-700"
-      >
-        Join Waitlist
-      </button>
-    </form>
-  );
-}

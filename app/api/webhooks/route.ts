@@ -4,6 +4,7 @@ import { getDb } from "@/lib/db";
 
 const VALID_TYPES = ["discord", "slack", "custom"];
 const VALID_EVENTS = ["down", "slow", "recovered"];
+const FREE_EVENTS = ["down"];
 const MAX_WEBHOOKS = 2;
 
 export async function GET() {
@@ -57,6 +58,15 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       { error: `Events must be a subset of: ${VALID_EVENTS.join(", ")}` },
       { status: 400 }
+    );
+  }
+
+  // TODO: check Pro plan when available — for now only "down" is free
+  const proOnly = events.filter((e: string) => !FREE_EVENTS.includes(e));
+  if (proOnly.length > 0) {
+    return NextResponse.json(
+      { error: `Events ${proOnly.join(", ")} require the Pro plan` },
+      { status: 403 }
     );
   }
 

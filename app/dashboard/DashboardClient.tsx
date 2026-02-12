@@ -52,7 +52,7 @@ export default function DashboardClient({
   const [webhooksLoading, setWebhooksLoading] = useState(true);
   const [webhookUrl, setWebhookUrl] = useState("");
   const [webhookType, setWebhookType] = useState<"discord" | "slack" | "custom">("discord");
-  const [webhookEvents, setWebhookEvents] = useState<string[]>(["down", "recovered"]);
+  const [webhookEvents, setWebhookEvents] = useState<string[]>(["down"]);
   const [creatingWebhook, setCreatingWebhook] = useState(false);
   const [testingWebhookId, setTestingWebhookId] = useState<number | null>(null);
 
@@ -120,7 +120,7 @@ export default function DashboardClient({
     });
     if (res.ok) {
       setWebhookUrl("");
-      setWebhookEvents(["down", "recovered"]);
+      setWebhookEvents(["down"]);
       fetchWebhooks();
     }
     setCreatingWebhook(false);
@@ -314,17 +314,29 @@ export default function DashboardClient({
           </div>
           <div className="mb-3 flex items-center gap-4">
             <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">Events:</span>
-            {(["down", "slow", "recovered"] as const).map((event) => (
-              <label key={event} className="flex items-center gap-1.5 text-sm text-zinc-700 dark:text-zinc-300">
-                <input
-                  type="checkbox"
-                  checked={webhookEvents.includes(event)}
-                  onChange={() => toggleEvent(event)}
-                  className="rounded border-zinc-300 text-blue-600 focus:ring-blue-500 dark:border-zinc-600"
-                />
-                {event}
-              </label>
-            ))}
+            {(["down", "slow", "recovered"] as const).map((event) => {
+              const isPro = event === "slow" || event === "recovered";
+              return (
+                <label
+                  key={event}
+                  className={`flex items-center gap-1.5 text-sm ${isPro ? "text-zinc-400 dark:text-zinc-500" : "text-zinc-700 dark:text-zinc-300"}`}
+                >
+                  <input
+                    type="checkbox"
+                    checked={!isPro && webhookEvents.includes(event)}
+                    onChange={() => !isPro && toggleEvent(event)}
+                    disabled={isPro}
+                    className="rounded border-zinc-300 text-blue-600 focus:ring-blue-500 disabled:opacity-40 dark:border-zinc-600"
+                  />
+                  {event}
+                  {isPro && (
+                    <span className="rounded bg-blue-100 px-1 py-0.5 text-[10px] font-semibold text-blue-600 dark:bg-blue-900 dark:text-blue-300">
+                      PRO
+                    </span>
+                  )}
+                </label>
+              );
+            })}
           </div>
           <button
             onClick={createWebhook}

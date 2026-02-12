@@ -3,6 +3,7 @@ import { authServer } from "@/lib/auth/server";
 import { getDb } from "@/lib/db";
 
 const VALID_EVENTS = ["down", "slow", "recovered"];
+const FREE_EVENTS = ["down"];
 
 export async function DELETE(
   _request: NextRequest,
@@ -58,6 +59,13 @@ export async function PATCH(
       return NextResponse.json(
         { error: `Events must be a subset of: ${VALID_EVENTS.join(", ")}` },
         { status: 400 }
+      );
+    }
+    const proOnly = body.events.filter((e: string) => !FREE_EVENTS.includes(e));
+    if (proOnly.length > 0) {
+      return NextResponse.json(
+        { error: `Events ${proOnly.join(", ")} require the Pro plan` },
+        { status: 403 }
       );
     }
     await sql`
