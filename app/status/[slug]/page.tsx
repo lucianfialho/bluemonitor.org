@@ -255,6 +255,35 @@ export default async function StatusPage({
           <FAQSection name={service.name} />
         </div>
 
+        {/* Badge CTA */}
+        <section className="mb-10 rounded-2xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
+          <h2 className="mb-2 text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+            Add status badge to your website
+          </h2>
+          <p className="mb-4 text-sm text-zinc-500 dark:text-zinc-400">
+            Show your visitors the real-time status of {service.name} with an embeddable badge.
+          </p>
+          <div className="mb-4 flex items-center gap-4 rounded-lg bg-zinc-50 p-4 dark:bg-zinc-800/50">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={`https://www.bluemonitor.org/api/badge/${service.slug}`}
+              alt={`${service.name} status badge`}
+              height={36}
+            />
+          </div>
+          <pre className="mb-4 overflow-x-auto rounded-lg bg-zinc-900 p-3 text-xs text-zinc-300">
+            <code>{`<a href="https://www.bluemonitor.org/status/${service.slug}">
+  <img src="https://www.bluemonitor.org/api/badge/${service.slug}" alt="${service.name} status" />
+</a>`}</code>
+          </pre>
+          <Link
+            href="/badge"
+            className="text-sm font-medium text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+          >
+            Customize your badge &rarr;
+          </Link>
+        </section>
+
         {/* Related Services */}
         {related.length > 0 && (
           <section>

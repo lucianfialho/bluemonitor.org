@@ -89,7 +89,7 @@ export default function BadgeGenerator() {
             </h2>
             <div className="flex items-center justify-center rounded-lg border border-zinc-200 bg-zinc-50 p-8 dark:border-zinc-800 dark:bg-zinc-900">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={badgeUrl} alt="Badge preview" />
+              <img src={badgeUrl} alt="Badge preview" height={36} />
             </div>
           </div>
 
