@@ -35,6 +35,17 @@ export async function POST(request: NextRequest) {
   }
 
   const sql = getDb();
+
+  const countResult = await sql`
+    SELECT COUNT(*)::int as count FROM watchlist WHERE user_id = ${session.user.id}
+  `;
+  if (countResult[0].count >= 3) {
+    return NextResponse.json(
+      { error: "Maximum 3 services in watchlist" },
+      { status: 400 }
+    );
+  }
+
   await sql`
     INSERT INTO watchlist (user_id, service_id)
     VALUES (${session.user.id}, ${serviceId})

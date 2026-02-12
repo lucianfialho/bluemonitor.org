@@ -271,7 +271,7 @@ export default function DashboardClient({
             Webhooks
           </h2>
           <span className="text-xs text-zinc-500 dark:text-zinc-400">
-            {webhooks.length}/5 max
+            {webhooks.length}/2 max
           </span>
         </div>
 
@@ -310,7 +310,7 @@ export default function DashboardClient({
           </div>
           <button
             onClick={createWebhook}
-            disabled={creatingWebhook || !webhookUrl || webhookEvents.length === 0 || webhooks.length >= 5}
+            disabled={creatingWebhook || !webhookUrl || webhookEvents.length === 0 || webhooks.length >= 2}
             className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
           >
             {creatingWebhook ? "Adding..." : "Add Webhook"}

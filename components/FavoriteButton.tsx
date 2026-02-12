@@ -26,11 +26,12 @@ export default function FavoriteButton({
       if (prev) {
         await fetch(`/api/watchlist/${serviceId}`, { method: "DELETE" });
       } else {
-        await fetch("/api/watchlist", {
+        const res = await fetch("/api/watchlist", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ serviceId }),
         });
+        if (!res.ok) setFavorited(prev);
       }
     } catch {
       setFavorited(prev);

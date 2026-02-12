@@ -4,7 +4,7 @@ import { getDb } from "@/lib/db";
 
 const VALID_TYPES = ["discord", "slack", "custom"];
 const VALID_EVENTS = ["down", "slow", "recovered"];
-const MAX_WEBHOOKS = 5;
+const MAX_WEBHOOKS = 2;
 
 export async function GET() {
   const { data: session } = await authServer.getSession();
