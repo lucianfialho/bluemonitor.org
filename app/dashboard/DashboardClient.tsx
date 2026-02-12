@@ -183,7 +183,7 @@ export default function DashboardClient({
       <div className="mb-8 flex items-center justify-between rounded-xl border border-blue-200 bg-blue-50 px-5 py-4 dark:border-blue-900 dark:bg-blue-950/40">
         <div>
           <p className="text-sm font-medium text-blue-900 dark:text-blue-100">
-            Free plan — 3 watchlist services, 2 webhooks, 60 API req/min
+            Free plan — 3 watchlist services, 2 webhooks, 15 API req/min
           </p>
           <p className="mt-0.5 text-xs text-blue-700 dark:text-blue-300">
             Need more? Pro is coming soon with unlimited watchlist and priority alerts.
@@ -519,10 +519,9 @@ export default function DashboardClient({
         )}
 
         <p className="mt-3 text-xs text-zinc-500 dark:text-zinc-400">
-          Authenticated requests get <strong>300 req/min</strong> (vs 60/min
-          without a key).{" "}
+          60 req/min with key.{" "}
           <Link href="/docs" className="text-blue-600 hover:underline">
-            See API docs
+            API docs
           </Link>
         </p>
       </section>

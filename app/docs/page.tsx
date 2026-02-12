@@ -149,7 +149,7 @@ export default function DocsPage() {
         </h2>
         <p className="mb-3 text-sm text-zinc-600 dark:text-zinc-400">
           Authentication is <strong>optional</strong>. All endpoints work without an API
-          key, but authenticated requests get higher rate limits (300/min vs 60/min).
+          key, but authenticated requests get higher rate limits (60/min vs 15/min).
         </p>
         <p className="mb-3 text-sm text-zinc-600 dark:text-zinc-400">
           To get an API key,{" "}
@@ -189,12 +189,12 @@ export default function DocsPage() {
             <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800">
               <tr>
                 <td className="px-4 py-2 text-zinc-900 dark:text-zinc-100">Anonymous</td>
-                <td className="px-4 py-2 text-zinc-600 dark:text-zinc-400">60 req/min per IP</td>
+                <td className="px-4 py-2 text-zinc-600 dark:text-zinc-400">15 req/min per IP</td>
                 <td className="px-4 py-2 text-zinc-600 dark:text-zinc-400">No</td>
               </tr>
               <tr>
                 <td className="px-4 py-2 text-zinc-900 dark:text-zinc-100">Authenticated</td>
-                <td className="px-4 py-2 text-zinc-600 dark:text-zinc-400">300 req/min per key</td>
+                <td className="px-4 py-2 text-zinc-600 dark:text-zinc-400">60 req/min per key</td>
                 <td className="px-4 py-2 text-zinc-600 dark:text-zinc-400">
                   <code className="text-xs">Authorization: Bearer bm_...</code>
                 </td>
@@ -211,8 +211,8 @@ export default function DocsPage() {
         </h2>
         <p className="mb-3 text-sm text-zinc-600 dark:text-zinc-400">
           All endpoints are rate limited. Anonymous requests are limited to{" "}
-          <strong>60 requests per minute</strong> per IP, and authenticated requests to{" "}
-          <strong>300 per minute</strong> per API key. Rate limit information is included
+          <strong>15 requests per minute</strong> per IP, and authenticated requests to{" "}
+          <strong>60 per minute</strong> per API key. Rate limit information is included
           in response headers:
         </p>
         <div className="overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-800">
@@ -542,7 +542,7 @@ export default function DocsPage() {
               <tr>
                 <td className="px-4 py-2 font-mono">429</td>
                 <td className="px-4 py-2 text-zinc-600 dark:text-zinc-400">
-                  Rate limit exceeded (60 req/min)
+                  Rate limit exceeded (15 req/min anonymous, 60 req/min authenticated)
                 </td>
               </tr>
               <tr>

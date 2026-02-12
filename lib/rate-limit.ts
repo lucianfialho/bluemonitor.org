@@ -9,8 +9,8 @@ setInterval(() => {
 }, 5 * 60 * 1000);
 
 export const RATE_LIMITS = {
-  anonymous: 60,
-  authenticated: 300,
+  anonymous: 15,
+  authenticated: 60,
 } as const;
 
 export function rateLimit(
