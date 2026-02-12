@@ -39,10 +39,18 @@ async function tryHealthEndpoint(
       return { ok: false };
     }
 
+    // Determine status from health response
     let status: StatusCheckResult["status"] = "up";
-    if (res.status >= 500 || healthData?.status === "error") {
+    const hasFailedCheck =
+      healthData?.checks &&
+      Object.values(healthData.checks).some((c) => c.status === "error");
+
+    if (res.status >= 500 || healthData?.status === "error" || hasFailedCheck) {
       status = "down";
-    } else if (responseTime > 3000) {
+    } else if (
+      healthData?.status === "degraded" ||
+      responseTime > 3000
+    ) {
       status = "slow";
     }
 

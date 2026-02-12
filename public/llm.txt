@@ -70,63 +70,163 @@ defineProps({ slug: String });
 
 ## Health Endpoint
 
-Create a public health endpoint so BlueMonitor can check your service status more accurately. This endpoint should return a JSON response with HTTP 200 when the service is healthy.
+Create a public health endpoint so BlueMonitor can check your service with real diagnostics — not just "is the server alive" but "is the database connected, are external APIs reachable, is everything actually working."
 
 ### Route: GET /api/health
 
 The endpoint must:
 1. Be publicly accessible (no auth required)
-2. Return JSON with `{ "status": "ok" }` and HTTP 200 when healthy
-3. Optionally check database connectivity or critical dependencies
+2. Return JSON with the schema below
+3. Check database connectivity and critical dependencies
 4. Respond within 3 seconds (responses over 3s are marked as "slow")
+5. Return HTTP 200 for "ok" or "degraded", HTTP 503 for "error"
+
+### Response Schema
+
+```json
+{
+  "status": "ok" | "degraded" | "error",
+  "timestamp": "2026-02-12T12:00:00.000Z",
+  "version": "1.0.0",
+  "checks": {
+    "database": { "status": "ok", "latency": 5 },
+    "redis": { "status": "ok", "latency": 2 },
+    "stripe": { "status": "ok", "latency": 120 }
+  }
+}
+```
+
+**Status values:**
+- `"ok"` — everything is healthy
+- `"degraded"` — service works but something is slow or partially failing (BlueMonitor marks as "slow")
+- `"error"` — critical failure, service is broken (BlueMonitor marks as "down")
+
+**Rules:**
+- If ANY check has `"status": "error"` → overall status must be `"error"`
+- If ANY check has `"status": "error"` but service still works → overall can be `"degraded"`
+- `latency` is in milliseconds, measured per check
+- `checks` object: keys are dependency names, values have `status` and optional `latency`/`message`
 
 ### Next.js (App Router)
 
 Create `app/api/health/route.ts`:
 
 ```ts
-export async function GET() {
-  return Response.json({ status: "ok", timestamp: new Date().toISOString() });
-}
-```
+import { db } from "@/lib/db"; // adjust to your setup
 
-With database check:
-
-```ts
-import { db } from "@/lib/db"; // adjust import to your setup
-
-export async function GET() {
+async function checkDependency(name: string, fn: () => Promise<void>) {
+  const start = Date.now();
   try {
-    await db`SELECT 1`;
-    return Response.json({ status: "ok", timestamp: new Date().toISOString() });
-  } catch {
-    return Response.json({ status: "error" }, { status: 503 });
+    await fn();
+    return { status: "ok" as const, latency: Date.now() - start };
+  } catch (err) {
+    return {
+      status: "error" as const,
+      latency: Date.now() - start,
+      message: err instanceof Error ? err.message : "Unknown error",
+    };
   }
+}
+
+export async function GET() {
+  const checks = {
+    database: await checkDependency("database", async () => {
+      await db`SELECT 1`;
+    }),
+    // Add more checks for your dependencies:
+    // redis: await checkDependency("redis", async () => { await redis.ping(); }),
+    // stripe: await checkDependency("stripe", async () => { await stripe.balance.retrieve(); }),
+  };
+
+  const hasError = Object.values(checks).some((c) => c.status === "error");
+  const status = hasError ? "error" : "ok";
+
+  return Response.json(
+    {
+      status,
+      timestamp: new Date().toISOString(),
+      checks,
+    },
+    { status: hasError ? 503 : 200 }
+  );
 }
 ```
 
 ### Express
 
 ```ts
-app.get("/api/health", (req, res) => {
-  res.json({ status: "ok", timestamp: new Date().toISOString() });
+app.get("/api/health", async (req, res) => {
+  const checks: Record<string, { status: string; latency: number; message?: string }> = {};
+
+  // Database check
+  const dbStart = Date.now();
+  try {
+    await db.query("SELECT 1");
+    checks.database = { status: "ok", latency: Date.now() - dbStart };
+  } catch (err) {
+    checks.database = { status: "error", latency: Date.now() - dbStart, message: err.message };
+  }
+
+  // Add more checks as needed
+
+  const hasError = Object.values(checks).some((c) => c.status === "error");
+  const status = hasError ? "error" : "ok";
+
+  res.status(hasError ? 503 : 200).json({
+    status,
+    timestamp: new Date().toISOString(),
+    checks,
+  });
 });
 ```
 
 ### Hono
 
 ```ts
-app.get("/api/health", (c) => {
-  return c.json({ status: "ok", timestamp: new Date().toISOString() });
+app.get("/api/health", async (c) => {
+  const checks: Record<string, { status: string; latency: number; message?: string }> = {};
+
+  const dbStart = Date.now();
+  try {
+    await db.execute("SELECT 1");
+    checks.database = { status: "ok", latency: Date.now() - dbStart };
+  } catch (err) {
+    checks.database = { status: "error", latency: Date.now() - dbStart, message: String(err) };
+  }
+
+  const hasError = Object.values(checks).some((c) => c.status === "error");
+  const status = hasError ? "error" : "ok";
+
+  return c.json({ status, timestamp: new Date().toISOString(), checks }, hasError ? 503 : 200);
 });
 ```
 
 ### FastAPI
 
 ```python
+from datetime import datetime
+import time
+
 @app.get("/api/health")
-def health():
-    return {"status": "ok", "timestamp": datetime.utcnow().isoformat()}
+async def health():
+    checks = {}
+
+    # Database check
+    db_start = time.monotonic()
+    try:
+        await database.execute("SELECT 1")
+        checks["database"] = {"status": "ok", "latency": round((time.monotonic() - db_start) * 1000)}
+    except Exception as e:
+        checks["database"] = {"status": "error", "latency": round((time.monotonic() - db_start) * 1000), "message": str(e)}
+
+    has_error = any(c["status"] == "error" for c in checks.values())
+    status = "error" if has_error else "ok"
+
+    from fastapi.responses import JSONResponse
+    return JSONResponse(
+        content={"status": status, "timestamp": datetime.utcnow().isoformat(), "checks": checks},
+        status_code=503 if has_error else 200,
+    )
 ```
 
 After creating the health endpoint, add a status badge to your site so users can see your service status in real-time. See the badge section above.

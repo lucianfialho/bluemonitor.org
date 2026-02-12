@@ -68,9 +68,9 @@ export default function DevelopersPage() {
               Create a health endpoint
             </h3>
             <p className="text-sm text-zinc-500 dark:text-zinc-400">
-              <code className="text-xs">GET /api/health</code> — returns{" "}
-              <code className="text-xs">{`{ "status": "ok" }`}</code> when your
-              service is healthy. Can include database and dependency checks.
+              <code className="text-xs">GET /api/health</code> — checks your
+              database, Redis, external APIs, and reports each dependency
+              individually. We parse the full response.
             </p>
           </div>
           <div className="rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
@@ -106,14 +106,24 @@ export default function DevelopersPage() {
                 <h3 className="font-medium text-zinc-900 dark:text-zinc-100">
                   With health endpoint
                 </h3>
-                <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                <p className="mb-3 text-sm text-zinc-500 dark:text-zinc-400">
                   We call <code className="text-xs">/api/health</code> and parse
-                  the JSON response. Your endpoint can report database status,
-                  external dependencies, memory usage — anything you expose. If
-                  it returns{" "}
-                  <code className="text-xs">{`"status": "error"`}</code> or HTTP
-                  500, we mark it as down.
+                  each check individually. If any dependency reports{" "}
+                  <code className="text-xs">{`"error"`}</code>, we mark
+                  your service as down. If the status is{" "}
+                  <code className="text-xs">{`"degraded"`}</code>, we mark it as
+                  slow.
                 </p>
+                <pre className="overflow-x-auto rounded-lg bg-zinc-950 p-3 text-xs text-zinc-300">
+                  <code>{`{
+  "status": "ok",
+  "checks": {
+    "database": { "status": "ok", "latency": 5 },
+    "redis":    { "status": "ok", "latency": 2 },
+    "stripe":   { "status": "ok", "latency": 120 }
+  }
+}`}</code>
+                </pre>
               </div>
             </div>
           </div>

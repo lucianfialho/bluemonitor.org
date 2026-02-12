@@ -42,9 +42,17 @@ export interface CategoryInfo {
   description: string;
 }
 
+export interface HealthCheck {
+  status: "ok" | "error" | string;
+  latency?: number;
+  message?: string;
+}
+
 export interface HealthEndpointResponse {
-  status: string;
+  status: "ok" | "degraded" | "error" | string;
   timestamp?: string;
+  checks?: Record<string, HealthCheck>;
+  version?: string;
   [key: string]: unknown;
 }
 
