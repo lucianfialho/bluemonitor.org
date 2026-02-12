@@ -23,8 +23,8 @@ export function parseStatuspageIncidents(json: string, baseUrl: string): ParsedI
 
       return {
         sourceId: inc.id as string,
-        title: inc.name as string,
-        description,
+        title: cleanHtml(inc.name as string),
+        description: cleanHtml(description),
         severity: mapSeverity(inc.impact as string),
         status: mapStatus(inc.status as string),
         startedAt: inc.started_at as string || inc.created_at as string,
@@ -146,17 +146,26 @@ function extractTag(xml: string, tag: string): string | null {
   return match ? match[1].trim() : null;
 }
 
-function cleanHtml(text: string): string {
+function decodeEntities(text: string): string {
   return text
-    .replace(/<[^>]+>/g, "")
     .replace(/&amp;/g, "&")
     .replace(/&lt;/g, "<")
     .replace(/&gt;/g, ">")
     .replace(/&quot;/g, '"')
     .replace(/&#039;/g, "'")
-    .replace(/\s+/g, " ")
-    .trim()
-    .slice(0, 2000);
+    .replace(/&apos;/g, "'")
+    .replace(/&nbsp;/g, " ");
+}
+
+function cleanHtml(text: string): string {
+  // Decode entities first (RSS feeds have &lt;p&gt; instead of <p>)
+  let decoded = decodeEntities(text);
+  // Strip all HTML tags
+  decoded = decoded.replace(/<[^>]+>/g, " ");
+  // Decode any remaining entities
+  decoded = decodeEntities(decoded);
+  // Normalize whitespace
+  return decoded.replace(/\s+/g, " ").trim().slice(0, 2000);
 }
 
 function hashString(str: string): string {
