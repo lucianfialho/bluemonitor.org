@@ -68,6 +68,69 @@ defineProps({ slug: String });
 </a>
 ```
 
+## Health Endpoint
+
+Create a public health endpoint so BlueMonitor can check your service status more accurately. This endpoint should return a JSON response with HTTP 200 when the service is healthy.
+
+### Route: GET /api/health
+
+The endpoint must:
+1. Be publicly accessible (no auth required)
+2. Return JSON with `{ "status": "ok" }` and HTTP 200 when healthy
+3. Optionally check database connectivity or critical dependencies
+4. Respond within 3 seconds (responses over 3s are marked as "slow")
+
+### Next.js (App Router)
+
+Create `app/api/health/route.ts`:
+
+```ts
+export async function GET() {
+  return Response.json({ status: "ok", timestamp: new Date().toISOString() });
+}
+```
+
+With database check:
+
+```ts
+import { db } from "@/lib/db"; // adjust import to your setup
+
+export async function GET() {
+  try {
+    await db`SELECT 1`;
+    return Response.json({ status: "ok", timestamp: new Date().toISOString() });
+  } catch {
+    return Response.json({ status: "error" }, { status: 503 });
+  }
+}
+```
+
+### Express
+
+```ts
+app.get("/api/health", (req, res) => {
+  res.json({ status: "ok", timestamp: new Date().toISOString() });
+});
+```
+
+### Hono
+
+```ts
+app.get("/api/health", (c) => {
+  return c.json({ status: "ok", timestamp: new Date().toISOString() });
+});
+```
+
+### FastAPI
+
+```python
+@app.get("/api/health")
+def health():
+    return {"status": "ok", "timestamp": datetime.utcnow().isoformat()}
+```
+
+After creating the health endpoint, add a status badge to your site so users can see your service status in real-time. See the badge section above.
+
 ## Common Slugs
 
 - chatgpt → `chatgpt`

@@ -424,6 +424,65 @@ export default function DocsPage() {
         </div>
       </section>
 
+      {/* Badge */}
+      <section className="mb-10">
+        <h2 className="mb-6 text-xl font-semibold text-zinc-900 dark:text-zinc-100">
+          Status Badge
+        </h2>
+        <p className="mb-4 text-sm text-zinc-600 dark:text-zinc-400">
+          Embed a real-time status badge on your website, README, or docs. The
+          badge is a PNG image that updates automatically. If the service
+          doesn&apos;t exist yet, it will be auto-submitted for monitoring.
+        </p>
+        <div className="space-y-6">
+          <Endpoint
+            method="GET"
+            path="/api/badge/:slug"
+            description="Returns a PNG status badge image for a service."
+            params={[
+              {
+                name: ":slug",
+                description:
+                  'Domain with dots replaced by dashes (e.g., "github-com", "vercel-com")',
+              },
+            ]}
+            query={[
+              {
+                name: "theme",
+                description: "Badge color theme",
+                default: "light",
+              },
+            ]}
+            example="curl -o badge.png https://www.bluemonitor.org/api/badge/github-com"
+            response={`PNG image (280×36px)
+
+Content-Type: image/png
+Cache-Control: public, s-maxage=300, stale-while-revalidate=60`}
+          />
+        </div>
+
+        <div className="mt-6 space-y-4">
+          <div>
+            <h4 className="mb-2 text-xs font-semibold uppercase tracking-wider text-zinc-500">
+              HTML
+            </h4>
+            <pre className="overflow-x-auto rounded-lg bg-zinc-950 p-3 text-sm text-green-400">
+              <code>{`<a href="https://www.bluemonitor.org/status/your-domain-com">
+  <img src="https://www.bluemonitor.org/api/badge/your-domain-com" alt="Status" />
+</a>`}</code>
+            </pre>
+          </div>
+          <div>
+            <h4 className="mb-2 text-xs font-semibold uppercase tracking-wider text-zinc-500">
+              Markdown
+            </h4>
+            <pre className="overflow-x-auto rounded-lg bg-zinc-950 p-3 text-sm text-green-400">
+              <code>{`[![Status](https://www.bluemonitor.org/api/badge/your-domain-com)](https://www.bluemonitor.org/status/your-domain-com)`}</code>
+            </pre>
+          </div>
+        </div>
+      </section>
+
       {/* Status Values */}
       <section className="mb-10">
         <h2 className="mb-3 text-xl font-semibold text-zinc-900 dark:text-zinc-100">
