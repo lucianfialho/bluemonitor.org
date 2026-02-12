@@ -6,6 +6,7 @@ import StatusChecker from "@/components/StatusChecker";
 import StatusTimeline from "@/components/StatusTimeline";
 import IncidentList from "@/components/IncidentList";
 import ServiceIcon from "@/components/ServiceIcon";
+import FavoriteButton from "@/components/FavoriteButton";
 
 export async function generateStaticParams() {
   // Don't pre-render at build time to avoid overwhelming the DB.
@@ -224,9 +225,12 @@ export default async function StatusPage({
               <ServiceIcon domain={service.domain} name={service.name} size={40} />
             </div>
           </div>
-          <h1 className="mb-2 text-3xl font-bold text-zinc-900 dark:text-zinc-100 sm:text-4xl">
-            Is {service.name} Down?
-          </h1>
+          <div className="mb-2 flex items-center justify-center gap-2">
+            <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-100 sm:text-4xl">
+              Is {service.name} Down?
+            </h1>
+            {service.id && <FavoriteButton serviceId={service.id} />}
+          </div>
           <p className="mb-6 text-zinc-500 dark:text-zinc-400">
             Real-time status check for{" "}
             <span className="font-medium text-zinc-700 dark:text-zinc-300">

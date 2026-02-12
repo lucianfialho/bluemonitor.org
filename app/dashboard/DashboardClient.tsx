@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
+import ServiceIcon from "@/components/ServiceIcon";
+import { Category } from "@/lib/types";
 
 interface ApiKey {
   id: number;
@@ -9,6 +11,18 @@ interface ApiKey {
   key_preview: string;
   created_at: string;
   last_used_at: string | null;
+}
+
+interface WatchlistService {
+  id: number;
+  slug: string;
+  name: string;
+  domain: string;
+  category: Category;
+  current_status: "up" | "down" | "slow" | null;
+  current_response_time: number | null;
+  last_checked_at: string | null;
+  added_at: string;
 }
 
 export default function DashboardClient({
@@ -22,6 +36,9 @@ export default function DashboardClient({
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
 
+  const [watchlist, setWatchlist] = useState<WatchlistService[]>([]);
+  const [watchlistLoading, setWatchlistLoading] = useState(true);
+
   const fetchKeys = useCallback(async () => {
     const res = await fetch("/api/keys");
     const data = await res.json();
@@ -29,9 +46,17 @@ export default function DashboardClient({
     setLoading(false);
   }, []);
 
+  const fetchWatchlist = useCallback(async () => {
+    const res = await fetch("/api/watchlist");
+    const data = await res.json();
+    setWatchlist(data.services || []);
+    setWatchlistLoading(false);
+  }, []);
+
   useEffect(() => {
     fetchKeys();
-  }, [fetchKeys]);
+    fetchWatchlist();
+  }, [fetchKeys, fetchWatchlist]);
 
   async function createKey() {
     setCreating(true);
@@ -55,6 +80,11 @@ export default function DashboardClient({
     fetchKeys();
   }
 
+  async function removeFromWatchlist(serviceId: number) {
+    setWatchlist((prev) => prev.filter((s) => s.id !== serviceId));
+    await fetch(`/api/watchlist/${serviceId}`, { method: "DELETE" });
+  }
+
   return (
     <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-12">
       <nav className="mb-6 flex items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400">
@@ -73,9 +103,99 @@ export default function DashboardClient({
           Dashboard
         </h1>
         <p className="text-zinc-600 dark:text-zinc-400">
-          Welcome, {user.name || user.email}. Manage your API keys below.
+          Welcome, {user.name || user.email}.
         </p>
       </div>
+
+      {/* Watchlist */}
+      <section className="mb-8">
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+            Your Watchlist
+          </h2>
+          <Link
+            href="/"
+            className="text-sm text-blue-600 hover:underline dark:text-blue-400"
+          >
+            Browse services
+          </Link>
+        </div>
+
+        {watchlistLoading ? (
+          <div className="rounded-xl border border-zinc-200 bg-white px-5 py-8 text-center text-sm text-zinc-500 dark:border-zinc-800 dark:bg-zinc-900">
+            Loading...
+          </div>
+        ) : watchlist.length === 0 ? (
+          <div className="rounded-xl border border-dashed border-zinc-300 bg-white px-5 py-8 text-center dark:border-zinc-700 dark:bg-zinc-900">
+            <p className="text-sm text-zinc-500 dark:text-zinc-400">
+              Your watchlist is empty. Add services from any service page to monitor them here.
+            </p>
+            <Link
+              href="/"
+              className="mt-3 inline-block text-sm font-medium text-blue-600 hover:underline dark:text-blue-400"
+            >
+              Discover services
+            </Link>
+          </div>
+        ) : (
+          <div className="grid gap-3 sm:grid-cols-2">
+            {watchlist.map((service) => (
+              <div
+                key={service.id}
+                className="group relative flex items-center gap-3 rounded-xl border border-zinc-200 bg-white p-4 transition-all hover:border-blue-300 hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-blue-700"
+              >
+                <Link
+                  href={`/status/${service.slug}`}
+                  className="absolute inset-0 z-0"
+                  aria-label={service.name}
+                />
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-zinc-100 dark:bg-zinc-800">
+                  <ServiceIcon domain={service.domain} name={service.name} size={20} />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <span className="truncate text-sm font-medium text-zinc-900 group-hover:text-blue-600 dark:text-zinc-100 dark:group-hover:text-blue-400">
+                      {service.name}
+                    </span>
+                    {service.current_status && (
+                      <span
+                        className={`inline-block h-2 w-2 shrink-0 rounded-full ${
+                          service.current_status === "up"
+                            ? "bg-green-500"
+                            : service.current_status === "slow"
+                              ? "bg-yellow-500"
+                              : "bg-red-500"
+                        }`}
+                        title={
+                          service.current_status === "up"
+                            ? "Operational"
+                            : service.current_status === "slow"
+                              ? "Slow"
+                              : "Down"
+                        }
+                      />
+                    )}
+                  </div>
+                  <p className="truncate text-xs text-zinc-500">{service.domain}</p>
+                </div>
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    removeFromWatchlist(service.id);
+                  }}
+                  className="relative z-10 rounded-md p-1 text-zinc-400 transition-colors hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-950 dark:hover:text-red-400"
+                  title="Remove from watchlist"
+                >
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
 
       {/* Create API Key */}
       <section className="mb-8 rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
