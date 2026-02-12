@@ -8,10 +8,9 @@ import IncidentList from "@/components/IncidentList";
 import ServiceIcon from "@/components/ServiceIcon";
 
 export async function generateStaticParams() {
-  const services = await getServices();
-  return services.map((service) => ({
-    slug: service.slug,
-  }));
+  // Don't pre-render at build time to avoid overwhelming the DB.
+  // Pages are generated on-demand with ISR (revalidate = 60).
+  return [];
 }
 
 export const dynamicParams = true;
