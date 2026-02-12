@@ -44,7 +44,7 @@ export default function SubmitForm() {
           Thanks for your submission!
         </div>
         <p className="mb-4 text-sm text-green-700 dark:text-green-300">
-          We&apos;ll review it and add the service to our monitoring list.
+          We&apos;ll review it and start monitoring your SaaS.
         </p>
         <button
           onClick={() => setStatus("idle")}
@@ -95,7 +95,7 @@ export default function SubmitForm() {
         disabled={status === "loading"}
         className="w-full rounded-lg bg-blue-600 px-4 py-2.5 font-medium text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
       >
-        {status === "loading" ? "Submitting..." : "Submit Service"}
+        {status === "loading" ? "Submitting..." : "Submit"}
       </button>
     </form>
   );
