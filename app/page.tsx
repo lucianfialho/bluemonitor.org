@@ -105,13 +105,41 @@ export default async function Home() {
           </h2>
 
           <div className="mt-16 grid gap-4 sm:grid-cols-2">
-            {/* Health Checks */}
+            {/* Uptime Monitoring */}
             <div className="overflow-hidden rounded-2xl bg-zinc-100 p-6 dark:bg-zinc-800/50 sm:p-8">
               <div className="mb-6 rounded-xl bg-zinc-900 p-4 font-mono text-xs leading-relaxed text-zinc-300 dark:bg-zinc-950">
                 <div className="mb-2 text-green-400">
-                  GET /api/health → 200 OK
+                  GET yourapp.com → 200 OK
                 </div>
                 <div className="space-y-1 text-zinc-500">
+                  <div>
+                    <span className="text-green-400">✓</span> status{" "}
+                    <span className="text-zinc-600">· operational</span>
+                  </div>
+                  <div>
+                    <span className="text-green-400">✓</span> response{" "}
+                    <span className="text-zinc-600">· 142ms</span>
+                  </div>
+                  <div>
+                    <span className="text-green-400">✓</span> uptime{" "}
+                    <span className="text-zinc-600">· 99.98%</span>
+                  </div>
+                </div>
+              </div>
+              <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+                Uptime Monitoring
+              </h3>
+              <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+                We ping your service every 5 minutes and track response time,
+                status codes, and availability.
+              </p>
+            </div>
+
+            {/* Heartbeat Push */}
+            <div className="overflow-hidden rounded-2xl bg-zinc-100 p-6 dark:bg-zinc-800/50 sm:p-8">
+              <div className="mb-6 rounded-xl bg-zinc-900 p-4 font-mono text-xs leading-relaxed text-zinc-300 dark:bg-zinc-950">
+                <div className="text-blue-400">POST /api/v1/heartbeat</div>
+                <div className="mt-2 space-y-1 text-zinc-500">
                   <div>
                     <span className="text-green-400">✓</span> database{" "}
                     <span className="text-zinc-600">· 3ms</span>
@@ -121,48 +149,21 @@ export default async function Home() {
                     <span className="text-zinc-600">· 1ms</span>
                   </div>
                   <div>
-                    <span className="text-green-400">✓</span> stripe-api{" "}
-                    <span className="text-zinc-600">· 45ms</span>
-                  </div>
-                  <div>
                     <span className="text-red-400">✗</span>{" "}
                     <span className="text-red-400">sendgrid</span>{" "}
                     <span className="text-zinc-600">· timeout</span>
                   </div>
                 </div>
-              </div>
-              <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
-                Health Checks
-              </h3>
-              <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-                We call your /api/health and parse each dependency — database,
-                cache, third-party APIs.
-              </p>
-            </div>
-
-            {/* Heartbeat Push */}
-            <div className="overflow-hidden rounded-2xl bg-zinc-100 p-6 dark:bg-zinc-800/50 sm:p-8">
-              <div className="mb-6 rounded-xl bg-zinc-900 p-4 font-mono text-xs leading-relaxed text-zinc-300 dark:bg-zinc-950">
-                <div className="text-blue-400">curl -X POST \</div>
-                <div className="text-zinc-500">
-                  {"  "}bluemonitor.org/api/heartbeat/abc-123 \
-                </div>
-                <div className="text-zinc-500">
-                  {"  "}-H &quot;Content-Type: application/json&quot; \
-                </div>
-                <div className="text-zinc-500">
-                  {"  "}-d {"'{\"status\":\"ok\"}'"}
-                </div>
                 <div className="mt-2 text-green-400">
-                  → 200 {"{\"received\":true,\"next_expected\":\"5m\"}"}
+                  → 200 received
                 </div>
               </div>
               <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
                 Heartbeat Push
               </h3>
               <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-                Your service pushes status on a schedule. No public endpoint
-                needed — perfect for cron jobs.
+                Push detailed health data — database, cache, APIs — on a
+                schedule. No public endpoint needed.
               </p>
             </div>
 
@@ -336,8 +337,8 @@ export default async function Home() {
                 Configure monitoring
               </h3>
               <p className="mt-2 text-sm leading-relaxed text-zinc-500 dark:text-zinc-400">
-                Set up a health endpoint for pull checks or push heartbeats from
-                your service.
+                We ping your domain automatically, or push heartbeats with
+                detailed dependency checks from your service.
               </p>
             </div>
             <div className="rounded-2xl bg-zinc-100 p-6 dark:bg-zinc-800/50 sm:p-8">
