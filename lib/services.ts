@@ -112,6 +112,11 @@ export const services: Service[] = [
   { slug: "coin-master", name: "Coin Master", domain: "coinmaster.com", category: "gaming", checkUrl: "https://coinmaster.com", keywords: ["is coin master down", "coin master not working", "coin master status"] },
   { slug: "osrs", name: "Old School RuneScape", domain: "oldschool.runescape.com", category: "gaming", checkUrl: "https://oldschool.runescape.com", keywords: ["is osrs down", "osrs not working", "osrs status"] },
   { slug: "geforce-now", name: "GeForce NOW", domain: "nvidia.com", category: "gaming", checkUrl: "https://www.nvidia.com/en-us/geforce-now/", keywords: ["is geforce now down", "geforce now not working", "geforce now status"] },
+  { slug: "sea-of-thieves", name: "Sea of Thieves", domain: "seaofthieves.com", category: "gaming", checkUrl: "https://www.seaofthieves.com", keywords: ["is sea of thieves down", "sea of thieves not working", "sea of thieves status"] },
+  { slug: "fallout-76", name: "Fallout 76", domain: "bethesda.net", category: "gaming", checkUrl: "https://bethesda.net", keywords: ["is fallout 76 down", "fallout 76 not working", "fallout 76 status"] },
+  { slug: "clash-of-clans", name: "Clash of Clans", domain: "supercell.com", category: "gaming", checkUrl: "https://supercell.com/en/games/clashofclans/", keywords: ["is coc down", "clash of clans not working", "clash of clans status"] },
+  { slug: "hunt-showdown", name: "Hunt: Showdown", domain: "huntshowdown.com", category: "gaming", checkUrl: "https://www.huntshowdown.com", keywords: ["is hunt showdown down", "hunt showdown not working", "hunt showdown status"] },
+  { slug: "samsung", name: "Samsung", domain: "samsung.com", category: "entertainment", checkUrl: "https://www.samsung.com", keywords: ["is samsung down", "samsung server down", "samsung status"] },
 
   // Streaming
   { slug: "youtube", name: "YouTube", domain: "youtube.com", category: "streaming", checkUrl: "https://www.youtube.com", keywords: ["is youtube down", "youtube not working", "youtube status"] },
@@ -149,6 +154,9 @@ export const services: Service[] = [
   { slug: "youtube-tv", name: "YouTube TV", domain: "tv.youtube.com", category: "streaming", checkUrl: "https://tv.youtube.com", keywords: ["is youtube tv down", "youtube tv not working", "youtube tv status"] },
   { slug: "crunchyroll", name: "Crunchyroll", domain: "crunchyroll.com", category: "streaming", checkUrl: "https://www.crunchyroll.com", keywords: ["is crunchyroll down", "crunchyroll not working", "crunchyroll status"] },
   { slug: "hianime", name: "HiAnime", domain: "hianime.to", category: "streaming", checkUrl: "https://hianime.to", keywords: ["is hianime down", "hianime not working", "hianime status"] },
+  { slug: "mangafire", name: "MangaFire", domain: "mangafire.to", category: "streaming", checkUrl: "https://mangafire.to", keywords: ["is mangafire down", "mangafire not working", "mangafire status"] },
+  { slug: "mlb-tv", name: "MLB.TV", domain: "mlb.com", category: "streaming", checkUrl: "https://www.mlb.com/tv", keywords: ["is mlb tv down", "mlb tv not working", "mlb tv status"] },
+  { slug: "gogoanime", name: "GoGoAnime", domain: "gogoanime3.co", category: "streaming", checkUrl: "https://gogoanime3.co", keywords: ["is gogoanime down", "gogoanime not working", "gogoanime status"] },
 
   // Productivity
   { slug: "outlook", name: "Outlook", domain: "outlook.live.com", category: "productivity", checkUrl: "https://outlook.live.com", keywords: ["is outlook down", "outlook not working", "outlook status"] },
@@ -185,6 +193,7 @@ export const services: Service[] = [
   { slug: "canva", name: "Canva", domain: "canva.com", category: "productivity", checkUrl: "https://www.canva.com", keywords: ["is canva down", "canva not working", "canva status"] },
   { slug: "google-calendar", name: "Google Calendar", domain: "calendar.google.com", category: "productivity", checkUrl: "https://calendar.google.com", keywords: ["is google calendar down", "google calendar not working", "google calendar status"] },
   { slug: "intuit", name: "Intuit", domain: "intuit.com", category: "productivity", checkUrl: "https://www.intuit.com", keywords: ["is intuit down", "intuit not working", "intuit status"] },
+  { slug: "jira", name: "Jira", domain: "atlassian.com", category: "productivity", checkUrl: "https://www.atlassian.com/software/jira", keywords: ["is jira down", "jira not working", "jira status"] },
 
   // Education
   { slug: "canvas", name: "Canvas", domain: "instructure.com", category: "education", checkUrl: "https://www.instructure.com", keywords: ["is canvas down", "canvas not working", "canvas status"] },
@@ -360,6 +369,7 @@ export const services: Service[] = [
   { slug: "consumer-cellular", name: "Consumer Cellular", domain: "consumercellular.com", category: "isp", checkUrl: "https://www.consumercellular.com", keywords: ["is consumer cellular down", "consumer cellular not working", "consumer cellular status"] },
   { slug: "google-fiber", name: "Google Fiber", domain: "fiber.google.com", category: "isp", checkUrl: "https://fiber.google.com", keywords: ["is google fiber down", "google fiber not working", "google fiber status"] },
   { slug: "earthlink", name: "EarthLink", domain: "earthlink.net", category: "isp", checkUrl: "https://www.earthlink.net", keywords: ["is earthlink down", "earthlink not working", "earthlink status"] },
+  { slug: "wide-open-west", name: "WOW! Internet", domain: "wowway.com", category: "isp", checkUrl: "https://www.wowway.com", keywords: ["is wide open west down", "wow internet not working", "wow internet status"] },
 
   // Dating
   { slug: "hinge", name: "Hinge", domain: "hinge.co", category: "dating", checkUrl: "https://hinge.co", keywords: ["is hinge down", "hinge not working", "hinge status"] },
@@ -437,6 +447,13 @@ export const services: Service[] = [
   { slug: "streameast", name: "StreamEast", domain: "streameast.to", category: "streaming", checkUrl: "https://streameast.to", keywords: ["is streameast down", "streameast not working", "streameast status"] },
   { slug: "libgen", name: "Library Genesis", domain: "libgen.is", category: "entertainment", checkUrl: "https://libgen.is", keywords: ["is libgen down", "libgen not working", "libgen status"] },
   { slug: "prizepicks", name: "PrizePicks", domain: "prizepicks.com", category: "entertainment", checkUrl: "https://www.prizepicks.com", keywords: ["is prizepicks down", "prizepicks not working", "prizepicks status"] },
+  { slug: "real-debrid", name: "Real-Debrid", domain: "real-debrid.com", category: "entertainment", checkUrl: "https://real-debrid.com", keywords: ["is real debrid down", "real-debrid not working", "real debrid status"] },
+  { slug: "vsco", name: "VSCO", domain: "vsco.co", category: "entertainment", checkUrl: "https://vsco.co", keywords: ["is vsco down", "vsco not working", "vsco status"] },
+  { slug: "pirate-bay", name: "The Pirate Bay", domain: "thepiratebay.org", category: "entertainment", checkUrl: "https://thepiratebay.org", keywords: ["is piratebay down", "pirate bay not working", "pirate bay status"] },
+  { slug: "tradingview", name: "TradingView", domain: "tradingview.com", category: "finance", checkUrl: "https://www.tradingview.com", keywords: ["is tradingview down", "tradingview not working", "tradingview status"] },
+  { slug: "kraken", name: "Kraken", domain: "kraken.com", category: "finance", checkUrl: "https://www.kraken.com", keywords: ["is kraken down", "kraken not working", "kraken status"] },
+  { slug: "pokerstars", name: "PokerStars", domain: "pokerstars.com", category: "entertainment", checkUrl: "https://www.pokerstars.com", keywords: ["is pokerstars down", "pokerstars not working", "pokerstars status"] },
+  { slug: "caesars-sportsbook", name: "Caesars Sportsbook", domain: "caesars.com", category: "entertainment", checkUrl: "https://www.caesars.com/sportsbook-and-casino", keywords: ["is caesars sportsbook down", "caesars sportsbook not working", "caesars sportsbook status"] },
 
   // VPN & Security
   { slug: "nordvpn", name: "NordVPN", domain: "nordvpn.com", category: "vpn", checkUrl: "https://nordvpn.com", keywords: ["is nordvpn down", "nordvpn not working", "nordvpn status"] },
@@ -455,6 +472,9 @@ export const services: Service[] = [
   { slug: "hertz", name: "Hertz", domain: "hertz.com", category: "travel", checkUrl: "https://www.hertz.com", keywords: ["is hertz down", "hertz website down", "hertz status"] },
   { slug: "alaska-airlines", name: "Alaska Airlines", domain: "alaskaair.com", category: "travel", checkUrl: "https://www.alaskaair.com", keywords: ["is alaska airlines down", "alaska air website down", "alaska airlines status"] },
   { slug: "royal-caribbean", name: "Royal Caribbean", domain: "royalcaribbean.com", category: "travel", checkUrl: "https://www.royalcaribbean.com", keywords: ["is royal caribbean down", "royal caribbean website down", "royal caribbean status"] },
+  { slug: "marriott", name: "Marriott", domain: "marriott.com", category: "travel", checkUrl: "https://www.marriott.com", keywords: ["is marriott down", "marriott website down", "marriott status"] },
+  { slug: "allegiant", name: "Allegiant Air", domain: "allegiantair.com", category: "travel", checkUrl: "https://www.allegiantair.com", keywords: ["is allegiant down", "allegiant website down", "allegiant status"] },
+  { slug: "united-airlines", name: "United Airlines", domain: "united.com", category: "travel", checkUrl: "https://www.united.com", keywords: ["is united airlines down", "united website down", "united airlines status"] },
 ];
 
 export function getServiceBySlug(slug: string): Service | undefined {
