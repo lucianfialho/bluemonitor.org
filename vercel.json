@@ -1,6 +1,7 @@
 {
   "crons": [
     { "path": "/api/cron/check-services", "schedule": "*/5 * * * *" },
+    { "path": "/api/cron/recheck-down", "schedule": "* * * * *" },
     { "path": "/api/cron/cleanup", "schedule": "0 3 * * *" }
   ]
 }
