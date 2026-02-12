@@ -56,6 +56,7 @@ export default function DashboardClient({
   const [webhookEvents, setWebhookEvents] = useState<string[]>(["down"]);
   const [creatingWebhook, setCreatingWebhook] = useState(false);
   const [testingWebhookId, setTestingWebhookId] = useState<number | null>(null);
+  const [mcpCopied, setMcpCopied] = useState(false);
 
   const fetchKeys = useCallback(async () => {
     const res = await fetch("/api/keys");
@@ -418,6 +419,69 @@ export default function DashboardClient({
             ))}
           </div>
         )}
+      </section>
+
+      {/* MCP Integration */}
+      <section className="mb-8 rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
+        <div className="mb-4 flex items-center gap-2">
+          <h2 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+            MCP Integration
+          </h2>
+          <span className="rounded bg-blue-100 px-1.5 py-0.5 text-[10px] font-semibold text-blue-600 dark:bg-blue-900 dark:text-blue-300">
+            PRO
+          </span>
+        </div>
+        <p className="mb-4 text-sm text-zinc-600 dark:text-zinc-400">
+          Connect BlueMonitor to AI assistants like Claude, Cursor, or any MCP-compatible client.
+          Use your API key to authenticate.
+        </p>
+        <div className="relative">
+          <pre className="overflow-x-auto rounded-lg bg-zinc-950 p-4 text-sm text-zinc-300">
+            <code>{`{
+  "mcpServers": {
+    "bluemonitor": {
+      "url": "https://www.bluemonitor.org/api/mcp",
+      "headers": {
+        "Authorization": "Bearer ${keys[0]?.key_preview || "YOUR_API_KEY"}"
+      }
+    }
+  }
+}`}</code>
+          </pre>
+          <button
+            onClick={() => {
+              navigator.clipboard.writeText(
+                JSON.stringify(
+                  {
+                    mcpServers: {
+                      bluemonitor: {
+                        url: "https://www.bluemonitor.org/api/mcp",
+                        headers: {
+                          Authorization: "Bearer YOUR_API_KEY",
+                        },
+                      },
+                    },
+                  },
+                  null,
+                  2
+                )
+              );
+              setMcpCopied(true);
+              setTimeout(() => setMcpCopied(false), 2000);
+            }}
+            className="absolute right-3 top-3 rounded-md bg-zinc-800 px-2 py-1 text-xs text-zinc-400 transition-colors hover:bg-zinc-700 hover:text-zinc-200"
+          >
+            {mcpCopied ? "Copied!" : "Copy"}
+          </button>
+        </div>
+        <p className="mt-3 text-xs text-zinc-500 dark:text-zinc-400">
+          Replace <code className="rounded bg-zinc-100 px-1 py-0.5 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">YOUR_API_KEY</code> with
+          your actual API key. Available tools: <code className="rounded bg-zinc-100 px-1 py-0.5 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">list_services</code>,{" "}
+          <code className="rounded bg-zinc-100 px-1 py-0.5 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">check_status</code>,{" "}
+          <code className="rounded bg-zinc-100 px-1 py-0.5 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">list_watchlist</code>,{" "}
+          <code className="rounded bg-zinc-100 px-1 py-0.5 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">get_incidents</code>,{" "}
+          <code className="rounded bg-zinc-100 px-1 py-0.5 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">check_domain</code>
+        </p>
       </section>
 
       {/* Create API Key */}

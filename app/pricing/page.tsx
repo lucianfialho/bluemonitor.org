@@ -36,6 +36,7 @@ const plans = [
       "Priority alert delivery",
       "300 API requests / min",
       "1-minute recheck interval",
+      "MCP integration for AI assistants",
       "Priority support",
     ],
     cta: "Join Waitlist",
