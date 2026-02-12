@@ -23,6 +23,12 @@ export default function Header() {
             Services
           </Link>
           <Link
+            href="/badge"
+            className="text-sm font-medium text-zinc-600 transition-colors hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
+          >
+            Badge
+          </Link>
+          <Link
             href="/submit"
             className="rounded-lg bg-blue-600 px-3.5 py-1.5 text-sm font-medium text-white transition-colors hover:bg-blue-700"
           >
