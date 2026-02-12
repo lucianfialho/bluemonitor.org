@@ -10,6 +10,10 @@ export interface Service {
   current_status?: "up" | "down" | "slow" | null;
   current_response_time?: number | null;
   last_checked_at?: string | null;
+  status_page_url?: string | null;
+  feed_url?: string | null;
+  feed_api_url?: string | null;
+  feed_provider?: string | null;
 }
 
 export type Category =

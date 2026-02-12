@@ -39,6 +39,10 @@ function mapRow(row: Record<string, unknown>): Service {
     current_status: (row.current_status as Service["current_status"]) ?? null,
     current_response_time: (row.current_response_time as number) ?? null,
     last_checked_at: (row.last_checked_at as string) ?? null,
+    status_page_url: (row.status_page_url as string) ?? null,
+    feed_url: (row.feed_url as string) ?? null,
+    feed_api_url: (row.feed_api_url as string) ?? null,
+    feed_provider: (row.feed_provider as string) ?? null,
   };
 }
 
