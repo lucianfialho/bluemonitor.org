@@ -1,11 +1,12 @@
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { services, getServiceBySlug, getRelatedServices, getCategoryBySlug } from "@/lib/services";
+import { getServices, getServiceBySlug, getRelatedServices, getCategoryBySlug } from "@/lib/services";
 import StatusChecker from "@/components/StatusChecker";
 import ServiceIcon from "@/components/ServiceIcon";
 
 export async function generateStaticParams() {
+  const services = await getServices();
   return services.map((service) => ({
     slug: service.slug,
   }));
@@ -20,7 +21,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const service = getServiceBySlug(slug);
+  const service = await getServiceBySlug(slug);
 
   if (!service) {
     return { title: "Service Not Found — BlueMonitor" };
@@ -35,7 +36,13 @@ export async function generateMetadata({
     openGraph: {
       title: `Is ${service.name} Down? — BlueMonitor`,
       description: `Check if ${service.name} is down right now. Real-time status monitoring for ${service.name}.`,
+      url: `https://www.bluemonitor.org/status/${service.slug}`,
       type: "website",
+    },
+    twitter: {
+      card: "summary",
+      title: `Is ${service.name} Down? — BlueMonitor`,
+      description: `Check if ${service.name} is down right now. Real-time status monitoring for ${service.name}.`,
     },
   };
 }
@@ -90,49 +97,99 @@ export default async function StatusPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const service = getServiceBySlug(slug);
+  const service = await getServiceBySlug(slug);
 
   if (!service) {
     notFound();
   }
 
-  const related = getRelatedServices(slug);
+  const related = await getRelatedServices(slug);
   const category = getCategoryBySlug(service.category);
 
-  const structuredData = {
+  const faqStructuredData = {
     "@context": "https://schema.org",
-    "@type": "WebPage",
-    name: `Is ${service.name} Down?`,
-    description: `Check if ${service.name} is down right now. Real-time status monitoring, response time, and outage history for ${service.name}.`,
-    url: `https://www.bluemonitor.org/status/${service.slug}`,
-    mainEntity: {
-      "@type": "FAQPage",
-      mainEntity: [
-        {
-          "@type": "Question",
-          name: `Is ${service.name} down right now?`,
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: `This page shows the real-time status of ${service.name}. The status is checked automatically by pinging ${service.name}'s servers.`,
-          },
+    "@type": "FAQPage",
+    mainEntity: [
+      {
+        "@type": "Question",
+        name: `Is ${service.name} down right now?`,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: `This page shows the real-time status of ${service.name}. The status is checked automatically by pinging ${service.name}'s servers. If the status shows "Down", it means ${service.name} is currently experiencing issues.`,
         },
-        {
-          "@type": "Question",
-          name: `Why is ${service.name} not working?`,
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: `${service.name} may not be working due to server outages, scheduled maintenance, network issues, or high traffic.`,
-          },
+      },
+      {
+        "@type": "Question",
+        name: `Why is ${service.name} not working?`,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: `${service.name} may not be working due to server outages, scheduled maintenance, network issues, or high traffic. Check the current status above for real-time information.`,
         },
-      ],
-    },
+      },
+      {
+        "@type": "Question",
+        name: `How do I check if ${service.name} is down for everyone?`,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: `BlueMonitor checks ${service.name}'s servers from our monitoring infrastructure. If the status shows "Down" here, it's likely down for everyone. If it shows "Up" but you can't access it, the issue may be on your end.`,
+        },
+      },
+      {
+        "@type": "Question",
+        name: `What should I do if ${service.name} is down?`,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: `If ${service.name} is down, you can: wait a few minutes and try again, check their official social media for updates, clear your browser cache, or try using a different network connection.`,
+        },
+      },
+    ],
+  };
+
+  const breadcrumbStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: "https://www.bluemonitor.org",
+      },
+      ...(category
+        ? [
+            {
+              "@type": "ListItem",
+              position: 2,
+              name: category.name,
+              item: `https://www.bluemonitor.org/categories/${service.category}`,
+            },
+            {
+              "@type": "ListItem",
+              position: 3,
+              name: service.name,
+              item: `https://www.bluemonitor.org/status/${service.slug}`,
+            },
+          ]
+        : [
+            {
+              "@type": "ListItem",
+              position: 2,
+              name: service.name,
+              item: `https://www.bluemonitor.org/status/${service.slug}`,
+            },
+          ]),
+    ],
   };
 
   return (
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqStructuredData) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbStructuredData) }}
       />
 
       <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 sm:py-12">

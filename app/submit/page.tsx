@@ -5,6 +5,9 @@ export const metadata: Metadata = {
   title: "Submit a Service — BlueMonitor",
   description:
     "Submit a service or website to be monitored on BlueMonitor. Help us expand our coverage.",
+  alternates: {
+    canonical: "/submit",
+  },
 };
 
 export default function SubmitPage() {

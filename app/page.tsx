@@ -1,15 +1,19 @@
-import { services, categories } from "@/lib/services";
+import { getServices, categories } from "@/lib/services";
 import ServiceCard from "@/components/ServiceCard";
 import SearchBar from "@/components/SearchBar";
 import Link from "next/link";
+import { Service } from "@/lib/types";
 
-export default function Home() {
-  const popular = services.slice(0, 12);
+export const revalidate = 60;
+
+export default async function Home() {
+  const allServices = await getServices();
+  const popular = allServices.slice(0, 12);
 
   const grouped = categories
     .map((cat) => ({
       ...cat,
-      services: services.filter((s) => s.category === cat.slug),
+      services: allServices.filter((s: Service) => s.category === cat.slug),
     }))
     .filter((cat) => cat.services.length > 0);
 
@@ -25,7 +29,7 @@ export default function Home() {
           Check if any website or service is down — instantly.
         </p>
         <div className="flex justify-center">
-          <SearchBar />
+          <SearchBar services={allServices} />
         </div>
       </section>
 
@@ -35,7 +39,7 @@ export default function Home() {
           Popular Services
         </h2>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {popular.map((service) => (
+          {popular.map((service: Service) => (
             <ServiceCard key={service.slug} service={service} />
           ))}
         </div>
@@ -75,7 +79,7 @@ export default function Home() {
               {cat.name}
             </h3>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {cat.services.map((service) => (
+              {cat.services.map((service: Service) => (
                 <ServiceCard key={service.slug} service={service} />
               ))}
             </div>

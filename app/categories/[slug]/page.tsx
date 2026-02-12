@@ -11,6 +11,7 @@ export async function generateStaticParams() {
 }
 
 export const dynamicParams = false;
+export const revalidate = 60;
 
 export async function generateMetadata({
   params,
@@ -30,6 +31,17 @@ export async function generateMetadata({
     alternates: {
       canonical: `/categories/${category.slug}`,
     },
+    openGraph: {
+      title: `${category.name} Status — BlueMonitor`,
+      description: `Check the real-time status of ${category.name.toLowerCase()} services. Monitor uptime and outages for popular ${category.name.toLowerCase()} platforms.`,
+      url: `https://www.bluemonitor.org/categories/${category.slug}`,
+      type: "website",
+    },
+    twitter: {
+      card: "summary",
+      title: `${category.name} Status — BlueMonitor`,
+      description: `Real-time status monitoring for ${category.name.toLowerCase()} services.`,
+    },
   };
 }
 
@@ -45,7 +57,7 @@ export default async function CategoryPage({
     notFound();
   }
 
-  const categoryServices = getServicesByCategory(slug);
+  const categoryServices = await getServicesByCategory(slug);
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-12">

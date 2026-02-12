@@ -22,6 +22,9 @@ export const metadata: Metadata = {
   description:
     "Check if your favorite services are down. Real-time status monitoring, response times, and outage history for hundreds of popular services.",
   metadataBase: new URL("https://www.bluemonitor.org"),
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
     title: "BlueMonitor — Real-Time Service Status Monitoring",
     description:

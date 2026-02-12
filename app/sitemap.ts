@@ -1,10 +1,12 @@
 import { MetadataRoute } from "next";
-import { services, categories } from "@/lib/services";
+import { getServices, categories } from "@/lib/services";
 
 const BASE_URL = "https://www.bluemonitor.org";
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  const statusPages = services.map((service) => ({
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const allServices = await getServices();
+
+  const statusPages = allServices.map((service) => ({
     url: `${BASE_URL}/status/${service.slug}`,
     lastModified: new Date(),
     changeFrequency: "hourly" as const,
@@ -24,6 +26,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: new Date(),
       changeFrequency: "daily",
       priority: 1,
+    },
+    {
+      url: `${BASE_URL}/submit`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.4,
     },
     ...statusPages,
     ...categoryPages,

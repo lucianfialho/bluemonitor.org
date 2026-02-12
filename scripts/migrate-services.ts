@@ -1,0 +1,5470 @@
+import { neon } from "@neondatabase/serverless";
+
+interface ServiceData {
+  slug: string;
+  name: string;
+  domain: string;
+  category: string;
+  checkUrl: string;
+  keywords: string[];
+}
+
+const services: ServiceData[] = [
+  {
+    "slug": "chatgpt",
+    "name": "ChatGPT",
+    "domain": "chat.openai.com",
+    "category": "ai",
+    "checkUrl": "https://chat.openai.com",
+    "keywords": [
+      "is chatgpt down",
+      "chatgpt not working",
+      "chatgpt status"
+    ]
+  },
+  {
+    "slug": "claude",
+    "name": "Claude",
+    "domain": "claude.ai",
+    "category": "ai",
+    "checkUrl": "https://claude.ai",
+    "keywords": [
+      "is claude down",
+      "claude not working",
+      "claude status"
+    ]
+  },
+  {
+    "slug": "gemini",
+    "name": "Gemini",
+    "domain": "gemini.google.com",
+    "category": "ai",
+    "checkUrl": "https://gemini.google.com",
+    "keywords": [
+      "is gemini down",
+      "gemini not working",
+      "gemini status"
+    ]
+  },
+  {
+    "slug": "midjourney",
+    "name": "Midjourney",
+    "domain": "midjourney.com",
+    "category": "ai",
+    "checkUrl": "https://www.midjourney.com",
+    "keywords": [
+      "is midjourney down",
+      "midjourney not working",
+      "midjourney status"
+    ]
+  },
+  {
+    "slug": "copilot",
+    "name": "Microsoft Copilot",
+    "domain": "copilot.microsoft.com",
+    "category": "ai",
+    "checkUrl": "https://copilot.microsoft.com",
+    "keywords": [
+      "is copilot down",
+      "copilot not working",
+      "copilot status"
+    ]
+  },
+  {
+    "slug": "perplexity",
+    "name": "Perplexity",
+    "domain": "perplexity.ai",
+    "category": "ai",
+    "checkUrl": "https://www.perplexity.ai",
+    "keywords": [
+      "is perplexity down",
+      "perplexity not working",
+      "perplexity status"
+    ]
+  },
+  {
+    "slug": "cursor",
+    "name": "Cursor",
+    "domain": "cursor.com",
+    "category": "ai",
+    "checkUrl": "https://www.cursor.com",
+    "keywords": [
+      "is cursor down",
+      "cursor not working",
+      "cursor status"
+    ]
+  },
+  {
+    "slug": "grok",
+    "name": "Grok",
+    "domain": "grok.com",
+    "category": "ai",
+    "checkUrl": "https://grok.com",
+    "keywords": [
+      "is grok down",
+      "grok not working",
+      "grok status"
+    ]
+  },
+  {
+    "slug": "deepseek",
+    "name": "DeepSeek",
+    "domain": "deepseek.com",
+    "category": "ai",
+    "checkUrl": "https://www.deepseek.com",
+    "keywords": [
+      "is deepseek down",
+      "deepseek not working",
+      "deepseek status"
+    ]
+  },
+  {
+    "slug": "janitor-ai",
+    "name": "Janitor AI",
+    "domain": "janitorai.com",
+    "category": "ai",
+    "checkUrl": "https://www.janitorai.com",
+    "keywords": [
+      "is janitor ai down",
+      "janitor ai not working",
+      "janitor ai status"
+    ]
+  },
+  {
+    "slug": "character-ai",
+    "name": "Character AI",
+    "domain": "character.ai",
+    "category": "ai",
+    "checkUrl": "https://character.ai",
+    "keywords": [
+      "is character ai down",
+      "character ai not working",
+      "character ai status"
+    ]
+  },
+  {
+    "slug": "civitai",
+    "name": "CivitAI",
+    "domain": "civitai.com",
+    "category": "ai",
+    "checkUrl": "https://civitai.com",
+    "keywords": [
+      "is civitai down",
+      "civitai not working",
+      "civitai status"
+    ]
+  },
+  {
+    "slug": "openai",
+    "name": "OpenAI",
+    "domain": "openai.com",
+    "category": "ai",
+    "checkUrl": "https://openai.com",
+    "keywords": [
+      "is openai down",
+      "openai not working",
+      "openai status"
+    ]
+  },
+  {
+    "slug": "lovable",
+    "name": "Lovable",
+    "domain": "lovable.dev",
+    "category": "ai",
+    "checkUrl": "https://lovable.dev",
+    "keywords": [
+      "is lovable down",
+      "lovable not working",
+      "lovable status"
+    ]
+  },
+  {
+    "slug": "bolt",
+    "name": "Bolt.new",
+    "domain": "bolt.new",
+    "category": "ai",
+    "checkUrl": "https://bolt.new",
+    "keywords": [
+      "is bolt.new down",
+      "bolt new not working",
+      "bolt.new status"
+    ]
+  },
+  {
+    "slug": "v0",
+    "name": "v0 by Vercel",
+    "domain": "v0.dev",
+    "category": "ai",
+    "checkUrl": "https://v0.dev",
+    "keywords": [
+      "is v0 down",
+      "v0 dev not working",
+      "v0 status"
+    ]
+  },
+  {
+    "slug": "suno",
+    "name": "Suno",
+    "domain": "suno.com",
+    "category": "ai",
+    "checkUrl": "https://suno.com",
+    "keywords": [
+      "is suno down",
+      "suno not working",
+      "suno status"
+    ]
+  },
+  {
+    "slug": "udio",
+    "name": "Udio",
+    "domain": "udio.com",
+    "category": "ai",
+    "checkUrl": "https://www.udio.com",
+    "keywords": [
+      "is udio down",
+      "udio not working",
+      "udio status"
+    ]
+  },
+  {
+    "slug": "elevenlabs",
+    "name": "ElevenLabs",
+    "domain": "elevenlabs.io",
+    "category": "ai",
+    "checkUrl": "https://elevenlabs.io",
+    "keywords": [
+      "is elevenlabs down",
+      "elevenlabs not working",
+      "elevenlabs status"
+    ]
+  },
+  {
+    "slug": "runway",
+    "name": "Runway",
+    "domain": "runwayml.com",
+    "category": "ai",
+    "checkUrl": "https://runwayml.com",
+    "keywords": [
+      "is runway down",
+      "runway ml not working",
+      "runway status"
+    ]
+  },
+  {
+    "slug": "pika",
+    "name": "Pika",
+    "domain": "pika.art",
+    "category": "ai",
+    "checkUrl": "https://pika.art",
+    "keywords": [
+      "is pika down",
+      "pika not working",
+      "pika status"
+    ]
+  },
+  {
+    "slug": "leonardo-ai",
+    "name": "Leonardo AI",
+    "domain": "leonardo.ai",
+    "category": "ai",
+    "checkUrl": "https://leonardo.ai",
+    "keywords": [
+      "is leonardo ai down",
+      "leonardo ai not working",
+      "leonardo ai status"
+    ]
+  },
+  {
+    "slug": "stability-ai",
+    "name": "Stability AI",
+    "domain": "stability.ai",
+    "category": "ai",
+    "checkUrl": "https://stability.ai",
+    "keywords": [
+      "is stability ai down",
+      "stable diffusion not working",
+      "stability ai status"
+    ]
+  },
+  {
+    "slug": "hugging-face",
+    "name": "Hugging Face",
+    "domain": "huggingface.co",
+    "category": "ai",
+    "checkUrl": "https://huggingface.co",
+    "keywords": [
+      "is hugging face down",
+      "huggingface not working",
+      "hugging face status"
+    ]
+  },
+  {
+    "slug": "replicate",
+    "name": "Replicate",
+    "domain": "replicate.com",
+    "category": "ai",
+    "checkUrl": "https://replicate.com",
+    "keywords": [
+      "is replicate down",
+      "replicate not working",
+      "replicate status"
+    ]
+  },
+  {
+    "slug": "mistral",
+    "name": "Mistral AI",
+    "domain": "mistral.ai",
+    "category": "ai",
+    "checkUrl": "https://mistral.ai",
+    "keywords": [
+      "is mistral down",
+      "mistral ai not working",
+      "mistral status"
+    ]
+  },
+  {
+    "slug": "groq",
+    "name": "Groq",
+    "domain": "groq.com",
+    "category": "ai",
+    "checkUrl": "https://groq.com",
+    "keywords": [
+      "is groq down",
+      "groq not working",
+      "groq status"
+    ]
+  },
+  {
+    "slug": "together-ai",
+    "name": "Together AI",
+    "domain": "together.ai",
+    "category": "ai",
+    "checkUrl": "https://www.together.ai",
+    "keywords": [
+      "is together ai down",
+      "together ai not working",
+      "together ai status"
+    ]
+  },
+  {
+    "slug": "github-copilot",
+    "name": "GitHub Copilot",
+    "domain": "github.com",
+    "category": "ai",
+    "checkUrl": "https://github.com/features/copilot",
+    "keywords": [
+      "is github copilot down",
+      "copilot not working",
+      "github copilot status"
+    ]
+  },
+  {
+    "slug": "windsurf",
+    "name": "Windsurf",
+    "domain": "codeium.com",
+    "category": "ai",
+    "checkUrl": "https://codeium.com",
+    "keywords": [
+      "is windsurf down",
+      "windsurf not working",
+      "windsurf status"
+    ]
+  },
+  {
+    "slug": "jasper-ai",
+    "name": "Jasper",
+    "domain": "jasper.ai",
+    "category": "ai",
+    "checkUrl": "https://www.jasper.ai",
+    "keywords": [
+      "is jasper ai down",
+      "jasper not working",
+      "jasper ai status"
+    ]
+  },
+  {
+    "slug": "copy-ai",
+    "name": "Copy.ai",
+    "domain": "copy.ai",
+    "category": "ai",
+    "checkUrl": "https://www.copy.ai",
+    "keywords": [
+      "is copy ai down",
+      "copy.ai not working",
+      "copy ai status"
+    ]
+  },
+  {
+    "slug": "poe",
+    "name": "Poe",
+    "domain": "poe.com",
+    "category": "ai",
+    "checkUrl": "https://poe.com",
+    "keywords": [
+      "is poe down",
+      "poe not working",
+      "poe status"
+    ]
+  },
+  {
+    "slug": "novelai",
+    "name": "NovelAI",
+    "domain": "novelai.net",
+    "category": "ai",
+    "checkUrl": "https://novelai.net",
+    "keywords": [
+      "is novelai down",
+      "novelai not working",
+      "novelai status"
+    ]
+  },
+  {
+    "slug": "ideogram",
+    "name": "Ideogram",
+    "domain": "ideogram.ai",
+    "category": "ai",
+    "checkUrl": "https://ideogram.ai",
+    "keywords": [
+      "is ideogram down",
+      "ideogram not working",
+      "ideogram status"
+    ]
+  },
+  {
+    "slug": "luma-ai",
+    "name": "Luma AI",
+    "domain": "lumalabs.ai",
+    "category": "ai",
+    "checkUrl": "https://lumalabs.ai",
+    "keywords": [
+      "is luma ai down",
+      "luma ai not working",
+      "luma ai status"
+    ]
+  },
+  {
+    "slug": "heygen",
+    "name": "HeyGen",
+    "domain": "heygen.com",
+    "category": "ai",
+    "checkUrl": "https://www.heygen.com",
+    "keywords": [
+      "is heygen down",
+      "heygen not working",
+      "heygen status"
+    ]
+  },
+  {
+    "slug": "synthesia",
+    "name": "Synthesia",
+    "domain": "synthesia.io",
+    "category": "ai",
+    "checkUrl": "https://www.synthesia.io",
+    "keywords": [
+      "is synthesia down",
+      "synthesia not working",
+      "synthesia status"
+    ]
+  },
+  {
+    "slug": "descript",
+    "name": "Descript",
+    "domain": "descript.com",
+    "category": "ai",
+    "checkUrl": "https://www.descript.com",
+    "keywords": [
+      "is descript down",
+      "descript not working",
+      "descript status"
+    ]
+  },
+  {
+    "slug": "otter-ai",
+    "name": "Otter.ai",
+    "domain": "otter.ai",
+    "category": "ai",
+    "checkUrl": "https://otter.ai",
+    "keywords": [
+      "is otter ai down",
+      "otter.ai not working",
+      "otter ai status"
+    ]
+  },
+  {
+    "slug": "phind",
+    "name": "Phind",
+    "domain": "phind.com",
+    "category": "ai",
+    "checkUrl": "https://www.phind.com",
+    "keywords": [
+      "is phind down",
+      "phind not working",
+      "phind status"
+    ]
+  },
+  {
+    "slug": "cohere",
+    "name": "Cohere",
+    "domain": "cohere.com",
+    "category": "ai",
+    "checkUrl": "https://cohere.com",
+    "keywords": [
+      "is cohere down",
+      "cohere not working",
+      "cohere status"
+    ]
+  },
+  {
+    "slug": "instagram",
+    "name": "Instagram",
+    "domain": "instagram.com",
+    "category": "social-media",
+    "checkUrl": "https://www.instagram.com",
+    "keywords": [
+      "is instagram down",
+      "instagram not working",
+      "instagram status"
+    ]
+  },
+  {
+    "slug": "facebook",
+    "name": "Facebook",
+    "domain": "facebook.com",
+    "category": "social-media",
+    "checkUrl": "https://www.facebook.com",
+    "keywords": [
+      "is facebook down",
+      "facebook not working",
+      "facebook status"
+    ]
+  },
+  {
+    "slug": "twitter",
+    "name": "X (Twitter)",
+    "domain": "x.com",
+    "category": "social-media",
+    "checkUrl": "https://x.com",
+    "keywords": [
+      "is twitter down",
+      "is x down",
+      "twitter not working"
+    ]
+  },
+  {
+    "slug": "reddit",
+    "name": "Reddit",
+    "domain": "reddit.com",
+    "category": "social-media",
+    "checkUrl": "https://www.reddit.com",
+    "keywords": [
+      "is reddit down",
+      "reddit not working",
+      "reddit status"
+    ]
+  },
+  {
+    "slug": "tiktok",
+    "name": "TikTok",
+    "domain": "tiktok.com",
+    "category": "social-media",
+    "checkUrl": "https://www.tiktok.com",
+    "keywords": [
+      "is tiktok down",
+      "tiktok not working",
+      "tiktok status"
+    ]
+  },
+  {
+    "slug": "snapchat",
+    "name": "Snapchat",
+    "domain": "snapchat.com",
+    "category": "social-media",
+    "checkUrl": "https://www.snapchat.com",
+    "keywords": [
+      "is snapchat down",
+      "snapchat not working",
+      "snapchat status"
+    ]
+  },
+  {
+    "slug": "linkedin",
+    "name": "LinkedIn",
+    "domain": "linkedin.com",
+    "category": "social-media",
+    "checkUrl": "https://www.linkedin.com",
+    "keywords": [
+      "is linkedin down",
+      "linkedin not working",
+      "linkedin status"
+    ]
+  },
+  {
+    "slug": "pinterest",
+    "name": "Pinterest",
+    "domain": "pinterest.com",
+    "category": "social-media",
+    "checkUrl": "https://www.pinterest.com",
+    "keywords": [
+      "is pinterest down",
+      "pinterest not working",
+      "pinterest status"
+    ]
+  },
+  {
+    "slug": "threads",
+    "name": "Threads",
+    "domain": "threads.net",
+    "category": "social-media",
+    "checkUrl": "https://www.threads.net",
+    "keywords": [
+      "is threads down",
+      "threads not working",
+      "threads status"
+    ]
+  },
+  {
+    "slug": "bluesky",
+    "name": "Bluesky",
+    "domain": "bsky.app",
+    "category": "social-media",
+    "checkUrl": "https://bsky.app",
+    "keywords": [
+      "is bluesky down",
+      "bluesky not working",
+      "bluesky status"
+    ]
+  },
+  {
+    "slug": "deviantart",
+    "name": "DeviantArt",
+    "domain": "deviantart.com",
+    "category": "social-media",
+    "checkUrl": "https://www.deviantart.com",
+    "keywords": [
+      "is deviantart down",
+      "deviantart not working",
+      "deviantart status"
+    ]
+  },
+  {
+    "slug": "letterboxd",
+    "name": "Letterboxd",
+    "domain": "letterboxd.com",
+    "category": "social-media",
+    "checkUrl": "https://letterboxd.com",
+    "keywords": [
+      "is letterboxd down",
+      "letterboxd not working",
+      "letterboxd status"
+    ]
+  },
+  {
+    "slug": "tumblr",
+    "name": "Tumblr",
+    "domain": "tumblr.com",
+    "category": "social-media",
+    "checkUrl": "https://www.tumblr.com",
+    "keywords": [
+      "is tumblr down",
+      "tumblr not working",
+      "tumblr status"
+    ]
+  },
+  {
+    "slug": "roblox",
+    "name": "Roblox",
+    "domain": "roblox.com",
+    "category": "gaming",
+    "checkUrl": "https://www.roblox.com",
+    "keywords": [
+      "is roblox down",
+      "roblox not working",
+      "roblox status"
+    ]
+  },
+  {
+    "slug": "steam",
+    "name": "Steam",
+    "domain": "store.steampowered.com",
+    "category": "gaming",
+    "checkUrl": "https://store.steampowered.com",
+    "keywords": [
+      "is steam down",
+      "steam not working",
+      "steam status"
+    ]
+  },
+  {
+    "slug": "fortnite",
+    "name": "Fortnite",
+    "domain": "fortnite.com",
+    "category": "gaming",
+    "checkUrl": "https://www.fortnite.com",
+    "keywords": [
+      "is fortnite down",
+      "fortnite not working",
+      "fortnite status"
+    ]
+  },
+  {
+    "slug": "xbox-live",
+    "name": "Xbox Live",
+    "domain": "xbox.com",
+    "category": "gaming",
+    "checkUrl": "https://www.xbox.com",
+    "keywords": [
+      "is xbox live down",
+      "xbox live not working",
+      "xbox status"
+    ]
+  },
+  {
+    "slug": "playstation-network",
+    "name": "PlayStation Network",
+    "domain": "playstation.com",
+    "category": "gaming",
+    "checkUrl": "https://www.playstation.com",
+    "keywords": [
+      "is psn down",
+      "playstation network not working",
+      "psn status"
+    ]
+  },
+  {
+    "slug": "epic-games",
+    "name": "Epic Games",
+    "domain": "epicgames.com",
+    "category": "gaming",
+    "checkUrl": "https://www.epicgames.com",
+    "keywords": [
+      "is epic games down",
+      "epic games not working",
+      "epic games status"
+    ]
+  },
+  {
+    "slug": "minecraft",
+    "name": "Minecraft",
+    "domain": "minecraft.net",
+    "category": "gaming",
+    "checkUrl": "https://www.minecraft.net",
+    "keywords": [
+      "is minecraft down",
+      "minecraft not working",
+      "minecraft status"
+    ]
+  },
+  {
+    "slug": "valorant",
+    "name": "Valorant",
+    "domain": "playvalorant.com",
+    "category": "gaming",
+    "checkUrl": "https://playvalorant.com",
+    "keywords": [
+      "is valorant down",
+      "valorant not working",
+      "valorant status"
+    ]
+  },
+  {
+    "slug": "league-of-legends",
+    "name": "League of Legends",
+    "domain": "leagueoflegends.com",
+    "category": "gaming",
+    "checkUrl": "https://www.leagueoflegends.com",
+    "keywords": [
+      "is league of legends down",
+      "lol not working",
+      "lol status"
+    ]
+  },
+  {
+    "slug": "warzone",
+    "name": "Call of Duty: Warzone",
+    "domain": "callofduty.com",
+    "category": "gaming",
+    "checkUrl": "https://www.callofduty.com",
+    "keywords": [
+      "is warzone down",
+      "warzone not working",
+      "warzone status"
+    ]
+  },
+  {
+    "slug": "world-of-warcraft",
+    "name": "World of Warcraft",
+    "domain": "worldofwarcraft.blizzard.com",
+    "category": "gaming",
+    "checkUrl": "https://worldofwarcraft.blizzard.com",
+    "keywords": [
+      "is world of warcraft down",
+      "wow not working",
+      "wow status"
+    ]
+  },
+  {
+    "slug": "clash-royale",
+    "name": "Clash Royale",
+    "domain": "supercell.com",
+    "category": "gaming",
+    "checkUrl": "https://supercell.com/en/games/clashroyale/",
+    "keywords": [
+      "is clash royale down",
+      "clash royale not working",
+      "clash royale status"
+    ]
+  },
+  {
+    "slug": "cs2",
+    "name": "Counter-Strike 2",
+    "domain": "counter-strike.net",
+    "category": "gaming",
+    "checkUrl": "https://www.counter-strike.net",
+    "keywords": [
+      "is cs2 down",
+      "cs2 not working",
+      "counter-strike 2 status"
+    ]
+  },
+  {
+    "slug": "marvel-rivals",
+    "name": "Marvel Rivals",
+    "domain": "marvelrivals.com",
+    "category": "gaming",
+    "checkUrl": "https://www.marvelrivals.com",
+    "keywords": [
+      "is marvel rivals down",
+      "marvel rivals not working",
+      "marvel rivals status"
+    ]
+  },
+  {
+    "slug": "overwatch",
+    "name": "Overwatch 2",
+    "domain": "overwatch.blizzard.com",
+    "category": "gaming",
+    "checkUrl": "https://overwatch.blizzard.com",
+    "keywords": [
+      "is overwatch down",
+      "overwatch not working",
+      "overwatch status"
+    ]
+  },
+  {
+    "slug": "battlenet",
+    "name": "Battle.net",
+    "domain": "battle.net",
+    "category": "gaming",
+    "checkUrl": "https://www.battle.net",
+    "keywords": [
+      "is battlenet down",
+      "battle.net not working",
+      "battlenet status"
+    ]
+  },
+  {
+    "slug": "destiny-2",
+    "name": "Destiny 2",
+    "domain": "bungie.net",
+    "category": "gaming",
+    "checkUrl": "https://www.bungie.net",
+    "keywords": [
+      "is destiny 2 down",
+      "destiny 2 not working",
+      "destiny 2 status"
+    ]
+  },
+  {
+    "slug": "dead-by-daylight",
+    "name": "Dead by Daylight",
+    "domain": "deadbydaylight.com",
+    "category": "gaming",
+    "checkUrl": "https://deadbydaylight.com",
+    "keywords": [
+      "is dbd down",
+      "dead by daylight not working",
+      "dbd status"
+    ]
+  },
+  {
+    "slug": "pokemon-go",
+    "name": "Pokemon GO",
+    "domain": "pokemongolive.com",
+    "category": "gaming",
+    "checkUrl": "https://pokemongolive.com",
+    "keywords": [
+      "is pokemon go down",
+      "pokemon go not working",
+      "pokemon go status"
+    ]
+  },
+  {
+    "slug": "rainbow-six-siege",
+    "name": "Rainbow Six Siege",
+    "domain": "ubisoft.com",
+    "category": "gaming",
+    "checkUrl": "https://www.ubisoft.com/en-us/game/rainbow-six/siege",
+    "keywords": [
+      "is siege down",
+      "rainbow six siege not working",
+      "siege status"
+    ]
+  },
+  {
+    "slug": "helldivers-2",
+    "name": "Helldivers 2",
+    "domain": "playstation.com",
+    "category": "gaming",
+    "checkUrl": "https://www.playstation.com/en-us/games/helldivers-2/",
+    "keywords": [
+      "is helldivers 2 down",
+      "helldivers 2 not working",
+      "helldivers 2 status"
+    ]
+  },
+  {
+    "slug": "pubg",
+    "name": "PUBG",
+    "domain": "pubg.com",
+    "category": "gaming",
+    "checkUrl": "https://www.pubg.com",
+    "keywords": [
+      "is pubg down",
+      "pubg not working",
+      "pubg status"
+    ]
+  },
+  {
+    "slug": "runescape",
+    "name": "RuneScape",
+    "domain": "runescape.com",
+    "category": "gaming",
+    "checkUrl": "https://www.runescape.com",
+    "keywords": [
+      "is runescape down",
+      "runescape not working",
+      "runescape status"
+    ]
+  },
+  {
+    "slug": "eso",
+    "name": "Elder Scrolls Online",
+    "domain": "elderscrollsonline.com",
+    "category": "gaming",
+    "checkUrl": "https://www.elderscrollsonline.com",
+    "keywords": [
+      "is eso down",
+      "elder scrolls online not working",
+      "eso status"
+    ]
+  },
+  {
+    "slug": "arc-raiders",
+    "name": "Arc Raiders",
+    "domain": "arcraiders.com",
+    "category": "gaming",
+    "checkUrl": "https://www.arcraiders.com",
+    "keywords": [
+      "is arc raiders down",
+      "arc raiders not working",
+      "arc raiders status"
+    ]
+  },
+  {
+    "slug": "ubisoft-connect",
+    "name": "Ubisoft Connect",
+    "domain": "ubisoft.com",
+    "category": "gaming",
+    "checkUrl": "https://connect.ubisoft.com",
+    "keywords": [
+      "is ubisoft connect down",
+      "ubisoft connect not working",
+      "ubisoft connect status"
+    ]
+  },
+  {
+    "slug": "halo-infinite",
+    "name": "Halo Infinite",
+    "domain": "halowaypoint.com",
+    "category": "gaming",
+    "checkUrl": "https://www.halowaypoint.com",
+    "keywords": [
+      "is halo infinite down",
+      "halo infinite not working",
+      "halo infinite status"
+    ]
+  },
+  {
+    "slug": "nintendo-eshop",
+    "name": "Nintendo eShop",
+    "domain": "nintendo.com",
+    "category": "gaming",
+    "checkUrl": "https://www.nintendo.com",
+    "keywords": [
+      "is nintendo eshop down",
+      "nintendo eshop not working",
+      "nintendo eshop status"
+    ]
+  },
+  {
+    "slug": "path-of-exile-2",
+    "name": "Path of Exile 2",
+    "domain": "pathofexile2.com",
+    "category": "gaming",
+    "checkUrl": "https://pathofexile2.com",
+    "keywords": [
+      "is poe 2 down",
+      "path of exile 2 not working",
+      "poe 2 status"
+    ]
+  },
+  {
+    "slug": "monopoly-go",
+    "name": "Monopoly GO",
+    "domain": "scopely.com",
+    "category": "gaming",
+    "checkUrl": "https://www.scopely.com",
+    "keywords": [
+      "is monopoly go down",
+      "monopoly go not working",
+      "monopoly go status"
+    ]
+  },
+  {
+    "slug": "the-finals",
+    "name": "The Finals",
+    "domain": "thefinals.com",
+    "category": "gaming",
+    "checkUrl": "https://www.thefinals.com",
+    "keywords": [
+      "is the finals down",
+      "the finals not working",
+      "the finals status"
+    ]
+  },
+  {
+    "slug": "star-citizen",
+    "name": "Star Citizen",
+    "domain": "robertsspaceindustries.com",
+    "category": "gaming",
+    "checkUrl": "https://robertsspaceindustries.com",
+    "keywords": [
+      "is star citizen down",
+      "star citizen not working",
+      "star citizen status"
+    ]
+  },
+  {
+    "slug": "hearthstone",
+    "name": "Hearthstone",
+    "domain": "hearthstone.blizzard.com",
+    "category": "gaming",
+    "checkUrl": "https://hearthstone.blizzard.com",
+    "keywords": [
+      "is hearthstone down",
+      "hearthstone not working",
+      "hearthstone status"
+    ]
+  },
+  {
+    "slug": "among-us",
+    "name": "Among Us",
+    "domain": "innersloth.com",
+    "category": "gaming",
+    "checkUrl": "https://www.innersloth.com",
+    "keywords": [
+      "is among us down",
+      "among us not working",
+      "among us status"
+    ]
+  },
+  {
+    "slug": "rec-room",
+    "name": "Rec Room",
+    "domain": "recroom.com",
+    "category": "gaming",
+    "checkUrl": "https://recroom.com",
+    "keywords": [
+      "is rec room down",
+      "rec room not working",
+      "rec room status"
+    ]
+  },
+  {
+    "slug": "smite",
+    "name": "SMITE",
+    "domain": "smitegame.com",
+    "category": "gaming",
+    "checkUrl": "https://www.smitegame.com",
+    "keywords": [
+      "is smite down",
+      "smite not working",
+      "smite status"
+    ]
+  },
+  {
+    "slug": "sims-4",
+    "name": "The Sims 4",
+    "domain": "ea.com",
+    "category": "gaming",
+    "checkUrl": "https://www.ea.com/games/the-sims/the-sims-4",
+    "keywords": [
+      "is sims 4 down",
+      "sims 4 not working",
+      "sims 4 status"
+    ]
+  },
+  {
+    "slug": "wuthering-waves",
+    "name": "Wuthering Waves",
+    "domain": "kurogames.com",
+    "category": "gaming",
+    "checkUrl": "https://wutheringwaves.kurogames.com",
+    "keywords": [
+      "is wuthering waves down",
+      "wuthering waves not working",
+      "wuthering waves status"
+    ]
+  },
+  {
+    "slug": "pokemon-tcg-pocket",
+    "name": "Pokemon TCG Pocket",
+    "domain": "pokemon.com",
+    "category": "gaming",
+    "checkUrl": "https://www.pokemon.com",
+    "keywords": [
+      "is pokemon tcgp down",
+      "pokemon tcg pocket not working",
+      "pokemon tcg pocket status"
+    ]
+  },
+  {
+    "slug": "dota-2",
+    "name": "Dota 2",
+    "domain": "dota2.com",
+    "category": "gaming",
+    "checkUrl": "https://www.dota2.com",
+    "keywords": [
+      "is dota down",
+      "dota 2 not working",
+      "dota 2 status"
+    ]
+  },
+  {
+    "slug": "guild-wars-2",
+    "name": "Guild Wars 2",
+    "domain": "guildwars2.com",
+    "category": "gaming",
+    "checkUrl": "https://www.guildwars2.com",
+    "keywords": [
+      "is guild wars 2 down",
+      "gw2 not working",
+      "guild wars 2 status"
+    ]
+  },
+  {
+    "slug": "war-thunder",
+    "name": "War Thunder",
+    "domain": "warthunder.com",
+    "category": "gaming",
+    "checkUrl": "https://warthunder.com",
+    "keywords": [
+      "is war thunder down",
+      "warthunder not working",
+      "war thunder status"
+    ]
+  },
+  {
+    "slug": "brawlhalla",
+    "name": "Brawlhalla",
+    "domain": "brawlhalla.com",
+    "category": "gaming",
+    "checkUrl": "https://www.brawlhalla.com",
+    "keywords": [
+      "is brawlhalla down",
+      "brawlhalla not working",
+      "brawlhalla status"
+    ]
+  },
+  {
+    "slug": "rocket-league",
+    "name": "Rocket League",
+    "domain": "rocketleague.com",
+    "category": "gaming",
+    "checkUrl": "https://www.rocketleague.com",
+    "keywords": [
+      "is rocket league down",
+      "rocket league not working",
+      "rocket league status"
+    ]
+  },
+  {
+    "slug": "apex-legends",
+    "name": "Apex Legends",
+    "domain": "ea.com",
+    "category": "gaming",
+    "checkUrl": "https://www.ea.com/games/apex-legends",
+    "keywords": [
+      "is apex down",
+      "apex legends not working",
+      "apex legends status"
+    ]
+  },
+  {
+    "slug": "ffxiv",
+    "name": "Final Fantasy XIV",
+    "domain": "finalfantasyxiv.com",
+    "category": "gaming",
+    "checkUrl": "https://www.finalfantasyxiv.com",
+    "keywords": [
+      "is ffxiv down",
+      "ffxiv not working",
+      "ffxiv status"
+    ]
+  },
+  {
+    "slug": "vrchat",
+    "name": "VRChat",
+    "domain": "vrchat.com",
+    "category": "gaming",
+    "checkUrl": "https://hello.vrchat.com",
+    "keywords": [
+      "is vrchat down",
+      "vrchat not working",
+      "vrchat status"
+    ]
+  },
+  {
+    "slug": "hypixel",
+    "name": "Hypixel",
+    "domain": "hypixel.net",
+    "category": "gaming",
+    "checkUrl": "https://hypixel.net",
+    "keywords": [
+      "is hypixel down",
+      "hypixel not working",
+      "hypixel status"
+    ]
+  },
+  {
+    "slug": "rockstar",
+    "name": "Rockstar Games",
+    "domain": "rockstargames.com",
+    "category": "gaming",
+    "checkUrl": "https://www.rockstargames.com",
+    "keywords": [
+      "is rockstar down",
+      "rockstar games not working",
+      "rockstar status"
+    ]
+  },
+  {
+    "slug": "nba-2k",
+    "name": "NBA 2K",
+    "domain": "nba.2k.com",
+    "category": "gaming",
+    "checkUrl": "https://nba.2k.com",
+    "keywords": [
+      "is 2k down",
+      "2k servers down",
+      "nba 2k status"
+    ]
+  },
+  {
+    "slug": "black-ops-6",
+    "name": "Black Ops 6",
+    "domain": "callofduty.com",
+    "category": "gaming",
+    "checkUrl": "https://www.callofduty.com",
+    "keywords": [
+      "is bo6 down",
+      "black ops 6 not working",
+      "bo6 status"
+    ]
+  },
+  {
+    "slug": "activision",
+    "name": "Activision",
+    "domain": "activision.com",
+    "category": "gaming",
+    "checkUrl": "https://www.activision.com",
+    "keywords": [
+      "is activision down",
+      "activision not working",
+      "activision status"
+    ]
+  },
+  {
+    "slug": "blizzard",
+    "name": "Blizzard",
+    "domain": "blizzard.com",
+    "category": "gaming",
+    "checkUrl": "https://www.blizzard.com",
+    "keywords": [
+      "is blizzard down",
+      "blizzard not working",
+      "blizzard status"
+    ]
+  },
+  {
+    "slug": "ea",
+    "name": "EA",
+    "domain": "ea.com",
+    "category": "gaming",
+    "checkUrl": "https://www.ea.com",
+    "keywords": [
+      "is ea down",
+      "ea servers down",
+      "ea status"
+    ]
+  },
+  {
+    "slug": "cookie-run-kingdom",
+    "name": "Cookie Run Kingdom",
+    "domain": "cookierun-kingdom.com",
+    "category": "gaming",
+    "checkUrl": "https://www.cookierun-kingdom.com",
+    "keywords": [
+      "is cookie run kingdom down",
+      "cookie run kingdom not working",
+      "cookie run kingdom status"
+    ]
+  },
+  {
+    "slug": "ark-survival",
+    "name": "ARK Survival",
+    "domain": "playark.com",
+    "category": "gaming",
+    "checkUrl": "https://www.playark.com",
+    "keywords": [
+      "is ark down",
+      "ark servers down",
+      "ark status"
+    ]
+  },
+  {
+    "slug": "coin-master",
+    "name": "Coin Master",
+    "domain": "coinmaster.com",
+    "category": "gaming",
+    "checkUrl": "https://coinmaster.com",
+    "keywords": [
+      "is coin master down",
+      "coin master not working",
+      "coin master status"
+    ]
+  },
+  {
+    "slug": "osrs",
+    "name": "Old School RuneScape",
+    "domain": "oldschool.runescape.com",
+    "category": "gaming",
+    "checkUrl": "https://oldschool.runescape.com",
+    "keywords": [
+      "is osrs down",
+      "osrs not working",
+      "osrs status"
+    ]
+  },
+  {
+    "slug": "geforce-now",
+    "name": "GeForce NOW",
+    "domain": "nvidia.com",
+    "category": "gaming",
+    "checkUrl": "https://www.nvidia.com/en-us/geforce-now/",
+    "keywords": [
+      "is geforce now down",
+      "geforce now not working",
+      "geforce now status"
+    ]
+  },
+  {
+    "slug": "sea-of-thieves",
+    "name": "Sea of Thieves",
+    "domain": "seaofthieves.com",
+    "category": "gaming",
+    "checkUrl": "https://www.seaofthieves.com",
+    "keywords": [
+      "is sea of thieves down",
+      "sea of thieves not working",
+      "sea of thieves status"
+    ]
+  },
+  {
+    "slug": "fallout-76",
+    "name": "Fallout 76",
+    "domain": "bethesda.net",
+    "category": "gaming",
+    "checkUrl": "https://bethesda.net",
+    "keywords": [
+      "is fallout 76 down",
+      "fallout 76 not working",
+      "fallout 76 status"
+    ]
+  },
+  {
+    "slug": "clash-of-clans",
+    "name": "Clash of Clans",
+    "domain": "supercell.com",
+    "category": "gaming",
+    "checkUrl": "https://supercell.com/en/games/clashofclans/",
+    "keywords": [
+      "is coc down",
+      "clash of clans not working",
+      "clash of clans status"
+    ]
+  },
+  {
+    "slug": "hunt-showdown",
+    "name": "Hunt: Showdown",
+    "domain": "huntshowdown.com",
+    "category": "gaming",
+    "checkUrl": "https://www.huntshowdown.com",
+    "keywords": [
+      "is hunt showdown down",
+      "hunt showdown not working",
+      "hunt showdown status"
+    ]
+  },
+  {
+    "slug": "samsung",
+    "name": "Samsung",
+    "domain": "samsung.com",
+    "category": "entertainment",
+    "checkUrl": "https://www.samsung.com",
+    "keywords": [
+      "is samsung down",
+      "samsung server down",
+      "samsung status"
+    ]
+  },
+  {
+    "slug": "youtube",
+    "name": "YouTube",
+    "domain": "youtube.com",
+    "category": "streaming",
+    "checkUrl": "https://www.youtube.com",
+    "keywords": [
+      "is youtube down",
+      "youtube not working",
+      "youtube status"
+    ]
+  },
+  {
+    "slug": "netflix",
+    "name": "Netflix",
+    "domain": "netflix.com",
+    "category": "streaming",
+    "checkUrl": "https://www.netflix.com",
+    "keywords": [
+      "is netflix down",
+      "netflix not working",
+      "netflix status"
+    ]
+  },
+  {
+    "slug": "twitch",
+    "name": "Twitch",
+    "domain": "twitch.tv",
+    "category": "streaming",
+    "checkUrl": "https://www.twitch.tv",
+    "keywords": [
+      "is twitch down",
+      "twitch not working",
+      "twitch status"
+    ]
+  },
+  {
+    "slug": "spotify",
+    "name": "Spotify",
+    "domain": "spotify.com",
+    "category": "streaming",
+    "checkUrl": "https://www.spotify.com",
+    "keywords": [
+      "is spotify down",
+      "spotify not working",
+      "spotify status"
+    ]
+  },
+  {
+    "slug": "disney-plus",
+    "name": "Disney+",
+    "domain": "disneyplus.com",
+    "category": "streaming",
+    "checkUrl": "https://www.disneyplus.com",
+    "keywords": [
+      "is disney plus down",
+      "disney plus not working",
+      "disney plus status"
+    ]
+  },
+  {
+    "slug": "hbo-max",
+    "name": "Max (HBO)",
+    "domain": "max.com",
+    "category": "streaming",
+    "checkUrl": "https://www.max.com",
+    "keywords": [
+      "is hbo max down",
+      "max not working",
+      "hbo max status"
+    ]
+  },
+  {
+    "slug": "prime-video",
+    "name": "Prime Video",
+    "domain": "primevideo.com",
+    "category": "streaming",
+    "checkUrl": "https://www.primevideo.com",
+    "keywords": [
+      "is prime video down",
+      "prime video not working",
+      "prime video status"
+    ]
+  },
+  {
+    "slug": "kick",
+    "name": "Kick",
+    "domain": "kick.com",
+    "category": "streaming",
+    "checkUrl": "https://kick.com",
+    "keywords": [
+      "is kick down",
+      "kick not working",
+      "kick status"
+    ]
+  },
+  {
+    "slug": "fubo",
+    "name": "Fubo",
+    "domain": "fubo.tv",
+    "category": "streaming",
+    "checkUrl": "https://www.fubo.tv",
+    "keywords": [
+      "is fubo down",
+      "fubo not working",
+      "fubo status"
+    ]
+  },
+  {
+    "slug": "aniwatch",
+    "name": "Aniwatch",
+    "domain": "aniwatch.to",
+    "category": "streaming",
+    "checkUrl": "https://aniwatch.to",
+    "keywords": [
+      "is aniwatch down",
+      "aniwatch not working",
+      "aniwatch status"
+    ]
+  },
+  {
+    "slug": "hulu",
+    "name": "Hulu",
+    "domain": "hulu.com",
+    "category": "streaming",
+    "checkUrl": "https://www.hulu.com",
+    "keywords": [
+      "is hulu down",
+      "is hulu shutting down",
+      "hulu not working",
+      "hulu status"
+    ]
+  },
+  {
+    "slug": "paramount-plus",
+    "name": "Paramount+",
+    "domain": "paramountplus.com",
+    "category": "streaming",
+    "checkUrl": "https://www.paramountplus.com",
+    "keywords": [
+      "is paramount plus down",
+      "paramount plus not working",
+      "paramount plus status"
+    ]
+  },
+  {
+    "slug": "peacock",
+    "name": "Peacock",
+    "domain": "peacocktv.com",
+    "category": "streaming",
+    "checkUrl": "https://www.peacocktv.com",
+    "keywords": [
+      "is peacock down",
+      "peacock not working",
+      "peacock status"
+    ]
+  },
+  {
+    "slug": "sling-tv",
+    "name": "Sling TV",
+    "domain": "sling.com",
+    "category": "streaming",
+    "checkUrl": "https://www.sling.com",
+    "keywords": [
+      "is sling down",
+      "is sling tv down",
+      "sling not working",
+      "sling status"
+    ]
+  },
+  {
+    "slug": "roku",
+    "name": "Roku",
+    "domain": "roku.com",
+    "category": "streaming",
+    "checkUrl": "https://www.roku.com",
+    "keywords": [
+      "is roku down",
+      "roku not working",
+      "roku status"
+    ]
+  },
+  {
+    "slug": "9anime",
+    "name": "9anime",
+    "domain": "9anime.to",
+    "category": "streaming",
+    "checkUrl": "https://9anime.to",
+    "keywords": [
+      "is 9anime down",
+      "9anime not working",
+      "9anime status"
+    ]
+  },
+  {
+    "slug": "amazon-music",
+    "name": "Amazon Music",
+    "domain": "music.amazon.com",
+    "category": "streaming",
+    "checkUrl": "https://music.amazon.com",
+    "keywords": [
+      "is amazon music down",
+      "amazon music not working",
+      "amazon music status"
+    ]
+  },
+  {
+    "slug": "plex",
+    "name": "Plex",
+    "domain": "plex.tv",
+    "category": "streaming",
+    "checkUrl": "https://www.plex.tv",
+    "keywords": [
+      "is plex down",
+      "plex not working",
+      "plex status"
+    ]
+  },
+  {
+    "slug": "vimeo",
+    "name": "Vimeo",
+    "domain": "vimeo.com",
+    "category": "streaming",
+    "checkUrl": "https://vimeo.com",
+    "keywords": [
+      "is vimeo down",
+      "vimeo not working",
+      "vimeo status"
+    ]
+  },
+  {
+    "slug": "siriusxm",
+    "name": "SiriusXM",
+    "domain": "siriusxm.com",
+    "category": "streaming",
+    "checkUrl": "https://www.siriusxm.com",
+    "keywords": [
+      "is siriusxm down",
+      "siriusxm not working",
+      "siriusxm status"
+    ]
+  },
+  {
+    "slug": "pluto-tv",
+    "name": "Pluto TV",
+    "domain": "pluto.tv",
+    "category": "streaming",
+    "checkUrl": "https://pluto.tv",
+    "keywords": [
+      "is pluto tv down",
+      "pluto tv not working",
+      "pluto tv status"
+    ]
+  },
+  {
+    "slug": "espn",
+    "name": "ESPN",
+    "domain": "espn.com",
+    "category": "streaming",
+    "checkUrl": "https://www.espn.com",
+    "keywords": [
+      "is espn down",
+      "is the espn app down",
+      "espn not working",
+      "espn status"
+    ]
+  },
+  {
+    "slug": "apple-tv",
+    "name": "Apple TV+",
+    "domain": "tv.apple.com",
+    "category": "streaming",
+    "checkUrl": "https://tv.apple.com",
+    "keywords": [
+      "is apple tv down",
+      "apple tv not working",
+      "apple tv status"
+    ]
+  },
+  {
+    "slug": "apple-music",
+    "name": "Apple Music",
+    "domain": "music.apple.com",
+    "category": "streaming",
+    "checkUrl": "https://music.apple.com",
+    "keywords": [
+      "is apple music down",
+      "apple music not working",
+      "apple music status"
+    ]
+  },
+  {
+    "slug": "pandora",
+    "name": "Pandora",
+    "domain": "pandora.com",
+    "category": "streaming",
+    "checkUrl": "https://www.pandora.com",
+    "keywords": [
+      "is pandora down",
+      "pandora radio not working",
+      "pandora status"
+    ]
+  },
+  {
+    "slug": "viki",
+    "name": "Viki",
+    "domain": "viki.com",
+    "category": "streaming",
+    "checkUrl": "https://www.viki.com",
+    "keywords": [
+      "is viki down",
+      "viki not working",
+      "viki status"
+    ]
+  },
+  {
+    "slug": "audible",
+    "name": "Audible",
+    "domain": "audible.com",
+    "category": "streaming",
+    "checkUrl": "https://www.audible.com",
+    "keywords": [
+      "is audible down",
+      "audible not working",
+      "audible status"
+    ]
+  },
+  {
+    "slug": "britbox",
+    "name": "BritBox",
+    "domain": "britbox.com",
+    "category": "streaming",
+    "checkUrl": "https://www.britbox.com",
+    "keywords": [
+      "is britbox down",
+      "britbox not working",
+      "britbox status"
+    ]
+  },
+  {
+    "slug": "hoopla",
+    "name": "Hoopla",
+    "domain": "hoopladigital.com",
+    "category": "streaming",
+    "checkUrl": "https://www.hoopladigital.com",
+    "keywords": [
+      "is hoopla down",
+      "hoopla app down",
+      "hoopla status"
+    ]
+  },
+  {
+    "slug": "discovery-plus",
+    "name": "Discovery+",
+    "domain": "discoveryplus.com",
+    "category": "streaming",
+    "checkUrl": "https://www.discoveryplus.com",
+    "keywords": [
+      "is discovery plus down",
+      "discovery+ not working",
+      "discovery plus status"
+    ]
+  },
+  {
+    "slug": "tubi",
+    "name": "Tubi",
+    "domain": "tubitv.com",
+    "category": "streaming",
+    "checkUrl": "https://tubitv.com",
+    "keywords": [
+      "is tubi down",
+      "tubi not working",
+      "tubi status"
+    ]
+  },
+  {
+    "slug": "soundcloud",
+    "name": "SoundCloud",
+    "domain": "soundcloud.com",
+    "category": "streaming",
+    "checkUrl": "https://soundcloud.com",
+    "keywords": [
+      "is soundcloud down",
+      "soundcloud not working",
+      "soundcloud status"
+    ]
+  },
+  {
+    "slug": "youtube-tv",
+    "name": "YouTube TV",
+    "domain": "tv.youtube.com",
+    "category": "streaming",
+    "checkUrl": "https://tv.youtube.com",
+    "keywords": [
+      "is youtube tv down",
+      "youtube tv not working",
+      "youtube tv status"
+    ]
+  },
+  {
+    "slug": "crunchyroll",
+    "name": "Crunchyroll",
+    "domain": "crunchyroll.com",
+    "category": "streaming",
+    "checkUrl": "https://www.crunchyroll.com",
+    "keywords": [
+      "is crunchyroll down",
+      "crunchyroll not working",
+      "crunchyroll status"
+    ]
+  },
+  {
+    "slug": "hianime",
+    "name": "HiAnime",
+    "domain": "hianime.to",
+    "category": "streaming",
+    "checkUrl": "https://hianime.to",
+    "keywords": [
+      "is hianime down",
+      "hianime not working",
+      "hianime status"
+    ]
+  },
+  {
+    "slug": "mangafire",
+    "name": "MangaFire",
+    "domain": "mangafire.to",
+    "category": "streaming",
+    "checkUrl": "https://mangafire.to",
+    "keywords": [
+      "is mangafire down",
+      "mangafire not working",
+      "mangafire status"
+    ]
+  },
+  {
+    "slug": "mlb-tv",
+    "name": "MLB.TV",
+    "domain": "mlb.com",
+    "category": "streaming",
+    "checkUrl": "https://www.mlb.com/tv",
+    "keywords": [
+      "is mlb tv down",
+      "mlb tv not working",
+      "mlb tv status"
+    ]
+  },
+  {
+    "slug": "gogoanime",
+    "name": "GoGoAnime",
+    "domain": "gogoanime3.co",
+    "category": "streaming",
+    "checkUrl": "https://gogoanime3.co",
+    "keywords": [
+      "is gogoanime down",
+      "gogoanime not working",
+      "gogoanime status"
+    ]
+  },
+  {
+    "slug": "outlook",
+    "name": "Outlook",
+    "domain": "outlook.live.com",
+    "category": "productivity",
+    "checkUrl": "https://outlook.live.com",
+    "keywords": [
+      "is outlook down",
+      "outlook not working",
+      "outlook status"
+    ]
+  },
+  {
+    "slug": "gmail",
+    "name": "Gmail",
+    "domain": "mail.google.com",
+    "category": "productivity",
+    "checkUrl": "https://mail.google.com",
+    "keywords": [
+      "is gmail down",
+      "gmail not working",
+      "gmail status"
+    ]
+  },
+  {
+    "slug": "google-drive",
+    "name": "Google Drive",
+    "domain": "drive.google.com",
+    "category": "productivity",
+    "checkUrl": "https://drive.google.com",
+    "keywords": [
+      "is google drive down",
+      "google drive not working",
+      "google drive status"
+    ]
+  },
+  {
+    "slug": "notion",
+    "name": "Notion",
+    "domain": "notion.so",
+    "category": "productivity",
+    "checkUrl": "https://www.notion.so",
+    "keywords": [
+      "is notion down",
+      "notion not working",
+      "notion status"
+    ]
+  },
+  {
+    "slug": "slack",
+    "name": "Slack",
+    "domain": "slack.com",
+    "category": "productivity",
+    "checkUrl": "https://slack.com",
+    "keywords": [
+      "is slack down",
+      "slack not working",
+      "slack status"
+    ]
+  },
+  {
+    "slug": "teams",
+    "name": "Microsoft Teams",
+    "domain": "teams.microsoft.com",
+    "category": "productivity",
+    "checkUrl": "https://teams.microsoft.com",
+    "keywords": [
+      "is teams down",
+      "teams not working",
+      "microsoft teams status"
+    ]
+  },
+  {
+    "slug": "zoom",
+    "name": "Zoom",
+    "domain": "zoom.us",
+    "category": "productivity",
+    "checkUrl": "https://zoom.us",
+    "keywords": [
+      "is zoom down",
+      "zoom not working",
+      "zoom status"
+    ]
+  },
+  {
+    "slug": "grammarly",
+    "name": "Grammarly",
+    "domain": "grammarly.com",
+    "category": "productivity",
+    "checkUrl": "https://www.grammarly.com",
+    "keywords": [
+      "is grammarly down",
+      "grammarly not working",
+      "grammarly status"
+    ]
+  },
+  {
+    "slug": "monday",
+    "name": "Monday.com",
+    "domain": "monday.com",
+    "category": "productivity",
+    "checkUrl": "https://monday.com",
+    "keywords": [
+      "is monday.com down",
+      "monday not working",
+      "monday.com status"
+    ]
+  },
+  {
+    "slug": "shipstation",
+    "name": "ShipStation",
+    "domain": "shipstation.com",
+    "category": "productivity",
+    "checkUrl": "https://www.shipstation.com",
+    "keywords": [
+      "is shipstation down",
+      "shipstation not working",
+      "shipstation status"
+    ]
+  },
+  {
+    "slug": "box",
+    "name": "Box",
+    "domain": "box.com",
+    "category": "productivity",
+    "checkUrl": "https://www.box.com",
+    "keywords": [
+      "is box down",
+      "box not working",
+      "box status"
+    ]
+  },
+  {
+    "slug": "asana",
+    "name": "Asana",
+    "domain": "asana.com",
+    "category": "productivity",
+    "checkUrl": "https://asana.com",
+    "keywords": [
+      "is asana down",
+      "asana not working",
+      "asana status"
+    ]
+  },
+  {
+    "slug": "trello",
+    "name": "Trello",
+    "domain": "trello.com",
+    "category": "productivity",
+    "checkUrl": "https://trello.com",
+    "keywords": [
+      "is trello down",
+      "trello not working",
+      "trello status"
+    ]
+  },
+  {
+    "slug": "workday",
+    "name": "Workday",
+    "domain": "workday.com",
+    "category": "productivity",
+    "checkUrl": "https://www.workday.com",
+    "keywords": [
+      "is workday down",
+      "workday not working",
+      "workday status"
+    ]
+  },
+  {
+    "slug": "smartsheet",
+    "name": "Smartsheet",
+    "domain": "smartsheet.com",
+    "category": "productivity",
+    "checkUrl": "https://www.smartsheet.com",
+    "keywords": [
+      "is smartsheet down",
+      "smartsheet not working",
+      "smartsheet status"
+    ]
+  },
+  {
+    "slug": "google-maps",
+    "name": "Google Maps",
+    "domain": "maps.google.com",
+    "category": "productivity",
+    "checkUrl": "https://maps.google.com",
+    "keywords": [
+      "is google maps down",
+      "google maps not working",
+      "google maps status"
+    ]
+  },
+  {
+    "slug": "citrix",
+    "name": "Citrix",
+    "domain": "citrix.com",
+    "category": "productivity",
+    "checkUrl": "https://www.citrix.com",
+    "keywords": [
+      "is citrix down",
+      "citrix not working",
+      "citrix status"
+    ]
+  },
+  {
+    "slug": "google-docs",
+    "name": "Google Docs",
+    "domain": "docs.google.com",
+    "category": "productivity",
+    "checkUrl": "https://docs.google.com",
+    "keywords": [
+      "is google docs down",
+      "google docs not working",
+      "google docs status"
+    ]
+  },
+  {
+    "slug": "apple-maps",
+    "name": "Apple Maps",
+    "domain": "maps.apple.com",
+    "category": "productivity",
+    "checkUrl": "https://maps.apple.com",
+    "keywords": [
+      "is apple maps down",
+      "apple maps not working",
+      "apple maps status"
+    ]
+  },
+  {
+    "slug": "confluence",
+    "name": "Confluence",
+    "domain": "atlassian.com",
+    "category": "productivity",
+    "checkUrl": "https://www.atlassian.com/software/confluence",
+    "keywords": [
+      "is confluence down",
+      "confluence not working",
+      "confluence status"
+    ]
+  },
+  {
+    "slug": "surveymonkey",
+    "name": "SurveyMonkey",
+    "domain": "surveymonkey.com",
+    "category": "productivity",
+    "checkUrl": "https://www.surveymonkey.com",
+    "keywords": [
+      "is surveymonkey down",
+      "surveymonkey not working",
+      "surveymonkey status"
+    ]
+  },
+  {
+    "slug": "toasttab",
+    "name": "Toast",
+    "domain": "toasttab.com",
+    "category": "productivity",
+    "checkUrl": "https://www.toasttab.com",
+    "keywords": [
+      "is toast down",
+      "toasttab down",
+      "toast not working",
+      "toast status"
+    ]
+  },
+  {
+    "slug": "docusign",
+    "name": "DocuSign",
+    "domain": "docusign.com",
+    "category": "productivity",
+    "checkUrl": "https://www.docusign.com",
+    "keywords": [
+      "is docusign down",
+      "docusign not working",
+      "docusign status"
+    ]
+  },
+  {
+    "slug": "waze",
+    "name": "Waze",
+    "domain": "waze.com",
+    "category": "productivity",
+    "checkUrl": "https://www.waze.com",
+    "keywords": [
+      "is waze down",
+      "waze not working",
+      "waze status"
+    ]
+  },
+  {
+    "slug": "salesforce",
+    "name": "Salesforce",
+    "domain": "salesforce.com",
+    "category": "productivity",
+    "checkUrl": "https://www.salesforce.com",
+    "keywords": [
+      "is salesforce down",
+      "salesforce not working",
+      "salesforce status"
+    ]
+  },
+  {
+    "slug": "sharepoint",
+    "name": "SharePoint",
+    "domain": "sharepoint.com",
+    "category": "productivity",
+    "checkUrl": "https://www.sharepoint.com",
+    "keywords": [
+      "is sharepoint down",
+      "sharepoint not working",
+      "sharepoint status"
+    ]
+  },
+  {
+    "slug": "quickbooks",
+    "name": "QuickBooks",
+    "domain": "quickbooks.intuit.com",
+    "category": "productivity",
+    "checkUrl": "https://quickbooks.intuit.com",
+    "keywords": [
+      "is quickbooks down",
+      "quickbooks online down",
+      "quickbooks status"
+    ]
+  },
+  {
+    "slug": "adp",
+    "name": "ADP",
+    "domain": "adp.com",
+    "category": "productivity",
+    "checkUrl": "https://www.adp.com",
+    "keywords": [
+      "is adp down",
+      "adp not working",
+      "adp status"
+    ]
+  },
+  {
+    "slug": "mailchimp",
+    "name": "Mailchimp",
+    "domain": "mailchimp.com",
+    "category": "productivity",
+    "checkUrl": "https://mailchimp.com",
+    "keywords": [
+      "is mailchimp down",
+      "mailchimp not working",
+      "mailchimp status"
+    ]
+  },
+  {
+    "slug": "hubspot",
+    "name": "HubSpot",
+    "domain": "hubspot.com",
+    "category": "productivity",
+    "checkUrl": "https://www.hubspot.com",
+    "keywords": [
+      "is hubspot down",
+      "hubspot not working",
+      "hubspot status"
+    ]
+  },
+  {
+    "slug": "turbotax",
+    "name": "TurboTax",
+    "domain": "turbotax.intuit.com",
+    "category": "productivity",
+    "checkUrl": "https://turbotax.intuit.com",
+    "keywords": [
+      "is turbotax down",
+      "turbotax not working",
+      "turbotax status"
+    ]
+  },
+  {
+    "slug": "canva",
+    "name": "Canva",
+    "domain": "canva.com",
+    "category": "productivity",
+    "checkUrl": "https://www.canva.com",
+    "keywords": [
+      "is canva down",
+      "canva not working",
+      "canva status"
+    ]
+  },
+  {
+    "slug": "google-calendar",
+    "name": "Google Calendar",
+    "domain": "calendar.google.com",
+    "category": "productivity",
+    "checkUrl": "https://calendar.google.com",
+    "keywords": [
+      "is google calendar down",
+      "google calendar not working",
+      "google calendar status"
+    ]
+  },
+  {
+    "slug": "intuit",
+    "name": "Intuit",
+    "domain": "intuit.com",
+    "category": "productivity",
+    "checkUrl": "https://www.intuit.com",
+    "keywords": [
+      "is intuit down",
+      "intuit not working",
+      "intuit status"
+    ]
+  },
+  {
+    "slug": "jira",
+    "name": "Jira",
+    "domain": "atlassian.com",
+    "category": "productivity",
+    "checkUrl": "https://www.atlassian.com/software/jira",
+    "keywords": [
+      "is jira down",
+      "jira not working",
+      "jira status"
+    ]
+  },
+  {
+    "slug": "canvas",
+    "name": "Canvas",
+    "domain": "instructure.com",
+    "category": "education",
+    "checkUrl": "https://www.instructure.com",
+    "keywords": [
+      "is canvas down",
+      "canvas not working",
+      "canvas status"
+    ]
+  },
+  {
+    "slug": "ap-classroom",
+    "name": "AP Classroom",
+    "domain": "apclassroom.collegeboard.org",
+    "category": "education",
+    "checkUrl": "https://apclassroom.collegeboard.org",
+    "keywords": [
+      "is ap classroom down",
+      "ap classroom not working",
+      "ap classroom status"
+    ]
+  },
+  {
+    "slug": "collegeboard",
+    "name": "College Board",
+    "domain": "collegeboard.org",
+    "category": "education",
+    "checkUrl": "https://www.collegeboard.org",
+    "keywords": [
+      "is collegeboard down",
+      "collegeboard not working",
+      "college board status"
+    ]
+  },
+  {
+    "slug": "blooket",
+    "name": "Blooket",
+    "domain": "blooket.com",
+    "category": "education",
+    "checkUrl": "https://www.blooket.com",
+    "keywords": [
+      "is blooket down",
+      "blooket not working",
+      "blooket status"
+    ]
+  },
+  {
+    "slug": "mcgraw-hill",
+    "name": "McGraw Hill",
+    "domain": "mheducation.com",
+    "category": "education",
+    "checkUrl": "https://www.mheducation.com",
+    "keywords": [
+      "is mcgraw hill down",
+      "mcgraw hill not working",
+      "mcgraw hill status"
+    ]
+  },
+  {
+    "slug": "cengage",
+    "name": "Cengage",
+    "domain": "cengage.com",
+    "category": "education",
+    "checkUrl": "https://www.cengage.com",
+    "keywords": [
+      "is cengage down",
+      "cengage not working",
+      "cengage status"
+    ]
+  },
+  {
+    "slug": "duolingo",
+    "name": "Duolingo",
+    "domain": "duolingo.com",
+    "category": "education",
+    "checkUrl": "https://www.duolingo.com",
+    "keywords": [
+      "is duolingo down",
+      "duolingo not working",
+      "duolingo status"
+    ]
+  },
+  {
+    "slug": "quizlet",
+    "name": "Quizlet",
+    "domain": "quizlet.com",
+    "category": "education",
+    "checkUrl": "https://quizlet.com",
+    "keywords": [
+      "is quizlet down",
+      "quizlet not working",
+      "quizlet status"
+    ]
+  },
+  {
+    "slug": "pearson",
+    "name": "Pearson",
+    "domain": "pearson.com",
+    "category": "education",
+    "checkUrl": "https://www.pearson.com",
+    "keywords": [
+      "is pearson down",
+      "pearson not working",
+      "pearson status"
+    ]
+  },
+  {
+    "slug": "common-app",
+    "name": "Common App",
+    "domain": "commonapp.org",
+    "category": "education",
+    "checkUrl": "https://www.commonapp.org",
+    "keywords": [
+      "is common app down",
+      "common app not working",
+      "common app status"
+    ]
+  },
+  {
+    "slug": "khan-academy",
+    "name": "Khan Academy",
+    "domain": "khanacademy.org",
+    "category": "education",
+    "checkUrl": "https://www.khanacademy.org",
+    "keywords": [
+      "is khan academy down",
+      "khan academy not working",
+      "khan academy status"
+    ]
+  },
+  {
+    "slug": "turnitin",
+    "name": "Turnitin",
+    "domain": "turnitin.com",
+    "category": "education",
+    "checkUrl": "https://www.turnitin.com",
+    "keywords": [
+      "is turnitin down",
+      "turnitin not working",
+      "turnitin status"
+    ]
+  },
+  {
+    "slug": "overleaf",
+    "name": "Overleaf",
+    "domain": "overleaf.com",
+    "category": "education",
+    "checkUrl": "https://www.overleaf.com",
+    "keywords": [
+      "is overleaf down",
+      "overleaf not working",
+      "overleaf status"
+    ]
+  },
+  {
+    "slug": "fafsa",
+    "name": "FAFSA",
+    "domain": "studentaid.gov",
+    "category": "education",
+    "checkUrl": "https://studentaid.gov",
+    "keywords": [
+      "is fafsa down",
+      "fafsa website down",
+      "fafsa status"
+    ]
+  },
+  {
+    "slug": "blackboard",
+    "name": "Blackboard",
+    "domain": "blackboard.com",
+    "category": "education",
+    "checkUrl": "https://www.blackboard.com",
+    "keywords": [
+      "is blackboard down",
+      "blackboard not working",
+      "blackboard status"
+    ]
+  },
+  {
+    "slug": "coursera",
+    "name": "Coursera",
+    "domain": "coursera.org",
+    "category": "education",
+    "checkUrl": "https://www.coursera.org",
+    "keywords": [
+      "is coursera down",
+      "coursera not working",
+      "coursera status"
+    ]
+  },
+  {
+    "slug": "nelnet",
+    "name": "Nelnet",
+    "domain": "nelnet.com",
+    "category": "education",
+    "checkUrl": "https://www.nelnet.com",
+    "keywords": [
+      "is nelnet down",
+      "nelnet not working",
+      "nelnet status"
+    ]
+  },
+  {
+    "slug": "aws",
+    "name": "AWS",
+    "domain": "aws.amazon.com",
+    "category": "cloud",
+    "checkUrl": "https://aws.amazon.com",
+    "keywords": [
+      "is aws down",
+      "aws not working",
+      "aws status"
+    ]
+  },
+  {
+    "slug": "github",
+    "name": "GitHub",
+    "domain": "github.com",
+    "category": "developer",
+    "checkUrl": "https://github.com",
+    "keywords": [
+      "is github down",
+      "github not working",
+      "github status"
+    ]
+  },
+  {
+    "slug": "cloudflare",
+    "name": "Cloudflare",
+    "domain": "cloudflare.com",
+    "category": "cloud",
+    "checkUrl": "https://www.cloudflare.com",
+    "keywords": [
+      "is cloudflare down",
+      "cloudflare not working",
+      "cloudflare status"
+    ]
+  },
+  {
+    "slug": "mega",
+    "name": "MEGA",
+    "domain": "mega.io",
+    "category": "cloud",
+    "checkUrl": "https://mega.io",
+    "keywords": [
+      "is mega down",
+      "mega not working",
+      "mega status"
+    ]
+  },
+  {
+    "slug": "snowflake",
+    "name": "Snowflake",
+    "domain": "snowflake.com",
+    "category": "cloud",
+    "checkUrl": "https://www.snowflake.com",
+    "keywords": [
+      "is snowflake down",
+      "snowflake not working",
+      "snowflake status"
+    ]
+  },
+  {
+    "slug": "wetransfer",
+    "name": "WeTransfer",
+    "domain": "wetransfer.com",
+    "category": "cloud",
+    "checkUrl": "https://wetransfer.com",
+    "keywords": [
+      "is wetransfer down",
+      "wetransfer not working",
+      "wetransfer status"
+    ]
+  },
+  {
+    "slug": "vercel",
+    "name": "Vercel",
+    "domain": "vercel.com",
+    "category": "developer",
+    "checkUrl": "https://vercel.com",
+    "keywords": [
+      "is vercel down",
+      "vercel not working",
+      "vercel status"
+    ]
+  },
+  {
+    "slug": "openai-api",
+    "name": "OpenAI API",
+    "domain": "api.openai.com",
+    "category": "developer",
+    "checkUrl": "https://api.openai.com",
+    "keywords": [
+      "is openai api down",
+      "openai api not working",
+      "openai api status"
+    ]
+  },
+  {
+    "slug": "squarespace",
+    "name": "Squarespace",
+    "domain": "squarespace.com",
+    "category": "developer",
+    "checkUrl": "https://www.squarespace.com",
+    "keywords": [
+      "is squarespace down",
+      "squarespace not working",
+      "squarespace status"
+    ]
+  },
+  {
+    "slug": "wordpress",
+    "name": "WordPress",
+    "domain": "wordpress.com",
+    "category": "developer",
+    "checkUrl": "https://wordpress.com",
+    "keywords": [
+      "is wordpress down",
+      "wordpress not working",
+      "wordpress status"
+    ]
+  },
+  {
+    "slug": "itchio",
+    "name": "itch.io",
+    "domain": "itch.io",
+    "category": "developer",
+    "checkUrl": "https://itch.io",
+    "keywords": [
+      "is itchio down",
+      "itch.io not working",
+      "itch.io status"
+    ]
+  },
+  {
+    "slug": "leetcode",
+    "name": "LeetCode",
+    "domain": "leetcode.com",
+    "category": "developer",
+    "checkUrl": "https://leetcode.com",
+    "keywords": [
+      "is leetcode down",
+      "leetcode not working",
+      "leetcode status"
+    ]
+  },
+  {
+    "slug": "google-ads",
+    "name": "Google Ads",
+    "domain": "ads.google.com",
+    "category": "developer",
+    "checkUrl": "https://ads.google.com",
+    "keywords": [
+      "is google ads down",
+      "google ads not working",
+      "google ads status"
+    ]
+  },
+  {
+    "slug": "replit",
+    "name": "Replit",
+    "domain": "replit.com",
+    "category": "developer",
+    "checkUrl": "https://replit.com",
+    "keywords": [
+      "is replit down",
+      "replit not working",
+      "replit status"
+    ]
+  },
+  {
+    "slug": "bluehost",
+    "name": "Bluehost",
+    "domain": "bluehost.com",
+    "category": "developer",
+    "checkUrl": "https://www.bluehost.com",
+    "keywords": [
+      "is bluehost down",
+      "bluehost not working",
+      "bluehost status"
+    ]
+  },
+  {
+    "slug": "ahrefs",
+    "name": "Ahrefs",
+    "domain": "ahrefs.com",
+    "category": "developer",
+    "checkUrl": "https://ahrefs.com",
+    "keywords": [
+      "is ahrefs down",
+      "ahrefs not working",
+      "ahrefs status"
+    ]
+  },
+  {
+    "slug": "zapier",
+    "name": "Zapier",
+    "domain": "zapier.com",
+    "category": "developer",
+    "checkUrl": "https://zapier.com",
+    "keywords": [
+      "is zapier down",
+      "zapier not working",
+      "zapier status"
+    ]
+  },
+  {
+    "slug": "docker",
+    "name": "Docker",
+    "domain": "docker.com",
+    "category": "developer",
+    "checkUrl": "https://www.docker.com",
+    "keywords": [
+      "is docker down",
+      "docker not working",
+      "docker status"
+    ]
+  },
+  {
+    "slug": "atlassian",
+    "name": "Atlassian",
+    "domain": "atlassian.com",
+    "category": "developer",
+    "checkUrl": "https://www.atlassian.com",
+    "keywords": [
+      "is atlassian down",
+      "atlassian not working",
+      "atlassian status"
+    ]
+  },
+  {
+    "slug": "firebase",
+    "name": "Firebase",
+    "domain": "firebase.google.com",
+    "category": "developer",
+    "checkUrl": "https://firebase.google.com",
+    "keywords": [
+      "is firebase down",
+      "firebase not working",
+      "firebase status"
+    ]
+  },
+  {
+    "slug": "gitlab",
+    "name": "GitLab",
+    "domain": "gitlab.com",
+    "category": "developer",
+    "checkUrl": "https://gitlab.com",
+    "keywords": [
+      "is gitlab down",
+      "gitlab not working",
+      "gitlab status"
+    ]
+  },
+  {
+    "slug": "autodesk",
+    "name": "Autodesk",
+    "domain": "autodesk.com",
+    "category": "developer",
+    "checkUrl": "https://www.autodesk.com",
+    "keywords": [
+      "is autodesk down",
+      "autodesk not working",
+      "autodesk status"
+    ]
+  },
+  {
+    "slug": "npm",
+    "name": "npm",
+    "domain": "npmjs.com",
+    "category": "developer",
+    "checkUrl": "https://www.npmjs.com",
+    "keywords": [
+      "is npm down",
+      "npm not working",
+      "npm status"
+    ]
+  },
+  {
+    "slug": "craigslist",
+    "name": "Craigslist",
+    "domain": "craigslist.org",
+    "category": "developer",
+    "checkUrl": "https://www.craigslist.org",
+    "keywords": [
+      "is craigslist down",
+      "craigslist not working",
+      "craigslist status"
+    ]
+  },
+  {
+    "slug": "figma",
+    "name": "Figma",
+    "domain": "figma.com",
+    "category": "developer",
+    "checkUrl": "https://www.figma.com",
+    "keywords": [
+      "is figma down",
+      "figma not working",
+      "figma status"
+    ]
+  },
+  {
+    "slug": "adobe",
+    "name": "Adobe",
+    "domain": "adobe.com",
+    "category": "developer",
+    "checkUrl": "https://www.adobe.com",
+    "keywords": [
+      "is adobe down",
+      "adobe not working",
+      "adobe status"
+    ]
+  },
+  {
+    "slug": "godaddy",
+    "name": "GoDaddy",
+    "domain": "godaddy.com",
+    "category": "developer",
+    "checkUrl": "https://www.godaddy.com",
+    "keywords": [
+      "is godaddy down",
+      "godaddy not working",
+      "godaddy status"
+    ]
+  },
+  {
+    "slug": "wix",
+    "name": "Wix",
+    "domain": "wix.com",
+    "category": "developer",
+    "checkUrl": "https://www.wix.com",
+    "keywords": [
+      "is wix down",
+      "wix website down",
+      "wix status"
+    ]
+  },
+  {
+    "slug": "azure",
+    "name": "Microsoft Azure",
+    "domain": "azure.microsoft.com",
+    "category": "cloud",
+    "checkUrl": "https://azure.microsoft.com",
+    "keywords": [
+      "is azure down",
+      "azure not working",
+      "azure status"
+    ]
+  },
+  {
+    "slug": "dropbox",
+    "name": "Dropbox",
+    "domain": "dropbox.com",
+    "category": "cloud",
+    "checkUrl": "https://www.dropbox.com",
+    "keywords": [
+      "is dropbox down",
+      "dropbox not working",
+      "dropbox status"
+    ]
+  },
+  {
+    "slug": "icloud",
+    "name": "iCloud",
+    "domain": "icloud.com",
+    "category": "cloud",
+    "checkUrl": "https://www.icloud.com",
+    "keywords": [
+      "is icloud down",
+      "icloud not working",
+      "icloud status"
+    ]
+  },
+  {
+    "slug": "onedrive",
+    "name": "OneDrive",
+    "domain": "onedrive.live.com",
+    "category": "cloud",
+    "checkUrl": "https://onedrive.live.com",
+    "keywords": [
+      "is onedrive down",
+      "onedrive not working",
+      "onedrive status"
+    ]
+  },
+  {
+    "slug": "databricks",
+    "name": "Databricks",
+    "domain": "databricks.com",
+    "category": "cloud",
+    "checkUrl": "https://www.databricks.com",
+    "keywords": [
+      "is databricks down",
+      "databricks not working",
+      "databricks status"
+    ]
+  },
+  {
+    "slug": "discord",
+    "name": "Discord",
+    "domain": "discord.com",
+    "category": "communication",
+    "checkUrl": "https://discord.com",
+    "keywords": [
+      "is discord down",
+      "discord not working",
+      "discord status"
+    ]
+  },
+  {
+    "slug": "whatsapp",
+    "name": "WhatsApp",
+    "domain": "web.whatsapp.com",
+    "category": "communication",
+    "checkUrl": "https://web.whatsapp.com",
+    "keywords": [
+      "is whatsapp down",
+      "whatsapp not working",
+      "whatsapp status"
+    ]
+  },
+  {
+    "slug": "telegram",
+    "name": "Telegram",
+    "domain": "telegram.org",
+    "category": "communication",
+    "checkUrl": "https://telegram.org",
+    "keywords": [
+      "is telegram down",
+      "telegram not working",
+      "telegram status"
+    ]
+  },
+  {
+    "slug": "signal",
+    "name": "Signal",
+    "domain": "signal.org",
+    "category": "communication",
+    "checkUrl": "https://signal.org",
+    "keywords": [
+      "is signal down",
+      "signal not working",
+      "signal status"
+    ]
+  },
+  {
+    "slug": "kik",
+    "name": "Kik",
+    "domain": "kik.com",
+    "category": "communication",
+    "checkUrl": "https://www.kik.com",
+    "keywords": [
+      "is kik down",
+      "kik not working",
+      "kik status"
+    ]
+  },
+  {
+    "slug": "messenger",
+    "name": "Messenger",
+    "domain": "messenger.com",
+    "category": "communication",
+    "checkUrl": "https://www.messenger.com",
+    "keywords": [
+      "is messenger down",
+      "messenger not working",
+      "messenger status"
+    ]
+  },
+  {
+    "slug": "protonmail",
+    "name": "ProtonMail",
+    "domain": "proton.me",
+    "category": "communication",
+    "checkUrl": "https://proton.me",
+    "keywords": [
+      "is proton mail down",
+      "protonmail not working",
+      "protonmail status"
+    ]
+  },
+  {
+    "slug": "imessage",
+    "name": "iMessage",
+    "domain": "apple.com",
+    "category": "communication",
+    "checkUrl": "https://www.apple.com/icloud/",
+    "keywords": [
+      "is imessage down",
+      "imessage not working",
+      "imessage status"
+    ]
+  },
+  {
+    "slug": "ringcentral",
+    "name": "RingCentral",
+    "domain": "ringcentral.com",
+    "category": "communication",
+    "checkUrl": "https://www.ringcentral.com",
+    "keywords": [
+      "is ringcentral down",
+      "ringcentral not working",
+      "ringcentral status"
+    ]
+  },
+  {
+    "slug": "facetime",
+    "name": "FaceTime",
+    "domain": "apple.com",
+    "category": "communication",
+    "checkUrl": "https://www.apple.com/facetime/",
+    "keywords": [
+      "is facetime down",
+      "facetime not working",
+      "facetime status"
+    ]
+  },
+  {
+    "slug": "yahoo-mail",
+    "name": "Yahoo Mail",
+    "domain": "mail.yahoo.com",
+    "category": "communication",
+    "checkUrl": "https://mail.yahoo.com",
+    "keywords": [
+      "is yahoo mail down",
+      "yahoo mail not working",
+      "yahoo mail status"
+    ]
+  },
+  {
+    "slug": "aol-mail",
+    "name": "AOL Mail",
+    "domain": "mail.aol.com",
+    "category": "communication",
+    "checkUrl": "https://mail.aol.com",
+    "keywords": [
+      "is aol mail down",
+      "aol mail not working",
+      "aol mail status"
+    ]
+  },
+  {
+    "slug": "google-meet",
+    "name": "Google Meet",
+    "domain": "meet.google.com",
+    "category": "communication",
+    "checkUrl": "https://meet.google.com",
+    "keywords": [
+      "is google meet down",
+      "google meet not working",
+      "google meet status"
+    ]
+  },
+  {
+    "slug": "amazon",
+    "name": "Amazon",
+    "domain": "amazon.com",
+    "category": "ecommerce",
+    "checkUrl": "https://www.amazon.com",
+    "keywords": [
+      "is amazon down",
+      "amazon not working",
+      "amazon status"
+    ]
+  },
+  {
+    "slug": "shopify",
+    "name": "Shopify",
+    "domain": "shopify.com",
+    "category": "ecommerce",
+    "checkUrl": "https://www.shopify.com",
+    "keywords": [
+      "is shopify down",
+      "shopify not working",
+      "shopify status"
+    ]
+  },
+  {
+    "slug": "ebay",
+    "name": "eBay",
+    "domain": "ebay.com",
+    "category": "ecommerce",
+    "checkUrl": "https://www.ebay.com",
+    "keywords": [
+      "is ebay down",
+      "ebay not working",
+      "ebay status"
+    ]
+  },
+  {
+    "slug": "paypal",
+    "name": "PayPal",
+    "domain": "paypal.com",
+    "category": "finance",
+    "checkUrl": "https://www.paypal.com",
+    "keywords": [
+      "is paypal down",
+      "paypal not working",
+      "paypal status"
+    ]
+  },
+  {
+    "slug": "airbnb",
+    "name": "Airbnb",
+    "domain": "airbnb.com",
+    "category": "ecommerce",
+    "checkUrl": "https://www.airbnb.com",
+    "keywords": [
+      "is airbnb down",
+      "airbnb not working",
+      "airbnb status"
+    ]
+  },
+  {
+    "slug": "etsy",
+    "name": "Etsy",
+    "domain": "etsy.com",
+    "category": "ecommerce",
+    "checkUrl": "https://www.etsy.com",
+    "keywords": [
+      "is etsy down",
+      "etsy not working",
+      "etsy status"
+    ]
+  },
+  {
+    "slug": "ticketmaster",
+    "name": "Ticketmaster",
+    "domain": "ticketmaster.com",
+    "category": "ecommerce",
+    "checkUrl": "https://www.ticketmaster.com",
+    "keywords": [
+      "is ticketmaster down",
+      "ticketmaster not working",
+      "ticketmaster status"
+    ]
+  },
+  {
+    "slug": "depop",
+    "name": "Depop",
+    "domain": "depop.com",
+    "category": "ecommerce",
+    "checkUrl": "https://www.depop.com",
+    "keywords": [
+      "is depop down",
+      "depop not working",
+      "depop status"
+    ]
+  },
+  {
+    "slug": "poshmark",
+    "name": "Poshmark",
+    "domain": "poshmark.com",
+    "category": "ecommerce",
+    "checkUrl": "https://poshmark.com",
+    "keywords": [
+      "is poshmark down",
+      "poshmark not working",
+      "poshmark status"
+    ]
+  },
+  {
+    "slug": "target",
+    "name": "Target",
+    "domain": "target.com",
+    "category": "ecommerce",
+    "checkUrl": "https://www.target.com",
+    "keywords": [
+      "is target down",
+      "target website down",
+      "target status"
+    ]
+  },
+  {
+    "slug": "zillow",
+    "name": "Zillow",
+    "domain": "zillow.com",
+    "category": "ecommerce",
+    "checkUrl": "https://www.zillow.com",
+    "keywords": [
+      "is zillow down",
+      "zillow not working",
+      "zillow status"
+    ]
+  },
+  {
+    "slug": "yelp",
+    "name": "Yelp",
+    "domain": "yelp.com",
+    "category": "ecommerce",
+    "checkUrl": "https://www.yelp.com",
+    "keywords": [
+      "is yelp down",
+      "yelp not working",
+      "yelp status"
+    ]
+  },
+  {
+    "slug": "costco",
+    "name": "Costco",
+    "domain": "costco.com",
+    "category": "ecommerce",
+    "checkUrl": "https://www.costco.com",
+    "keywords": [
+      "is costco down",
+      "costco not working",
+      "costco status"
+    ]
+  },
+  {
+    "slug": "kroger",
+    "name": "Kroger",
+    "domain": "kroger.com",
+    "category": "ecommerce",
+    "checkUrl": "https://www.kroger.com",
+    "keywords": [
+      "is kroger down",
+      "kroger not working",
+      "kroger status"
+    ]
+  },
+  {
+    "slug": "sephora",
+    "name": "Sephora",
+    "domain": "sephora.com",
+    "category": "ecommerce",
+    "checkUrl": "https://www.sephora.com",
+    "keywords": [
+      "is sephora down",
+      "sephora website down",
+      "sephora status"
+    ]
+  },
+  {
+    "slug": "eventbrite",
+    "name": "Eventbrite",
+    "domain": "eventbrite.com",
+    "category": "ecommerce",
+    "checkUrl": "https://www.eventbrite.com",
+    "keywords": [
+      "is eventbrite down",
+      "eventbrite not working",
+      "eventbrite status"
+    ]
+  },
+  {
+    "slug": "macys",
+    "name": "Macy's",
+    "domain": "macys.com",
+    "category": "ecommerce",
+    "checkUrl": "https://www.macys.com",
+    "keywords": [
+      "is macys down",
+      "macys website down",
+      "macys status"
+    ]
+  },
+  {
+    "slug": "fashion-nova",
+    "name": "Fashion Nova",
+    "domain": "fashionnova.com",
+    "category": "ecommerce",
+    "checkUrl": "https://www.fashionnova.com",
+    "keywords": [
+      "is fashion nova down",
+      "fashion nova not working",
+      "fashion nova status"
+    ]
+  },
+  {
+    "slug": "chewy",
+    "name": "Chewy",
+    "domain": "chewy.com",
+    "category": "ecommerce",
+    "checkUrl": "https://www.chewy.com",
+    "keywords": [
+      "is chewy down",
+      "chewy not working",
+      "chewy status"
+    ]
+  },
+  {
+    "slug": "wayfair",
+    "name": "Wayfair",
+    "domain": "wayfair.com",
+    "category": "ecommerce",
+    "checkUrl": "https://www.wayfair.com",
+    "keywords": [
+      "is wayfair down",
+      "wayfair not working",
+      "wayfair status"
+    ]
+  },
+  {
+    "slug": "aliexpress",
+    "name": "AliExpress",
+    "domain": "aliexpress.com",
+    "category": "ecommerce",
+    "checkUrl": "https://www.aliexpress.com",
+    "keywords": [
+      "is aliexpress down",
+      "aliexpress not working",
+      "aliexpress status"
+    ]
+  },
+  {
+    "slug": "starbucks",
+    "name": "Starbucks",
+    "domain": "starbucks.com",
+    "category": "ecommerce",
+    "checkUrl": "https://www.starbucks.com",
+    "keywords": [
+      "is starbucks down",
+      "starbucks app down",
+      "starbucks status"
+    ]
+  },
+  {
+    "slug": "gamestop",
+    "name": "GameStop",
+    "domain": "gamestop.com",
+    "category": "ecommerce",
+    "checkUrl": "https://www.gamestop.com",
+    "keywords": [
+      "is gamestop down",
+      "gamestop website down",
+      "gamestop status"
+    ]
+  },
+  {
+    "slug": "adidas",
+    "name": "Adidas",
+    "domain": "adidas.com",
+    "category": "ecommerce",
+    "checkUrl": "https://www.adidas.com",
+    "keywords": [
+      "is adidas down",
+      "adidas website down",
+      "adidas status"
+    ]
+  },
+  {
+    "slug": "shein",
+    "name": "Shein",
+    "domain": "shein.com",
+    "category": "ecommerce",
+    "checkUrl": "https://www.shein.com",
+    "keywords": [
+      "is shein down",
+      "shein not working",
+      "shein status"
+    ]
+  },
+  {
+    "slug": "groupon",
+    "name": "Groupon",
+    "domain": "groupon.com",
+    "category": "ecommerce",
+    "checkUrl": "https://www.groupon.com",
+    "keywords": [
+      "is groupon down",
+      "groupon not working",
+      "groupon status"
+    ]
+  },
+  {
+    "slug": "ulta",
+    "name": "Ulta Beauty",
+    "domain": "ulta.com",
+    "category": "ecommerce",
+    "checkUrl": "https://www.ulta.com",
+    "keywords": [
+      "is ulta down",
+      "ulta website down",
+      "ulta status"
+    ]
+  },
+  {
+    "slug": "stubhub",
+    "name": "StubHub",
+    "domain": "stubhub.com",
+    "category": "ecommerce",
+    "checkUrl": "https://www.stubhub.com",
+    "keywords": [
+      "is stubhub down",
+      "stubhub not working",
+      "stubhub status"
+    ]
+  },
+  {
+    "slug": "walmart",
+    "name": "Walmart",
+    "domain": "walmart.com",
+    "category": "ecommerce",
+    "checkUrl": "https://www.walmart.com",
+    "keywords": [
+      "is walmart down",
+      "walmart website down",
+      "walmart status"
+    ]
+  },
+  {
+    "slug": "mcdonalds",
+    "name": "McDonald's",
+    "domain": "mcdonalds.com",
+    "category": "ecommerce",
+    "checkUrl": "https://www.mcdonalds.com",
+    "keywords": [
+      "is mcdonalds app down",
+      "mcdonalds not working",
+      "mcdonalds status"
+    ]
+  },
+  {
+    "slug": "temu",
+    "name": "Temu",
+    "domain": "temu.com",
+    "category": "ecommerce",
+    "checkUrl": "https://www.temu.com",
+    "keywords": [
+      "is temu down",
+      "temu not working",
+      "temu status"
+    ]
+  },
+  {
+    "slug": "nike",
+    "name": "Nike",
+    "domain": "nike.com",
+    "category": "ecommerce",
+    "checkUrl": "https://www.nike.com",
+    "keywords": [
+      "is nike down",
+      "nike website down",
+      "nike status"
+    ]
+  },
+  {
+    "slug": "best-buy",
+    "name": "Best Buy",
+    "domain": "bestbuy.com",
+    "category": "ecommerce",
+    "checkUrl": "https://www.bestbuy.com",
+    "keywords": [
+      "is best buy down",
+      "bestbuy website down",
+      "best buy status"
+    ]
+  },
+  {
+    "slug": "home-depot",
+    "name": "Home Depot",
+    "domain": "homedepot.com",
+    "category": "ecommerce",
+    "checkUrl": "https://www.homedepot.com",
+    "keywords": [
+      "is home depot down",
+      "home depot website down",
+      "home depot status"
+    ]
+  },
+  {
+    "slug": "chipotle",
+    "name": "Chipotle",
+    "domain": "chipotle.com",
+    "category": "ecommerce",
+    "checkUrl": "https://www.chipotle.com",
+    "keywords": [
+      "is chipotle app down",
+      "chipotle not working",
+      "chipotle status"
+    ]
+  },
+  {
+    "slug": "fidelity",
+    "name": "Fidelity",
+    "domain": "fidelity.com",
+    "category": "finance",
+    "checkUrl": "https://www.fidelity.com",
+    "keywords": [
+      "is fidelity down",
+      "fidelity not working",
+      "fidelity status"
+    ]
+  },
+  {
+    "slug": "afterpay",
+    "name": "Afterpay",
+    "domain": "afterpay.com",
+    "category": "finance",
+    "checkUrl": "https://www.afterpay.com",
+    "keywords": [
+      "is afterpay down",
+      "afterpay not working",
+      "afterpay status"
+    ]
+  },
+  {
+    "slug": "credit-karma",
+    "name": "Credit Karma",
+    "domain": "creditkarma.com",
+    "category": "finance",
+    "checkUrl": "https://www.creditkarma.com",
+    "keywords": [
+      "is credit karma down",
+      "credit karma not working",
+      "credit karma status"
+    ]
+  },
+  {
+    "slug": "zelle",
+    "name": "Zelle",
+    "domain": "zellepay.com",
+    "category": "finance",
+    "checkUrl": "https://www.zellepay.com",
+    "keywords": [
+      "is zelle down",
+      "zelle not working",
+      "zelle status"
+    ]
+  },
+  {
+    "slug": "ally-bank",
+    "name": "Ally Bank",
+    "domain": "ally.com",
+    "category": "finance",
+    "checkUrl": "https://www.ally.com",
+    "keywords": [
+      "is ally bank down",
+      "ally bank not working",
+      "ally bank status"
+    ]
+  },
+  {
+    "slug": "citibank",
+    "name": "Citibank",
+    "domain": "citibank.com",
+    "category": "finance",
+    "checkUrl": "https://www.citibank.com",
+    "keywords": [
+      "is citibank down",
+      "citibank app down",
+      "citibank status"
+    ]
+  },
+  {
+    "slug": "robinhood",
+    "name": "Robinhood",
+    "domain": "robinhood.com",
+    "category": "finance",
+    "checkUrl": "https://robinhood.com",
+    "keywords": [
+      "is robinhood down",
+      "robinhood not working",
+      "robinhood status"
+    ]
+  },
+  {
+    "slug": "charles-schwab",
+    "name": "Charles Schwab",
+    "domain": "schwab.com",
+    "category": "finance",
+    "checkUrl": "https://www.schwab.com",
+    "keywords": [
+      "is charles schwab down",
+      "schwab not working",
+      "charles schwab status"
+    ]
+  },
+  {
+    "slug": "stripe",
+    "name": "Stripe",
+    "domain": "stripe.com",
+    "category": "finance",
+    "checkUrl": "https://stripe.com",
+    "keywords": [
+      "is stripe down",
+      "stripe not working",
+      "stripe status"
+    ]
+  },
+  {
+    "slug": "huntington-bank",
+    "name": "Huntington Bank",
+    "domain": "huntington.com",
+    "category": "finance",
+    "checkUrl": "https://www.huntington.com",
+    "keywords": [
+      "is huntington bank down",
+      "huntington bank not working",
+      "huntington status"
+    ]
+  },
+  {
+    "slug": "uphold",
+    "name": "Uphold",
+    "domain": "uphold.com",
+    "category": "finance",
+    "checkUrl": "https://uphold.com",
+    "keywords": [
+      "is uphold down",
+      "uphold not working",
+      "uphold status"
+    ]
+  },
+  {
+    "slug": "affirm",
+    "name": "Affirm",
+    "domain": "affirm.com",
+    "category": "finance",
+    "checkUrl": "https://www.affirm.com",
+    "keywords": [
+      "is affirm down",
+      "affirm not working",
+      "affirm status"
+    ]
+  },
+  {
+    "slug": "venmo",
+    "name": "Venmo",
+    "domain": "venmo.com",
+    "category": "finance",
+    "checkUrl": "https://venmo.com",
+    "keywords": [
+      "is venmo down",
+      "venmo app down",
+      "venmo status"
+    ]
+  },
+  {
+    "slug": "chime",
+    "name": "Chime",
+    "domain": "chime.com",
+    "category": "finance",
+    "checkUrl": "https://www.chime.com",
+    "keywords": [
+      "is chime down",
+      "chime not working",
+      "chime status"
+    ]
+  },
+  {
+    "slug": "cash-app",
+    "name": "Cash App",
+    "domain": "cash.app",
+    "category": "finance",
+    "checkUrl": "https://cash.app",
+    "keywords": [
+      "is cash app down",
+      "cash app not working",
+      "cash app status"
+    ]
+  },
+  {
+    "slug": "chase",
+    "name": "Chase",
+    "domain": "chase.com",
+    "category": "finance",
+    "checkUrl": "https://www.chase.com",
+    "keywords": [
+      "is chase down",
+      "chase app down",
+      "chase status"
+    ]
+  },
+  {
+    "slug": "capital-one",
+    "name": "Capital One",
+    "domain": "capitalone.com",
+    "category": "finance",
+    "checkUrl": "https://www.capitalone.com",
+    "keywords": [
+      "is capital one down",
+      "capital one not working",
+      "capital one status"
+    ]
+  },
+  {
+    "slug": "navy-federal",
+    "name": "Navy Federal",
+    "domain": "navyfederal.org",
+    "category": "finance",
+    "checkUrl": "https://www.navyfederal.org",
+    "keywords": [
+      "is navy federal down",
+      "navy federal not working",
+      "navy federal status"
+    ]
+  },
+  {
+    "slug": "wells-fargo",
+    "name": "Wells Fargo",
+    "domain": "wellsfargo.com",
+    "category": "finance",
+    "checkUrl": "https://www.wellsfargo.com",
+    "keywords": [
+      "is wells fargo down",
+      "wells fargo app down",
+      "wells fargo status"
+    ]
+  },
+  {
+    "slug": "coinbase",
+    "name": "Coinbase",
+    "domain": "coinbase.com",
+    "category": "finance",
+    "checkUrl": "https://www.coinbase.com",
+    "keywords": [
+      "is coinbase down",
+      "coinbase not working",
+      "coinbase status"
+    ]
+  },
+  {
+    "slug": "square",
+    "name": "Square",
+    "domain": "squareup.com",
+    "category": "finance",
+    "checkUrl": "https://squareup.com",
+    "keywords": [
+      "is square down",
+      "square not working",
+      "square status"
+    ]
+  },
+  {
+    "slug": "bank-of-america",
+    "name": "Bank of America",
+    "domain": "bankofamerica.com",
+    "category": "finance",
+    "checkUrl": "https://www.bankofamerica.com",
+    "keywords": [
+      "is bank of america down",
+      "bofa app down",
+      "bank of america status"
+    ]
+  },
+  {
+    "slug": "pnc",
+    "name": "PNC Bank",
+    "domain": "pnc.com",
+    "category": "finance",
+    "checkUrl": "https://www.pnc.com",
+    "keywords": [
+      "is pnc down",
+      "pnc bank not working",
+      "pnc status"
+    ]
+  },
+  {
+    "slug": "us-bank",
+    "name": "US Bank",
+    "domain": "usbank.com",
+    "category": "finance",
+    "checkUrl": "https://www.usbank.com",
+    "keywords": [
+      "is us bank down",
+      "us bank not working",
+      "us bank status"
+    ]
+  },
+  {
+    "slug": "american-express",
+    "name": "American Express",
+    "domain": "americanexpress.com",
+    "category": "finance",
+    "checkUrl": "https://www.americanexpress.com",
+    "keywords": [
+      "is amex down",
+      "american express not working",
+      "amex status"
+    ]
+  },
+  {
+    "slug": "doordash",
+    "name": "DoorDash",
+    "domain": "doordash.com",
+    "category": "delivery",
+    "checkUrl": "https://www.doordash.com",
+    "keywords": [
+      "is doordash down",
+      "doordash not working",
+      "doordash status"
+    ]
+  },
+  {
+    "slug": "uber-eats",
+    "name": "Uber Eats",
+    "domain": "ubereats.com",
+    "category": "delivery",
+    "checkUrl": "https://www.ubereats.com",
+    "keywords": [
+      "is uber eats down",
+      "uber eats not working",
+      "uber eats status"
+    ]
+  },
+  {
+    "slug": "grubhub",
+    "name": "Grubhub",
+    "domain": "grubhub.com",
+    "category": "delivery",
+    "checkUrl": "https://www.grubhub.com",
+    "keywords": [
+      "is grubhub down",
+      "grubhub not working",
+      "grubhub status"
+    ]
+  },
+  {
+    "slug": "instacart",
+    "name": "Instacart",
+    "domain": "instacart.com",
+    "category": "delivery",
+    "checkUrl": "https://www.instacart.com",
+    "keywords": [
+      "is instacart down",
+      "instacart not working",
+      "instacart status"
+    ]
+  },
+  {
+    "slug": "uber",
+    "name": "Uber",
+    "domain": "uber.com",
+    "category": "delivery",
+    "checkUrl": "https://www.uber.com",
+    "keywords": [
+      "is uber down",
+      "uber not working",
+      "uber status"
+    ]
+  },
+  {
+    "slug": "dominos",
+    "name": "Domino's",
+    "domain": "dominos.com",
+    "category": "delivery",
+    "checkUrl": "https://www.dominos.com",
+    "keywords": [
+      "is dominos down",
+      "dominos website down",
+      "dominos status"
+    ]
+  },
+  {
+    "slug": "cox",
+    "name": "Cox",
+    "domain": "cox.com",
+    "category": "isp",
+    "checkUrl": "https://www.cox.com",
+    "keywords": [
+      "is cox down",
+      "is cox cable down",
+      "is cox wifi down",
+      "cox status"
+    ]
+  },
+  {
+    "slug": "frontier",
+    "name": "Frontier",
+    "domain": "frontier.com",
+    "category": "isp",
+    "checkUrl": "https://frontier.com",
+    "keywords": [
+      "is frontier down",
+      "frontier not working",
+      "frontier status"
+    ]
+  },
+  {
+    "slug": "sparklight",
+    "name": "Sparklight",
+    "domain": "sparklight.com",
+    "category": "isp",
+    "checkUrl": "https://www.sparklight.com",
+    "keywords": [
+      "is sparklight down",
+      "sparklight not working",
+      "sparklight status"
+    ]
+  },
+  {
+    "slug": "dish-network",
+    "name": "Dish Network",
+    "domain": "dish.com",
+    "category": "isp",
+    "checkUrl": "https://www.dish.com",
+    "keywords": [
+      "is dish network down",
+      "dish network not working",
+      "dish status"
+    ]
+  },
+  {
+    "slug": "metro-pcs",
+    "name": "Metro by T-Mobile",
+    "domain": "metrobyt-mobile.com",
+    "category": "isp",
+    "checkUrl": "https://www.metrobyt-mobile.com",
+    "keywords": [
+      "is metro pcs down",
+      "metro by t-mobile not working",
+      "metro pcs status"
+    ]
+  },
+  {
+    "slug": "breezeline",
+    "name": "Breezeline",
+    "domain": "breezeline.com",
+    "category": "isp",
+    "checkUrl": "https://www.breezeline.com",
+    "keywords": [
+      "is breezeline down",
+      "breezeline not working",
+      "breezeline status"
+    ]
+  },
+  {
+    "slug": "brightspeed",
+    "name": "Brightspeed",
+    "domain": "brightspeed.com",
+    "category": "isp",
+    "checkUrl": "https://www.brightspeed.com",
+    "keywords": [
+      "is brightspeed down",
+      "brightspeed not working",
+      "brightspeed status"
+    ]
+  },
+  {
+    "slug": "mint-mobile",
+    "name": "Mint Mobile",
+    "domain": "mintmobile.com",
+    "category": "isp",
+    "checkUrl": "https://www.mintmobile.com",
+    "keywords": [
+      "is mint mobile down",
+      "mint mobile not working",
+      "mint mobile status"
+    ]
+  },
+  {
+    "slug": "verizon",
+    "name": "Verizon",
+    "domain": "verizon.com",
+    "category": "isp",
+    "checkUrl": "https://www.verizon.com",
+    "keywords": [
+      "is verizon down",
+      "is verizon down in my area",
+      "verizon not working",
+      "verizon status"
+    ]
+  },
+  {
+    "slug": "cricket-wireless",
+    "name": "Cricket Wireless",
+    "domain": "cricketwireless.com",
+    "category": "isp",
+    "checkUrl": "https://www.cricketwireless.com",
+    "keywords": [
+      "is cricket wireless down",
+      "cricket wireless not working",
+      "cricket wireless status"
+    ]
+  },
+  {
+    "slug": "boost-mobile",
+    "name": "Boost Mobile",
+    "domain": "boostmobile.com",
+    "category": "isp",
+    "checkUrl": "https://www.boostmobile.com",
+    "keywords": [
+      "is boost mobile down",
+      "boost mobile not working",
+      "boost mobile status"
+    ]
+  },
+  {
+    "slug": "metronet",
+    "name": "Metronet",
+    "domain": "metronet.com",
+    "category": "isp",
+    "checkUrl": "https://www.metronet.com",
+    "keywords": [
+      "is metronet down",
+      "metronet not working",
+      "metronet status"
+    ]
+  },
+  {
+    "slug": "google-fi",
+    "name": "Google Fi",
+    "domain": "fi.google.com",
+    "category": "isp",
+    "checkUrl": "https://fi.google.com",
+    "keywords": [
+      "is google fi down",
+      "google fi not working",
+      "google fi status"
+    ]
+  },
+  {
+    "slug": "astound",
+    "name": "Astound Broadband",
+    "domain": "astound.com",
+    "category": "isp",
+    "checkUrl": "https://www.astound.com",
+    "keywords": [
+      "is astound broadband down",
+      "astound not working",
+      "astound status"
+    ]
+  },
+  {
+    "slug": "centurylink",
+    "name": "CenturyLink",
+    "domain": "centurylink.com",
+    "category": "isp",
+    "checkUrl": "https://www.centurylink.com",
+    "keywords": [
+      "is centurylink down",
+      "centurylink internet down",
+      "centurylink status"
+    ]
+  },
+  {
+    "slug": "quantum-fiber",
+    "name": "Quantum Fiber",
+    "domain": "quantumfiber.com",
+    "category": "isp",
+    "checkUrl": "https://www.quantumfiber.com",
+    "keywords": [
+      "is quantum fiber down",
+      "quantum fiber not working",
+      "quantum fiber status"
+    ]
+  },
+  {
+    "slug": "ziply-fiber",
+    "name": "Ziply Fiber",
+    "domain": "ziplyfiber.com",
+    "category": "isp",
+    "checkUrl": "https://ziplyfiber.com",
+    "keywords": [
+      "is ziply down",
+      "ziply fiber not working",
+      "ziply fiber status"
+    ]
+  },
+  {
+    "slug": "windstream",
+    "name": "Windstream",
+    "domain": "windstream.com",
+    "category": "isp",
+    "checkUrl": "https://www.windstream.com",
+    "keywords": [
+      "is windstream down",
+      "windstream not working",
+      "windstream status"
+    ]
+  },
+  {
+    "slug": "hughesnet",
+    "name": "HughesNet",
+    "domain": "hughesnet.com",
+    "category": "isp",
+    "checkUrl": "https://www.hughesnet.com",
+    "keywords": [
+      "is hughesnet down",
+      "hughesnet not working",
+      "hughesnet status"
+    ]
+  },
+  {
+    "slug": "spectrum",
+    "name": "Spectrum",
+    "domain": "spectrum.net",
+    "category": "isp",
+    "checkUrl": "https://www.spectrum.net",
+    "keywords": [
+      "is spectrum down",
+      "is spectrum internet down",
+      "spectrum not working",
+      "spectrum status"
+    ]
+  },
+  {
+    "slug": "xfinity",
+    "name": "Xfinity",
+    "domain": "xfinity.com",
+    "category": "isp",
+    "checkUrl": "https://www.xfinity.com",
+    "keywords": [
+      "is xfinity down",
+      "is comcast down",
+      "xfinity not working",
+      "xfinity status"
+    ]
+  },
+  {
+    "slug": "t-mobile",
+    "name": "T-Mobile",
+    "domain": "t-mobile.com",
+    "category": "isp",
+    "checkUrl": "https://www.t-mobile.com",
+    "keywords": [
+      "is t-mobile down",
+      "t-mobile not working",
+      "t-mobile service down",
+      "t-mobile status"
+    ]
+  },
+  {
+    "slug": "att",
+    "name": "AT&T",
+    "domain": "att.com",
+    "category": "isp",
+    "checkUrl": "https://www.att.com",
+    "keywords": [
+      "is att down",
+      "is at&t down",
+      "att not working",
+      "att status"
+    ]
+  },
+  {
+    "slug": "optimum",
+    "name": "Optimum",
+    "domain": "optimum.net",
+    "category": "isp",
+    "checkUrl": "https://www.optimum.net",
+    "keywords": [
+      "is optimum down",
+      "optimum not working",
+      "optimum status"
+    ]
+  },
+  {
+    "slug": "directv",
+    "name": "DirecTV",
+    "domain": "directv.com",
+    "category": "isp",
+    "checkUrl": "https://www.directv.com",
+    "keywords": [
+      "is directv down",
+      "directv not working",
+      "directv status"
+    ]
+  },
+  {
+    "slug": "us-cellular",
+    "name": "US Cellular",
+    "domain": "uscellular.com",
+    "category": "isp",
+    "checkUrl": "https://www.uscellular.com",
+    "keywords": [
+      "is us cellular down",
+      "us cellular not working",
+      "us cellular status"
+    ]
+  },
+  {
+    "slug": "straight-talk",
+    "name": "Straight Talk",
+    "domain": "straighttalk.com",
+    "category": "isp",
+    "checkUrl": "https://www.straighttalk.com",
+    "keywords": [
+      "is straight talk down",
+      "straight talk not working",
+      "straight talk status"
+    ]
+  },
+  {
+    "slug": "mediacom",
+    "name": "Mediacom",
+    "domain": "mediacomcable.com",
+    "category": "isp",
+    "checkUrl": "https://www.mediacomcable.com",
+    "keywords": [
+      "is mediacom down",
+      "mediacom not working",
+      "mediacom status"
+    ]
+  },
+  {
+    "slug": "cellcom",
+    "name": "Cellcom",
+    "domain": "cellcom.com",
+    "category": "isp",
+    "checkUrl": "https://www.cellcom.com",
+    "keywords": [
+      "is cellcom down",
+      "cellcom not working",
+      "cellcom status"
+    ]
+  },
+  {
+    "slug": "consumer-cellular",
+    "name": "Consumer Cellular",
+    "domain": "consumercellular.com",
+    "category": "isp",
+    "checkUrl": "https://www.consumercellular.com",
+    "keywords": [
+      "is consumer cellular down",
+      "consumer cellular not working",
+      "consumer cellular status"
+    ]
+  },
+  {
+    "slug": "google-fiber",
+    "name": "Google Fiber",
+    "domain": "fiber.google.com",
+    "category": "isp",
+    "checkUrl": "https://fiber.google.com",
+    "keywords": [
+      "is google fiber down",
+      "google fiber not working",
+      "google fiber status"
+    ]
+  },
+  {
+    "slug": "earthlink",
+    "name": "EarthLink",
+    "domain": "earthlink.net",
+    "category": "isp",
+    "checkUrl": "https://www.earthlink.net",
+    "keywords": [
+      "is earthlink down",
+      "earthlink not working",
+      "earthlink status"
+    ]
+  },
+  {
+    "slug": "wide-open-west",
+    "name": "WOW! Internet",
+    "domain": "wowway.com",
+    "category": "isp",
+    "checkUrl": "https://www.wowway.com",
+    "keywords": [
+      "is wide open west down",
+      "wow internet not working",
+      "wow internet status"
+    ]
+  },
+  {
+    "slug": "hinge",
+    "name": "Hinge",
+    "domain": "hinge.co",
+    "category": "dating",
+    "checkUrl": "https://hinge.co",
+    "keywords": [
+      "is hinge down",
+      "hinge not working",
+      "hinge status"
+    ]
+  },
+  {
+    "slug": "tinder",
+    "name": "Tinder",
+    "domain": "tinder.com",
+    "category": "dating",
+    "checkUrl": "https://tinder.com",
+    "keywords": [
+      "is tinder down",
+      "tinder not working",
+      "tinder status"
+    ]
+  },
+  {
+    "slug": "grindr",
+    "name": "Grindr",
+    "domain": "grindr.com",
+    "category": "dating",
+    "checkUrl": "https://www.grindr.com",
+    "keywords": [
+      "is grindr down",
+      "grindr not working",
+      "grindr status"
+    ]
+  },
+  {
+    "slug": "bumble",
+    "name": "Bumble",
+    "domain": "bumble.com",
+    "category": "dating",
+    "checkUrl": "https://bumble.com",
+    "keywords": [
+      "is bumble down",
+      "bumble not working",
+      "bumble status"
+    ]
+  },
+  {
+    "slug": "okcupid",
+    "name": "OkCupid",
+    "domain": "okcupid.com",
+    "category": "dating",
+    "checkUrl": "https://www.okcupid.com",
+    "keywords": [
+      "is okcupid down",
+      "okcupid not working",
+      "okcupid status"
+    ]
+  },
+  {
+    "slug": "fedex",
+    "name": "FedEx",
+    "domain": "fedex.com",
+    "category": "logistics",
+    "checkUrl": "https://www.fedex.com",
+    "keywords": [
+      "is fedex down",
+      "fedex not working",
+      "fedex status"
+    ]
+  },
+  {
+    "slug": "pirate-ship",
+    "name": "Pirate Ship",
+    "domain": "pirateship.com",
+    "category": "logistics",
+    "checkUrl": "https://www.pirateship.com",
+    "keywords": [
+      "is pirate ship down",
+      "pirate ship not working",
+      "pirate ship status"
+    ]
+  },
+  {
+    "slug": "ups",
+    "name": "UPS",
+    "domain": "ups.com",
+    "category": "logistics",
+    "checkUrl": "https://www.ups.com",
+    "keywords": [
+      "is ups down",
+      "ups website down",
+      "ups tracking down",
+      "ups status"
+    ]
+  },
+  {
+    "slug": "app-store",
+    "name": "Apple App Store",
+    "domain": "apps.apple.com",
+    "category": "entertainment",
+    "checkUrl": "https://apps.apple.com",
+    "keywords": [
+      "is the app store down",
+      "app store not working",
+      "app store status"
+    ]
+  },
+  {
+    "slug": "life360",
+    "name": "Life360",
+    "domain": "life360.com",
+    "category": "entertainment",
+    "checkUrl": "https://www.life360.com",
+    "keywords": [
+      "is life 360 down",
+      "life360 not working",
+      "life360 status"
+    ]
+  },
+  {
+    "slug": "patreon",
+    "name": "Patreon",
+    "domain": "patreon.com",
+    "category": "entertainment",
+    "checkUrl": "https://www.patreon.com",
+    "keywords": [
+      "is patreon down",
+      "patreon not working",
+      "patreon status"
+    ]
+  },
+  {
+    "slug": "chess-com",
+    "name": "Chess.com",
+    "domain": "chess.com",
+    "category": "entertainment",
+    "checkUrl": "https://www.chess.com",
+    "keywords": [
+      "is chess.com down",
+      "chess.com not working",
+      "chess.com status"
+    ]
+  },
+  {
+    "slug": "bandlab",
+    "name": "BandLab",
+    "domain": "bandlab.com",
+    "category": "entertainment",
+    "checkUrl": "https://www.bandlab.com",
+    "keywords": [
+      "is bandlab down",
+      "bandlab not working",
+      "bandlab status"
+    ]
+  },
+  {
+    "slug": "indeed",
+    "name": "Indeed",
+    "domain": "indeed.com",
+    "category": "entertainment",
+    "checkUrl": "https://www.indeed.com",
+    "keywords": [
+      "is indeed down",
+      "indeed not working",
+      "indeed status"
+    ]
+  },
+  {
+    "slug": "fitbit",
+    "name": "Fitbit",
+    "domain": "fitbit.com",
+    "category": "entertainment",
+    "checkUrl": "https://www.fitbit.com",
+    "keywords": [
+      "is fitbit down",
+      "fitbit not working",
+      "fitbit status"
+    ]
+  },
+  {
+    "slug": "fandango",
+    "name": "Fandango",
+    "domain": "fandango.com",
+    "category": "entertainment",
+    "checkUrl": "https://www.fandango.com",
+    "keywords": [
+      "is fandango down",
+      "fandango not working",
+      "fandango status"
+    ]
+  },
+  {
+    "slug": "goodreads",
+    "name": "Goodreads",
+    "domain": "goodreads.com",
+    "category": "entertainment",
+    "checkUrl": "https://www.goodreads.com",
+    "keywords": [
+      "is goodreads down",
+      "goodreads not working",
+      "goodreads status"
+    ]
+  },
+  {
+    "slug": "myfitnesspal",
+    "name": "MyFitnessPal",
+    "domain": "myfitnesspal.com",
+    "category": "entertainment",
+    "checkUrl": "https://www.myfitnesspal.com",
+    "keywords": [
+      "is myfitnesspal down",
+      "myfitnesspal not working",
+      "myfitnesspal status"
+    ]
+  },
+  {
+    "slug": "nytimes",
+    "name": "NY Times",
+    "domain": "nytimes.com",
+    "category": "entertainment",
+    "checkUrl": "https://www.nytimes.com",
+    "keywords": [
+      "is nytimes down",
+      "nytimes not working",
+      "nytimes status"
+    ]
+  },
+  {
+    "slug": "webtoons",
+    "name": "Webtoons",
+    "domain": "webtoons.com",
+    "category": "entertainment",
+    "checkUrl": "https://www.webtoons.com",
+    "keywords": [
+      "is webtoons down",
+      "webtoons not working",
+      "webtoons status"
+    ]
+  },
+  {
+    "slug": "imdb",
+    "name": "IMDb",
+    "domain": "imdb.com",
+    "category": "entertainment",
+    "checkUrl": "https://www.imdb.com",
+    "keywords": [
+      "is imdb down",
+      "imdb not working",
+      "imdb status"
+    ]
+  },
+  {
+    "slug": "fandom",
+    "name": "Fandom",
+    "domain": "fandom.com",
+    "category": "entertainment",
+    "checkUrl": "https://www.fandom.com",
+    "keywords": [
+      "is fandom down",
+      "fandom not working",
+      "fandom status"
+    ]
+  },
+  {
+    "slug": "upwork",
+    "name": "Upwork",
+    "domain": "upwork.com",
+    "category": "entertainment",
+    "checkUrl": "https://www.upwork.com",
+    "keywords": [
+      "is upwork down",
+      "upwork not working",
+      "upwork status"
+    ]
+  },
+  {
+    "slug": "ziprecruiter",
+    "name": "ZipRecruiter",
+    "domain": "ziprecruiter.com",
+    "category": "entertainment",
+    "checkUrl": "https://www.ziprecruiter.com",
+    "keywords": [
+      "is ziprecruiter down",
+      "ziprecruiter not working",
+      "ziprecruiter status"
+    ]
+  },
+  {
+    "slug": "whoop",
+    "name": "Whoop",
+    "domain": "whoop.com",
+    "category": "entertainment",
+    "checkUrl": "https://www.whoop.com",
+    "keywords": [
+      "is whoop down",
+      "whoop not working",
+      "whoop status"
+    ]
+  },
+  {
+    "slug": "libby",
+    "name": "Libby",
+    "domain": "libbyapp.com",
+    "category": "entertainment",
+    "checkUrl": "https://libbyapp.com",
+    "keywords": [
+      "is libby down",
+      "libby app down",
+      "libby status"
+    ]
+  },
+  {
+    "slug": "opentable",
+    "name": "OpenTable",
+    "domain": "opentable.com",
+    "category": "entertainment",
+    "checkUrl": "https://www.opentable.com",
+    "keywords": [
+      "is opentable down",
+      "opentable not working",
+      "opentable status"
+    ]
+  },
+  {
+    "slug": "ancestry",
+    "name": "Ancestry",
+    "domain": "ancestry.com",
+    "category": "entertainment",
+    "checkUrl": "https://www.ancestry.com",
+    "keywords": [
+      "is ancestry down",
+      "ancestry.com not working",
+      "ancestry status"
+    ]
+  },
+  {
+    "slug": "capcut",
+    "name": "CapCut",
+    "domain": "capcut.com",
+    "category": "entertainment",
+    "checkUrl": "https://www.capcut.com",
+    "keywords": [
+      "is capcut down",
+      "capcut not working",
+      "capcut status"
+    ]
+  },
+  {
+    "slug": "cricut",
+    "name": "Cricut",
+    "domain": "cricut.com",
+    "category": "entertainment",
+    "checkUrl": "https://www.cricut.com",
+    "keywords": [
+      "is cricut down",
+      "cricut not working",
+      "cricut status"
+    ]
+  },
+  {
+    "slug": "quora",
+    "name": "Quora",
+    "domain": "quora.com",
+    "category": "entertainment",
+    "checkUrl": "https://www.quora.com",
+    "keywords": [
+      "is quora down",
+      "quora not working",
+      "quora status"
+    ]
+  },
+  {
+    "slug": "glassdoor",
+    "name": "Glassdoor",
+    "domain": "glassdoor.com",
+    "category": "entertainment",
+    "checkUrl": "https://www.glassdoor.com",
+    "keywords": [
+      "is glassdoor down",
+      "glassdoor not working",
+      "glassdoor status"
+    ]
+  },
+  {
+    "slug": "strava",
+    "name": "Strava",
+    "domain": "strava.com",
+    "category": "entertainment",
+    "checkUrl": "https://www.strava.com",
+    "keywords": [
+      "is strava down",
+      "strava not working",
+      "strava status"
+    ]
+  },
+  {
+    "slug": "wikipedia",
+    "name": "Wikipedia",
+    "domain": "wikipedia.org",
+    "category": "entertainment",
+    "checkUrl": "https://www.wikipedia.org",
+    "keywords": [
+      "is wikipedia down",
+      "wikipedia not working",
+      "wikipedia status"
+    ]
+  },
+  {
+    "slug": "ring",
+    "name": "Ring",
+    "domain": "ring.com",
+    "category": "entertainment",
+    "checkUrl": "https://ring.com",
+    "keywords": [
+      "is ring down",
+      "ring not working",
+      "ring status"
+    ]
+  },
+  {
+    "slug": "alexa",
+    "name": "Amazon Alexa",
+    "domain": "alexa.amazon.com",
+    "category": "entertainment",
+    "checkUrl": "https://alexa.amazon.com",
+    "keywords": [
+      "is alexa down",
+      "alexa not working",
+      "alexa status"
+    ]
+  },
+  {
+    "slug": "apple-pay",
+    "name": "Apple Pay",
+    "domain": "apple.com",
+    "category": "entertainment",
+    "checkUrl": "https://www.apple.com/apple-pay/",
+    "keywords": [
+      "is apple pay down",
+      "apple pay not working",
+      "apple pay status"
+    ]
+  },
+  {
+    "slug": "usps",
+    "name": "USPS",
+    "domain": "usps.com",
+    "category": "logistics",
+    "checkUrl": "https://www.usps.com",
+    "keywords": [
+      "is usps down",
+      "usps website down",
+      "usps tracking down",
+      "usps status"
+    ]
+  },
+  {
+    "slug": "archive-org",
+    "name": "Internet Archive",
+    "domain": "archive.org",
+    "category": "entertainment",
+    "checkUrl": "https://archive.org",
+    "keywords": [
+      "is archive.org down",
+      "internet archive down",
+      "archive.org status"
+    ]
+  },
+  {
+    "slug": "nexus-mods",
+    "name": "Nexus Mods",
+    "domain": "nexusmods.com",
+    "category": "entertainment",
+    "checkUrl": "https://www.nexusmods.com",
+    "keywords": [
+      "is nexus mods down",
+      "nexus mods not working",
+      "nexus mods status"
+    ]
+  },
+  {
+    "slug": "yahoo",
+    "name": "Yahoo",
+    "domain": "yahoo.com",
+    "category": "entertainment",
+    "checkUrl": "https://www.yahoo.com",
+    "keywords": [
+      "is yahoo down",
+      "yahoo not working",
+      "yahoo status"
+    ]
+  },
+  {
+    "slug": "ao3",
+    "name": "Archive of Our Own",
+    "domain": "archiveofourown.org",
+    "category": "entertainment",
+    "checkUrl": "https://archiveofourown.org",
+    "keywords": [
+      "is ao3 down",
+      "archive of our own down",
+      "ao3 status"
+    ]
+  },
+  {
+    "slug": "irs",
+    "name": "IRS",
+    "domain": "irs.gov",
+    "category": "entertainment",
+    "checkUrl": "https://www.irs.gov",
+    "keywords": [
+      "is irs website down",
+      "irs not working",
+      "irs status"
+    ]
+  },
+  {
+    "slug": "escape-from-tarkov",
+    "name": "Escape from Tarkov",
+    "domain": "escapefromtarkov.com",
+    "category": "gaming",
+    "checkUrl": "https://www.escapefromtarkov.com",
+    "keywords": [
+      "is tarkov down",
+      "escape from tarkov not working",
+      "tarkov status"
+    ]
+  },
+  {
+    "slug": "yts",
+    "name": "YTS",
+    "domain": "yts.mx",
+    "category": "entertainment",
+    "checkUrl": "https://yts.mx",
+    "keywords": [
+      "is yts down",
+      "yts not working",
+      "yts status"
+    ]
+  },
+  {
+    "slug": "fanduel",
+    "name": "FanDuel",
+    "domain": "fanduel.com",
+    "category": "entertainment",
+    "checkUrl": "https://www.fanduel.com",
+    "keywords": [
+      "is fanduel down",
+      "fanduel not working",
+      "fanduel status"
+    ]
+  },
+  {
+    "slug": "garmin-connect",
+    "name": "Garmin Connect",
+    "domain": "connect.garmin.com",
+    "category": "entertainment",
+    "checkUrl": "https://connect.garmin.com",
+    "keywords": [
+      "is garmin connect down",
+      "garmin connect not working",
+      "garmin connect status"
+    ]
+  },
+  {
+    "slug": "flixer",
+    "name": "Flixer",
+    "domain": "flixer.to",
+    "category": "entertainment",
+    "checkUrl": "https://flixer.to",
+    "keywords": [
+      "is flixer down",
+      "flixer not working",
+      "flixer status"
+    ]
+  },
+  {
+    "slug": "fox-news",
+    "name": "Fox News",
+    "domain": "foxnews.com",
+    "category": "entertainment",
+    "checkUrl": "https://www.foxnews.com",
+    "keywords": [
+      "is fox news down",
+      "fox news not working",
+      "fox news status"
+    ]
+  },
+  {
+    "slug": "bovada",
+    "name": "Bovada",
+    "domain": "bovada.lv",
+    "category": "entertainment",
+    "checkUrl": "https://www.bovada.lv",
+    "keywords": [
+      "is bovada down",
+      "bovada not working",
+      "bovada status"
+    ]
+  },
+  {
+    "slug": "draftkings",
+    "name": "DraftKings",
+    "domain": "draftkings.com",
+    "category": "entertainment",
+    "checkUrl": "https://www.draftkings.com",
+    "keywords": [
+      "is draftkings down",
+      "draftkings not working",
+      "draftkings status"
+    ]
+  },
+  {
+    "slug": "cnn",
+    "name": "CNN",
+    "domain": "cnn.com",
+    "category": "entertainment",
+    "checkUrl": "https://www.cnn.com",
+    "keywords": [
+      "is cnn down",
+      "cnn not working",
+      "cnn status"
+    ]
+  },
+  {
+    "slug": "daily-pay",
+    "name": "DailyPay",
+    "domain": "dailypay.com",
+    "category": "entertainment",
+    "checkUrl": "https://www.dailypay.com",
+    "keywords": [
+      "is daily pay down",
+      "dailypay not working",
+      "dailypay status"
+    ]
+  },
+  {
+    "slug": "clapper",
+    "name": "Clapper",
+    "domain": "clapperapp.com",
+    "category": "entertainment",
+    "checkUrl": "https://clapperapp.com",
+    "keywords": [
+      "is clapper down",
+      "clapper not working",
+      "clapper status"
+    ]
+  },
+  {
+    "slug": "bing",
+    "name": "Bing",
+    "domain": "bing.com",
+    "category": "entertainment",
+    "checkUrl": "https://www.bing.com",
+    "keywords": [
+      "is bing down",
+      "bing not working",
+      "bing status"
+    ]
+  },
+  {
+    "slug": "chromecast",
+    "name": "Chromecast",
+    "domain": "store.google.com",
+    "category": "entertainment",
+    "checkUrl": "https://store.google.com/category/chromecast",
+    "keywords": [
+      "is chromecast down",
+      "chromecast not working",
+      "chromecast status"
+    ]
+  },
+  {
+    "slug": "lyft",
+    "name": "Lyft",
+    "domain": "lyft.com",
+    "category": "delivery",
+    "checkUrl": "https://www.lyft.com",
+    "keywords": [
+      "is lyft down",
+      "lyft not working",
+      "lyft status"
+    ]
+  },
+  {
+    "slug": "google-play",
+    "name": "Google Play Store",
+    "domain": "play.google.com",
+    "category": "entertainment",
+    "checkUrl": "https://play.google.com",
+    "keywords": [
+      "is google play down",
+      "google play store not working",
+      "google play status"
+    ]
+  },
+  {
+    "slug": "direct-express",
+    "name": "Direct Express",
+    "domain": "usdirectexpress.com",
+    "category": "finance",
+    "checkUrl": "https://www.usdirectexpress.com",
+    "keywords": [
+      "is direct express down",
+      "direct express not working",
+      "direct express status"
+    ]
+  },
+  {
+    "slug": "bankmobile",
+    "name": "BankMobile",
+    "domain": "bankmobile.com",
+    "category": "finance",
+    "checkUrl": "https://www.bankmobile.com",
+    "keywords": [
+      "is bankmobile down",
+      "bankmobile not working",
+      "bankmobile status"
+    ]
+  },
+  {
+    "slug": "discover",
+    "name": "Discover",
+    "domain": "discover.com",
+    "category": "finance",
+    "checkUrl": "https://www.discover.com",
+    "keywords": [
+      "is discover down",
+      "discover not working",
+      "discover status"
+    ]
+  },
+  {
+    "slug": "netspend",
+    "name": "Netspend",
+    "domain": "netspend.com",
+    "category": "finance",
+    "checkUrl": "https://www.netspend.com",
+    "keywords": [
+      "is netspend down",
+      "netspend not working",
+      "netspend status"
+    ]
+  },
+  {
+    "slug": "mangadex",
+    "name": "MangaDex",
+    "domain": "mangadex.org",
+    "category": "entertainment",
+    "checkUrl": "https://mangadex.org",
+    "keywords": [
+      "is mangadex down",
+      "mangadex not working",
+      "mangadex status"
+    ]
+  },
+  {
+    "slug": "onlyfans",
+    "name": "OnlyFans",
+    "domain": "onlyfans.com",
+    "category": "entertainment",
+    "checkUrl": "https://onlyfans.com",
+    "keywords": [
+      "is onlyfans down",
+      "onlyfans not working",
+      "onlyfans status"
+    ]
+  },
+  {
+    "slug": "meta",
+    "name": "Meta",
+    "domain": "meta.com",
+    "category": "entertainment",
+    "checkUrl": "https://about.meta.com",
+    "keywords": [
+      "is meta down",
+      "meta not working",
+      "meta status"
+    ]
+  },
+  {
+    "slug": "hotmail",
+    "name": "Hotmail",
+    "domain": "outlook.live.com",
+    "category": "communication",
+    "checkUrl": "https://outlook.live.com",
+    "keywords": [
+      "is hotmail down",
+      "hotmail not working",
+      "hotmail status"
+    ]
+  },
+  {
+    "slug": "truth-social",
+    "name": "Truth Social",
+    "domain": "truthsocial.com",
+    "category": "social-media",
+    "checkUrl": "https://truthsocial.com",
+    "keywords": [
+      "is truth social down",
+      "truth social not working",
+      "truth social status"
+    ]
+  },
+  {
+    "slug": "mychart",
+    "name": "MyChart",
+    "domain": "mychart.com",
+    "category": "entertainment",
+    "checkUrl": "https://www.mychart.com",
+    "keywords": [
+      "is mychart down",
+      "mychart not working",
+      "mychart status"
+    ]
+  },
+  {
+    "slug": "streameast",
+    "name": "StreamEast",
+    "domain": "streameast.to",
+    "category": "streaming",
+    "checkUrl": "https://streameast.to",
+    "keywords": [
+      "is streameast down",
+      "streameast not working",
+      "streameast status"
+    ]
+  },
+  {
+    "slug": "libgen",
+    "name": "Library Genesis",
+    "domain": "libgen.is",
+    "category": "entertainment",
+    "checkUrl": "https://libgen.is",
+    "keywords": [
+      "is libgen down",
+      "libgen not working",
+      "libgen status"
+    ]
+  },
+  {
+    "slug": "prizepicks",
+    "name": "PrizePicks",
+    "domain": "prizepicks.com",
+    "category": "entertainment",
+    "checkUrl": "https://www.prizepicks.com",
+    "keywords": [
+      "is prizepicks down",
+      "prizepicks not working",
+      "prizepicks status"
+    ]
+  },
+  {
+    "slug": "real-debrid",
+    "name": "Real-Debrid",
+    "domain": "real-debrid.com",
+    "category": "entertainment",
+    "checkUrl": "https://real-debrid.com",
+    "keywords": [
+      "is real debrid down",
+      "real-debrid not working",
+      "real debrid status"
+    ]
+  },
+  {
+    "slug": "vsco",
+    "name": "VSCO",
+    "domain": "vsco.co",
+    "category": "entertainment",
+    "checkUrl": "https://vsco.co",
+    "keywords": [
+      "is vsco down",
+      "vsco not working",
+      "vsco status"
+    ]
+  },
+  {
+    "slug": "pirate-bay",
+    "name": "The Pirate Bay",
+    "domain": "thepiratebay.org",
+    "category": "entertainment",
+    "checkUrl": "https://thepiratebay.org",
+    "keywords": [
+      "is piratebay down",
+      "pirate bay not working",
+      "pirate bay status"
+    ]
+  },
+  {
+    "slug": "tradingview",
+    "name": "TradingView",
+    "domain": "tradingview.com",
+    "category": "finance",
+    "checkUrl": "https://www.tradingview.com",
+    "keywords": [
+      "is tradingview down",
+      "tradingview not working",
+      "tradingview status"
+    ]
+  },
+  {
+    "slug": "kraken",
+    "name": "Kraken",
+    "domain": "kraken.com",
+    "category": "finance",
+    "checkUrl": "https://www.kraken.com",
+    "keywords": [
+      "is kraken down",
+      "kraken not working",
+      "kraken status"
+    ]
+  },
+  {
+    "slug": "pokerstars",
+    "name": "PokerStars",
+    "domain": "pokerstars.com",
+    "category": "entertainment",
+    "checkUrl": "https://www.pokerstars.com",
+    "keywords": [
+      "is pokerstars down",
+      "pokerstars not working",
+      "pokerstars status"
+    ]
+  },
+  {
+    "slug": "caesars-sportsbook",
+    "name": "Caesars Sportsbook",
+    "domain": "caesars.com",
+    "category": "entertainment",
+    "checkUrl": "https://www.caesars.com/sportsbook-and-casino",
+    "keywords": [
+      "is caesars sportsbook down",
+      "caesars sportsbook not working",
+      "caesars sportsbook status"
+    ]
+  },
+  {
+    "slug": "nordvpn",
+    "name": "NordVPN",
+    "domain": "nordvpn.com",
+    "category": "vpn",
+    "checkUrl": "https://nordvpn.com",
+    "keywords": [
+      "is nordvpn down",
+      "nordvpn not working",
+      "nordvpn status"
+    ]
+  },
+  {
+    "slug": "1password",
+    "name": "1Password",
+    "domain": "1password.com",
+    "category": "vpn",
+    "checkUrl": "https://1password.com",
+    "keywords": [
+      "is 1password down",
+      "1password not working",
+      "1password status"
+    ]
+  },
+  {
+    "slug": "surfshark",
+    "name": "Surfshark",
+    "domain": "surfshark.com",
+    "category": "vpn",
+    "checkUrl": "https://surfshark.com",
+    "keywords": [
+      "is surfshark down",
+      "surfshark not working",
+      "surfshark status"
+    ]
+  },
+  {
+    "slug": "expressvpn",
+    "name": "ExpressVPN",
+    "domain": "expressvpn.com",
+    "category": "vpn",
+    "checkUrl": "https://www.expressvpn.com",
+    "keywords": [
+      "is expressvpn down",
+      "expressvpn not working",
+      "expressvpn status"
+    ]
+  },
+  {
+    "slug": "american-airlines",
+    "name": "American Airlines",
+    "domain": "aa.com",
+    "category": "travel",
+    "checkUrl": "https://www.aa.com",
+    "keywords": [
+      "is american airlines website down",
+      "american airlines not working",
+      "american airlines status"
+    ]
+  },
+  {
+    "slug": "southwest-airlines",
+    "name": "Southwest Airlines",
+    "domain": "southwest.com",
+    "category": "travel",
+    "checkUrl": "https://www.southwest.com",
+    "keywords": [
+      "is southwest airlines down",
+      "southwest website down",
+      "southwest airlines status"
+    ]
+  },
+  {
+    "slug": "expedia",
+    "name": "Expedia",
+    "domain": "expedia.com",
+    "category": "travel",
+    "checkUrl": "https://www.expedia.com",
+    "keywords": [
+      "is expedia down",
+      "expedia not working",
+      "expedia status"
+    ]
+  },
+  {
+    "slug": "amtrak",
+    "name": "Amtrak",
+    "domain": "amtrak.com",
+    "category": "travel",
+    "checkUrl": "https://www.amtrak.com",
+    "keywords": [
+      "is amtrak website down",
+      "amtrak not working",
+      "amtrak status"
+    ]
+  },
+  {
+    "slug": "vrbo",
+    "name": "VRBO",
+    "domain": "vrbo.com",
+    "category": "travel",
+    "checkUrl": "https://www.vrbo.com",
+    "keywords": [
+      "is vrbo down",
+      "vrbo not working",
+      "vrbo status"
+    ]
+  },
+  {
+    "slug": "hilton",
+    "name": "Hilton",
+    "domain": "hilton.com",
+    "category": "travel",
+    "checkUrl": "https://www.hilton.com",
+    "keywords": [
+      "is hilton website down",
+      "hilton not working",
+      "hilton status"
+    ]
+  },
+  {
+    "slug": "carnival",
+    "name": "Carnival Cruise",
+    "domain": "carnival.com",
+    "category": "travel",
+    "checkUrl": "https://www.carnival.com",
+    "keywords": [
+      "is carnival website down",
+      "carnival not working",
+      "carnival status"
+    ]
+  },
+  {
+    "slug": "hertz",
+    "name": "Hertz",
+    "domain": "hertz.com",
+    "category": "travel",
+    "checkUrl": "https://www.hertz.com",
+    "keywords": [
+      "is hertz down",
+      "hertz website down",
+      "hertz status"
+    ]
+  },
+  {
+    "slug": "alaska-airlines",
+    "name": "Alaska Airlines",
+    "domain": "alaskaair.com",
+    "category": "travel",
+    "checkUrl": "https://www.alaskaair.com",
+    "keywords": [
+      "is alaska airlines down",
+      "alaska air website down",
+      "alaska airlines status"
+    ]
+  },
+  {
+    "slug": "royal-caribbean",
+    "name": "Royal Caribbean",
+    "domain": "royalcaribbean.com",
+    "category": "travel",
+    "checkUrl": "https://www.royalcaribbean.com",
+    "keywords": [
+      "is royal caribbean down",
+      "royal caribbean website down",
+      "royal caribbean status"
+    ]
+  },
+  {
+    "slug": "marriott",
+    "name": "Marriott",
+    "domain": "marriott.com",
+    "category": "travel",
+    "checkUrl": "https://www.marriott.com",
+    "keywords": [
+      "is marriott down",
+      "marriott website down",
+      "marriott status"
+    ]
+  },
+  {
+    "slug": "allegiant",
+    "name": "Allegiant Air",
+    "domain": "allegiantair.com",
+    "category": "travel",
+    "checkUrl": "https://www.allegiantair.com",
+    "keywords": [
+      "is allegiant down",
+      "allegiant website down",
+      "allegiant status"
+    ]
+  },
+  {
+    "slug": "united-airlines",
+    "name": "United Airlines",
+    "domain": "united.com",
+    "category": "travel",
+    "checkUrl": "https://www.united.com",
+    "keywords": [
+      "is united airlines down",
+      "united website down",
+      "united airlines status"
+    ]
+  }
+];
+
+async function migrate() {
+  const DATABASE_URL = process.env.DATABASE_URL;
+  if (!DATABASE_URL) {
+    console.error("DATABASE_URL is not set");
+    process.exit(1);
+  }
+
+  const sql = neon(DATABASE_URL);
+
+  console.log("Creating services table...");
+  await sql`
+    CREATE TABLE IF NOT EXISTS services (
+      id SERIAL PRIMARY KEY,
+      slug VARCHAR(255) UNIQUE NOT NULL,
+      name VARCHAR(255) NOT NULL,
+      domain VARCHAR(255) NOT NULL,
+      category VARCHAR(50) NOT NULL,
+      check_url VARCHAR(500) NOT NULL,
+      keywords TEXT[] NOT NULL DEFAULT '{}',
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `;
+
+  await sql`CREATE INDEX IF NOT EXISTS idx_services_category ON services(category)`;
+  await sql`CREATE INDEX IF NOT EXISTS idx_services_slug ON services(slug)`;
+
+  console.log("Table and indexes created.");
+
+  const existing = await sql`SELECT COUNT(*)::int as count FROM services`;
+  console.log(`Existing services in DB: ${existing[0].count}`);
+
+  console.log(`Inserting ${services.length} services...`);
+  let inserted = 0;
+
+  for (let i = 0; i < services.length; i += 50) {
+    const batch = services.slice(i, i + 50);
+    const promises = batch.map((s) =>
+      sql`
+        INSERT INTO services (slug, name, domain, category, check_url, keywords)
+        VALUES (${s.slug}, ${s.name}, ${s.domain}, ${s.category}, ${s.checkUrl}, ${s.keywords})
+        ON CONFLICT (slug) DO NOTHING
+      `
+    );
+    await Promise.all(promises);
+    inserted += batch.length;
+    console.log(`  Progress: ${inserted}/${services.length}`);
+  }
+
+  const final = await sql`SELECT COUNT(*)::int as count FROM services`;
+  console.log(`Done! Total services in DB: ${final[0].count}`);
+}
+
+migrate().catch((err) => {
+  console.error("Migration failed:", err);
+  process.exit(1);
+});

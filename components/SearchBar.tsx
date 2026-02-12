@@ -2,10 +2,10 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { services } from "@/lib/services";
+import { Service } from "@/lib/types";
 import ServiceIcon from "./ServiceIcon";
 
-export default function SearchBar() {
+export default function SearchBar({ services }: { services: Service[] }) {
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);

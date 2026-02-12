@@ -1,10 +1,12 @@
 export interface Service {
+  id?: number;
   slug: string;
   name: string;
   domain: string;
   category: Category;
   checkUrl: string;
   keywords: string[];
+  created_at?: string;
 }
 
 export type Category =
