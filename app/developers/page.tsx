@@ -112,6 +112,15 @@ export default function DevelopersPage() {
                 </code>
                 . No public endpoint needed. Perfect for private services.
               </p>
+              <div className="mt-4 flex items-center gap-2">
+                <code className="block flex-1 overflow-x-auto rounded-xl bg-zinc-900 px-3 py-2 text-xs text-zinc-300 dark:bg-zinc-950">
+                  {LLM_TXT_URL}
+                </code>
+                <CopyButton text={LLM_TXT_URL} />
+              </div>
+              <p className="mt-2 text-xs text-zinc-400 dark:text-zinc-500">
+                Paste in your AI tool to implement it automatically.
+              </p>
             </div>
           </div>
         </div>
