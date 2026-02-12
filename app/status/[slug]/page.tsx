@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getServices, getServiceBySlug, getRelatedServices, getCategoryBySlug } from "@/lib/services";
 import StatusChecker from "@/components/StatusChecker";
+import StatusTimeline from "@/components/StatusTimeline";
 import ServiceIcon from "@/components/ServiceIcon";
 
 export async function generateStaticParams() {
@@ -230,6 +231,11 @@ export default async function StatusPage({
             </span>
           </p>
           <StatusChecker domain={service.domain} />
+        </div>
+
+        {/* Status Timeline */}
+        <div className="mb-10 rounded-2xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
+          <StatusTimeline slug={service.slug} />
         </div>
 
         {/* About */}

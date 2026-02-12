@@ -7,6 +7,9 @@ export interface Service {
   checkUrl: string;
   keywords: string[];
   created_at?: string;
+  current_status?: "up" | "down" | "slow" | null;
+  current_response_time?: number | null;
+  last_checked_at?: string | null;
 }
 
 export type Category =
@@ -40,4 +43,11 @@ export interface StatusCheckResult {
   responseTime: number;
   statusCode: number;
   checkedAt: string;
+}
+
+export interface StatusCheck {
+  status: "up" | "down" | "slow";
+  response_time: number;
+  status_code: number;
+  checked_at: string;
 }

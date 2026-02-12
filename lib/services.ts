@@ -36,6 +36,9 @@ function mapRow(row: Record<string, unknown>): Service {
     checkUrl: row.check_url as string,
     keywords: row.keywords as string[],
     created_at: row.created_at as string,
+    current_status: (row.current_status as Service["current_status"]) ?? null,
+    current_response_time: (row.current_response_time as number) ?? null,
+    last_checked_at: (row.last_checked_at as string) ?? null,
   };
 }
 
