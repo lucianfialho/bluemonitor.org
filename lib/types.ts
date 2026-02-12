@@ -42,11 +42,19 @@ export interface CategoryInfo {
   description: string;
 }
 
+export interface HealthEndpointResponse {
+  status: string;
+  timestamp?: string;
+  [key: string]: unknown;
+}
+
 export interface StatusCheckResult {
   status: "up" | "down" | "slow";
   responseTime: number;
   statusCode: number;
   checkedAt: string;
+  healthEndpoint?: boolean;
+  healthData?: HealthEndpointResponse | null;
 }
 
 export interface StatusCheck {
