@@ -1370,6 +1370,16 @@
     "provider": "atom"
   },
   {
+    "serviceId": 455,
+    "slug": "vtex",
+    "name": "VTEX",
+    "domain": "vtex.com",
+    "statusPageUrl": "https://status.vtex.com",
+    "feedUrl": "https://status.vtex.com/feed.rss",
+    "apiUrl": null,
+    "provider": "incident.io"
+  },
+  {
     "serviceId": 233,
     "slug": "wix",
     "name": "Wix",
