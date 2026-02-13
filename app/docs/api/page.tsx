@@ -450,16 +450,10 @@ export default function ApiReferencePage() {
           />
           <Endpoint
             method="POST"
-            path="/api/v1/heartbeat?domain=:domain"
-            description="Push a heartbeat from your service. Requires API key. Service must be in your watchlist."
-            query={[
-              {
-                name: "domain",
-                description:
-                  "The domain of your service (e.g., myapp.com)",
-              },
-            ]}
+            path="/api/v1/heartbeat"
+            description="Push a heartbeat from your service. Requires API key. Auto-registers the service on first call."
             body={`{
+  "domain": "myapp.com",
   "status": "ok",
   "timestamp": "2026-02-12T12:00:00.000Z",
   "checks": {
@@ -467,10 +461,10 @@ export default function ApiReferencePage() {
     "redis": { "status": "ok", "latency": 2 }
   }
 }`}
-            example={`curl -X POST "https://www.bluemonitor.org/api/v1/heartbeat?domain=myapp.com" \\
+            example={`curl -X POST "https://www.bluemonitor.org/api/v1/heartbeat" \\
   -H "Authorization: Bearer bm_your_api_key" \\
   -H "Content-Type: application/json" \\
-  -d '{"status":"ok","checks":{"database":{"status":"ok","latency":5}}}'`}
+  -d '{"domain":"myapp.com","status":"ok","checks":{"database":{"status":"ok","latency":5}}}'`}
             response={`{
   "ok": true,
   "service": "My App",

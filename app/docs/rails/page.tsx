@@ -123,10 +123,11 @@ end`}</code>
 
     has_error = checks.values.any? { |c| c[:status] == "error" }
 
-    uri = URI("https://www.bluemonitor.org/api/v1/heartbeat?domain=yourapp.com")
+    uri = URI("https://www.bluemonitor.org/api/v1/heartbeat")
     Net::HTTP.post(
       uri,
       {
+        domain: "yourapp.com",
         status: has_error ? "error" : "ok",
         timestamp: Time.now.utc.iso8601,
         checks: checks

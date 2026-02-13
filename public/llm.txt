@@ -17,6 +17,10 @@ For detailed setup instructions with code examples, use the guide for your frame
 
 If your framework is not listed, follow the generic instructions below.
 
+## Important: Auto-detect the domain
+
+When generating code, automatically detect the project's production domain from the codebase (check `vercel.json`, `package.json` homepage field, `.env` files for `NEXT_PUBLIC_URL`, `APP_URL`, `VERCEL_PROJECT_PRODUCTION_URL`, or similar). Use the detected domain directly in the heartbeat URL — do NOT ask the user or use placeholders.
+
 ## How BlueMonitor Works
 
 **Uptime monitoring (pull):** We ping your service every 5 minutes and track response time and status code. Optionally add a `GET /api/health` endpoint that returns `{ "status": "ok" }`.
@@ -38,12 +42,13 @@ Create a `GET /api/health` route that returns:
 
 ### 2. Heartbeat Push (recommended)
 
-POST to `https://www.bluemonitor.org/api/v1/heartbeat?domain={your-domain}`
+POST to `https://www.bluemonitor.org/api/v1/heartbeat`
 
 Headers: `Authorization: Bearer bm_your_api_key`, `Content-Type: application/json`
 
 ```json
 {
+  "domain": "yourapp.com",
   "status": "ok",
   "timestamp": "2026-02-12T12:00:00.000Z",
   "checks": {
@@ -55,8 +60,8 @@ Headers: `Authorization: Bearer bm_your_api_key`, `Content-Type: application/jso
 
 Requirements:
 - A BlueMonitor API key (create at https://www.bluemonitor.org/dashboard)
-- The service must be in your watchlist
 - Send heartbeats every 5 minutes via cron or scheduler
+- The first heartbeat auto-registers the service and adds it to your watchlist
 
 ### 3. Status Badge
 
@@ -103,7 +108,7 @@ Full API docs: https://www.bluemonitor.org/docs/api
 - `GET /api/v1/status/:slug` — Get status of a service
 - `GET /api/v1/services` — List all monitored services
 - `GET /api/v1/incidents` — Get recent incidents
-- `POST /api/v1/heartbeat?domain=:domain` — Push heartbeat (requires API key)
+- `POST /api/v1/heartbeat` — Push heartbeat (requires API key, domain in body)
 - `GET /api/badge/:slug` — Status badge PNG image
 
 ## Common Slugs

@@ -5,6 +5,15 @@ import { determineStatusFromHealth } from "@/lib/check-service";
 import { notifyStatusChanges, StatusChange } from "@/lib/notify-webhooks";
 import { HealthEndpointResponse } from "@/lib/types";
 
+function slugify(text: string): string {
+  return text
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
 export async function POST(request: NextRequest) {
   // Rate limit
   const rlResponse = await withRateLimit(request);
@@ -19,26 +28,17 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // Parse domain from query string
-  const domain = request.nextUrl.searchParams.get("domain")?.trim();
-  if (!domain) {
-    return NextResponse.json(
-      { error: "Missing ?domain= query parameter." },
-      { status: 400 }
-    );
-  }
-
-  // Parse body as HealthEndpointResponse
-  let body: HealthEndpointResponse;
+  // Parse body
+  let body: HealthEndpointResponse & { domain?: string };
   try {
     const json = await request.json();
     if (!json || typeof json !== "object" || !("status" in json)) {
       return NextResponse.json(
-        { error: 'Body must be JSON with at least a "status" field.' },
+        { error: 'Body must be JSON with at least "status" and "domain" fields.' },
         { status: 400 }
       );
     }
-    body = json as HealthEndpointResponse;
+    body = json as HealthEndpointResponse & { domain?: string };
   } catch {
     return NextResponse.json(
       { error: "Invalid JSON body." },
@@ -46,25 +46,53 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const sql = getDb();
-
-  // Find the service and verify it's in the user's watchlist
-  const rows = await sql`
-    SELECT s.id, s.name, s.domain, s.current_status
-    FROM services s
-    JOIN watchlist w ON w.service_id = s.id AND w.user_id = ${owner.userId}
-    WHERE s.domain = ${domain}
-    LIMIT 1
-  `;
-
-  if (rows.length === 0) {
+  // Domain from body, fallback to query string for backwards compatibility
+  const domain = body.domain?.trim() || request.nextUrl.searchParams.get("domain")?.trim();
+  if (!domain) {
     return NextResponse.json(
-      { error: "Service not found in your watchlist. Add it first from your dashboard." },
-      { status: 404 }
+      { error: 'Missing "domain" field in request body.' },
+      { status: 400 }
     );
   }
 
+  const sql = getDb();
+
+  // Find the service by domain
+  let rows = await sql`
+    SELECT id, name, domain, current_status
+    FROM services
+    WHERE domain = ${domain}
+    LIMIT 1
+  `;
+
+  // Auto-register service if it doesn't exist
+  if (rows.length === 0) {
+    const name = domain.replace(/\.[^.]+$/, "").replace(/[.-]/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+    const slug = slugify(domain);
+    const checkUrl = `https://${domain}`;
+
+    const inserted = await sql`
+      INSERT INTO services (slug, name, domain, category, check_url, keywords)
+      VALUES (${slug}, ${name}, ${domain}, 'other', ${checkUrl}, ${[`is ${name.toLowerCase()} down`, `${name.toLowerCase()} status`]})
+      ON CONFLICT (slug) DO UPDATE SET slug = services.slug
+      RETURNING id, name, domain, current_status
+    `;
+    rows = inserted;
+  }
+
   const service = rows[0];
+
+  // Auto-add to watchlist if not already there (respects free tier limit)
+  const watchlistCheck = await sql`
+    SELECT 1 FROM watchlist WHERE user_id = ${owner.userId} AND service_id = ${service.id}
+  `;
+  if (watchlistCheck.length === 0) {
+    await sql`
+      INSERT INTO watchlist (user_id, service_id)
+      VALUES (${owner.userId}, ${service.id})
+      ON CONFLICT (user_id, service_id) DO NOTHING
+    `;
+  }
 
   // Determine status from reported health data
   const maxLatency = body.checks

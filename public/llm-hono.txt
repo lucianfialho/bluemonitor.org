@@ -4,6 +4,10 @@ Add uptime monitoring, heartbeat push, and a status badge to your Hono app. Work
 
 Documentation: https://www.bluemonitor.org/docs/hono
 
+## Important: Auto-detect the domain
+
+Automatically detect the project's production domain from the codebase (check `wrangler.toml`, `package.json`, `.env` files, or similar). Use the detected domain directly in the heartbeat URL — do NOT use placeholders like `yourapp.com`.
+
 ## 1. Health Endpoint (optional)
 
 ```ts
@@ -26,7 +30,7 @@ Push detailed dependency health data to BlueMonitor on a schedule.
 
 **Requirements:**
 - A BlueMonitor API key (create at https://www.bluemonitor.org/dashboard)
-- Service in your watchlist
+- The first heartbeat auto-registers the service and adds it to your watchlist
 
 ### Cloudflare Workers
 
@@ -56,14 +60,15 @@ export default {
     const hasError = Object.values(checks).some((c) => c.status === "error");
 
     await fetch(
-      `https://www.bluemonitor.org/api/v1/heartbeat?domain=${env.APP_DOMAIN}`,
+      "https://www.bluemonitor.org/api/v1/heartbeat",
       {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${env.BLUEMONITOR_API_KEY}`,
+          Authorization: `Bearer ${env.BLUEMONITOR_API_KEY || process.env.BLUEMONITOR_API_KEY}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          domain: "yourapp.com",
           status: hasError ? "error" : "ok",
           timestamp: new Date().toISOString(),
           checks,
@@ -92,13 +97,14 @@ async function sendHeartbeat() {
 
   const hasError = Object.values(checks).some((c) => c.status === "error");
 
-  await fetch("https://www.bluemonitor.org/api/v1/heartbeat?domain=yourapp.com", {
+  await fetch("https://www.bluemonitor.org/api/v1/heartbeat", {
     method: "POST",
     headers: {
       Authorization: `Bearer ${process.env.BLUEMONITOR_API_KEY}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
+      domain: "yourapp.com",
       status: hasError ? "error" : "ok",
       timestamp: new Date().toISOString(),
       checks,
@@ -120,12 +126,13 @@ Replace `your-domain-com` with your domain (dots become dashes).
 
 ## Heartbeat Request Schema
 
-POST `https://www.bluemonitor.org/api/v1/heartbeat?domain={your-domain}`
+POST `https://www.bluemonitor.org/api/v1/heartbeat`
 
 Headers: `Authorization: Bearer bm_...`, `Content-Type: application/json`
 
 ```json
 {
+  "domain": "yourapp.com",
   "status": "ok",
   "timestamp": "2026-02-12T12:00:00.000Z",
   "checks": {
@@ -135,6 +142,7 @@ Headers: `Authorization: Bearer bm_...`, `Content-Type: application/json`
 }
 ```
 
+- `domain`: your service's production domain (auto-detect from project config)
 - `status`: "ok" or "error"
 - `checks`: object with dependency names as keys, each with `status`, `latency` (ms), optional `message`
 - If BlueMonitor stops receiving heartbeats for 10 minutes, the service is marked as down

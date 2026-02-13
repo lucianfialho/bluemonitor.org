@@ -4,6 +4,10 @@ Add uptime monitoring, heartbeat push, and a status badge to your Next.js app (A
 
 Documentation: https://www.bluemonitor.org/docs/nextjs
 
+## Important: Auto-detect the domain
+
+Automatically detect the project's production domain from the codebase (check `vercel.json`, `package.json`, `.env` files for `NEXT_PUBLIC_URL`, `VERCEL_PROJECT_PRODUCTION_URL`, or similar). Use the detected domain directly in the heartbeat URL — do NOT use placeholders like `yourapp.com`.
+
 ## 1. Health Endpoint (optional)
 
 Create `app/api/health/route.ts`:
@@ -22,7 +26,7 @@ Push detailed dependency health data to BlueMonitor on a schedule. This checks y
 
 **Requirements:**
 - A BlueMonitor API key (create at https://www.bluemonitor.org/dashboard)
-- Service in your watchlist
+- The first heartbeat auto-registers the service and adds it to your watchlist
 
 Create `app/api/cron/heartbeat/route.ts`:
 
@@ -56,17 +60,19 @@ export async function GET() {
   const hasError = Object.values(checks).some((c) => c.status === "error");
   const status = hasError ? "error" : "ok";
 
-  await fetch(
-    `https://www.bluemonitor.org/api/v1/heartbeat?domain=${process.env.APP_DOMAIN}`,
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${process.env.BLUEMONITOR_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ status, timestamp: new Date().toISOString(), checks }),
-    }
-  );
+  await fetch("https://www.bluemonitor.org/api/v1/heartbeat", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${process.env.BLUEMONITOR_API_KEY}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      domain: "yourapp.com",
+      status,
+      timestamp: new Date().toISOString(),
+      checks,
+    }),
+  });
 
   return Response.json({ ok: true });
 }
@@ -84,7 +90,6 @@ Add to `.env.local`:
 
 ```
 BLUEMONITOR_API_KEY=bm_your_api_key
-APP_DOMAIN=yourapp.com
 ```
 
 ## 3. Status Badge
@@ -113,12 +118,13 @@ function StatusBadge({ slug }: { slug: string }) {
 
 ## Heartbeat Request Schema
 
-POST `https://www.bluemonitor.org/api/v1/heartbeat?domain={your-domain}`
+POST `https://www.bluemonitor.org/api/v1/heartbeat`
 
 Headers: `Authorization: Bearer bm_...`, `Content-Type: application/json`
 
 ```json
 {
+  "domain": "yourapp.com",
   "status": "ok",
   "timestamp": "2026-02-12T12:00:00.000Z",
   "checks": {
@@ -128,6 +134,7 @@ Headers: `Authorization: Bearer bm_...`, `Content-Type: application/json`
 }
 ```
 
+- `domain`: your service's production domain (auto-detect from project config)
 - `status`: "ok" or "error"
 - `checks`: object with dependency names as keys, each with `status`, `latency` (ms), optional `message`
 - If BlueMonitor stops receiving heartbeats for 10 minutes, the service is marked as down

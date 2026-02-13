@@ -4,6 +4,10 @@ Add uptime monitoring, heartbeat push, and a status badge to your Rails app.
 
 Documentation: https://www.bluemonitor.org/docs/rails
 
+## Important: Auto-detect the domain
+
+Automatically detect the project's production domain from the codebase (check `.env`, `config/environments/production.rb` for `host`, or similar). Use the detected domain directly in the heartbeat URL — do NOT use placeholders like `yourapp.com`.
+
 ## 1. Health Endpoint (optional)
 
 Add to `config/routes.rb`:
@@ -36,7 +40,7 @@ gem "sidekiq-cron"
 
 **Requirements:**
 - A BlueMonitor API key (create at https://www.bluemonitor.org/dashboard)
-- Service in your watchlist
+- The first heartbeat auto-registers the service and adds it to your watchlist
 
 Create `app/jobs/heartbeat_job.rb`:
 
@@ -80,10 +84,11 @@ class HeartbeatJob < ApplicationJob
 
     has_error = checks.values.any? { |c| c[:status] == "error" }
 
-    uri = URI("https://www.bluemonitor.org/api/v1/heartbeat?domain=#{ENV['APP_DOMAIN']}")
+    uri = URI("https://www.bluemonitor.org/api/v1/heartbeat")
     Net::HTTP.post(
       uri,
       {
+        domain: "yourapp.com",
         status: has_error ? "error" : "ok",
         timestamp: Time.now.utc.iso8601,
         checks: checks
@@ -109,7 +114,6 @@ Add to `.env`:
 
 ```
 BLUEMONITOR_API_KEY=bm_your_api_key
-APP_DOMAIN=yourapp.com
 ```
 
 ## 3. Status Badge
@@ -132,12 +136,13 @@ Replace `your-domain-com` with your domain (dots become dashes).
 
 ## Heartbeat Request Schema
 
-POST `https://www.bluemonitor.org/api/v1/heartbeat?domain={your-domain}`
+POST `https://www.bluemonitor.org/api/v1/heartbeat`
 
 Headers: `Authorization: Bearer bm_...`, `Content-Type: application/json`
 
 ```json
 {
+  "domain": "yourapp.com",
   "status": "ok",
   "timestamp": "2026-02-12T12:00:00.000Z",
   "checks": {
@@ -147,6 +152,7 @@ Headers: `Authorization: Bearer bm_...`, `Content-Type: application/json`
 }
 ```
 
+- `domain`: your service's production domain (auto-detect from project config)
 - `status`: "ok" or "error"
 - `checks`: object with dependency names as keys, each with `status`, `latency` (ms), optional `message`
 - If BlueMonitor stops receiving heartbeats for 10 minutes, the service is marked as down

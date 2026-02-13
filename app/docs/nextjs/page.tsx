@@ -146,21 +146,19 @@ export async function GET() {
   const hasError = Object.values(checks).some((c) => c.status === "error");
   const status = hasError ? "error" : "ok";
 
-  await fetch(
-    "https://www.bluemonitor.org/api/v1/heartbeat?domain=yourapp.com",
-    {
-      method: "POST",
-      headers: {
-        Authorization: "Bearer bm_your_api_key",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        status,
-        timestamp: new Date().toISOString(),
-        checks,
-      }),
-    }
-  );
+  await fetch("https://www.bluemonitor.org/api/v1/heartbeat", {
+    method: "POST",
+    headers: {
+      Authorization: "Bearer bm_your_api_key",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      domain: "yourapp.com",
+      status,
+      timestamp: new Date().toISOString(),
+      checks,
+    }),
+  });
 
   return Response.json({ ok: true });
 }`}</code>

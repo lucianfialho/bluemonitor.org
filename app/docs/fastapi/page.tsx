@@ -100,9 +100,9 @@ async def send_heartbeat():
     async with httpx.AsyncClient() as client:
         await client.post(
             "https://www.bluemonitor.org/api/v1/heartbeat",
-            params={"domain": "yourapp.com"},
             headers={"Authorization": f"Bearer {BLUEMONITOR_API_KEY}"},
             json={
+                "domain": "yourapp.com",
                 "status": "error" if has_error else "ok",
                 "timestamp": datetime.utcnow().isoformat(),
                 "checks": checks,

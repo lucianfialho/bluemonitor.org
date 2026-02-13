@@ -96,21 +96,19 @@ async function sendHeartbeat() {
 
   const hasError = Object.values(checks).some((c) => c.status === "error");
 
-  await fetch(
-    "https://www.bluemonitor.org/api/v1/heartbeat?domain=yourapp.com",
-    {
-      method: "POST",
-      headers: {
-        Authorization: \`Bearer \${process.env.BLUEMONITOR_API_KEY}\`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        status: hasError ? "error" : "ok",
-        timestamp: new Date().toISOString(),
-        checks,
-      }),
-    }
-  );
+  await fetch("https://www.bluemonitor.org/api/v1/heartbeat", {
+    method: "POST",
+    headers: {
+      Authorization: \`Bearer \${process.env.BLUEMONITOR_API_KEY}\`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      domain: "yourapp.com",
+      status: hasError ? "error" : "ok",
+      timestamp: new Date().toISOString(),
+      checks,
+    }),
+  });
 }
 
 // Every 5 minutes
