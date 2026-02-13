@@ -28,7 +28,7 @@ export default function SetupGuide({
       const res = await fetch("/api/watchlist");
       const data = await res.json();
       const services = data.services || [];
-      if (services.some((s: { last_checked_at: string | null }) => s.last_checked_at)) {
+      if (services.some((s: { last_heartbeat_at: string | null }) => s.last_heartbeat_at)) {
         setPolling(false);
         onHeartbeatReceived();
       }

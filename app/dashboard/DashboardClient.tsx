@@ -33,6 +33,7 @@ interface WatchlistService {
   current_status: "up" | "down" | "slow" | "dead" | null;
   current_response_time: number | null;
   last_checked_at: string | null;
+  last_heartbeat_at: string | null;
   added_at: string;
 }
 
@@ -202,7 +203,7 @@ export default function DashboardClient({
       <SetupGuide
         hasApiKey={keys.length > 0}
         apiKeyPreview={keys[0]?.key_preview ?? null}
-        hasHeartbeatService={watchlist.some((s) => s.last_checked_at !== null)}
+        hasHeartbeatService={watchlist.some((s) => s.last_heartbeat_at !== null)}
         hasWebhook={webhooks.length > 0}
         onHeartbeatReceived={fetchWatchlist}
       />
