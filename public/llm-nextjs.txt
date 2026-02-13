@@ -1,0 +1,133 @@
+# BlueMonitor — Next.js Setup Guide
+
+Add uptime monitoring, heartbeat push, and a status badge to your Next.js app (App Router).
+
+Documentation: https://www.bluemonitor.org/docs/nextjs
+
+## 1. Health Endpoint (optional)
+
+Create `app/api/health/route.ts`:
+
+```ts
+export async function GET() {
+  return Response.json({ status: "ok" });
+}
+```
+
+BlueMonitor pings this every 5 minutes. If it responds with 200 under 3s → operational. Over 3s → slow. Error/timeout → down.
+
+## 2. Heartbeat Push (recommended)
+
+Push detailed dependency health data to BlueMonitor on a schedule. This checks your database, cache, and external APIs internally.
+
+**Requirements:**
+- A BlueMonitor API key (create at https://www.bluemonitor.org/dashboard)
+- Service in your watchlist
+
+Create `app/api/cron/heartbeat/route.ts`:
+
+```ts
+import { db } from "@/lib/db"; // adjust to your setup
+
+async function checkDependency(name: string, fn: () => Promise<void>) {
+  const start = Date.now();
+  try {
+    await fn();
+    return { status: "ok" as const, latency: Date.now() - start };
+  } catch (err) {
+    return {
+      status: "error" as const,
+      latency: Date.now() - start,
+      message: err instanceof Error ? err.message : "Unknown error",
+    };
+  }
+}
+
+export async function GET() {
+  const checks = {
+    database: await checkDependency("database", async () => {
+      await db`SELECT 1`;
+    }),
+    // Add more:
+    // redis: await checkDependency("redis", async () => { await redis.ping(); }),
+    // stripe: await checkDependency("stripe", async () => { await stripe.balance.retrieve(); }),
+  };
+
+  const hasError = Object.values(checks).some((c) => c.status === "error");
+  const status = hasError ? "error" : "ok";
+
+  await fetch(
+    `https://www.bluemonitor.org/api/v1/heartbeat?domain=${process.env.APP_DOMAIN}`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.BLUEMONITOR_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ status, timestamp: new Date().toISOString(), checks }),
+    }
+  );
+
+  return Response.json({ ok: true });
+}
+```
+
+Add to `vercel.json`:
+
+```json
+{
+  "crons": [{ "path": "/api/cron/heartbeat", "schedule": "*/5 * * * *" }]
+}
+```
+
+Add to `.env.local`:
+
+```
+BLUEMONITOR_API_KEY=bm_your_api_key
+APP_DOMAIN=yourapp.com
+```
+
+## 3. Status Badge
+
+Replace `your-domain-com` with your domain (dots become dashes).
+
+### React Component
+
+```tsx
+function StatusBadge({ slug }: { slug: string }) {
+  return (
+    <a href={`https://www.bluemonitor.org/status/${slug}`} target="_blank" rel="noopener">
+      <img src={`https://www.bluemonitor.org/api/badge/${slug}`} alt="Status on BlueMonitor" height={36} />
+    </a>
+  );
+}
+
+// Usage: <StatusBadge slug="your-domain-com" />
+```
+
+### Markdown (README.md)
+
+```markdown
+[![Status](https://www.bluemonitor.org/api/badge/your-domain-com)](https://www.bluemonitor.org/status/your-domain-com)
+```
+
+## Heartbeat Request Schema
+
+POST `https://www.bluemonitor.org/api/v1/heartbeat?domain={your-domain}`
+
+Headers: `Authorization: Bearer bm_...`, `Content-Type: application/json`
+
+```json
+{
+  "status": "ok",
+  "timestamp": "2026-02-12T12:00:00.000Z",
+  "checks": {
+    "database": { "status": "ok", "latency": 5 },
+    "redis": { "status": "ok", "latency": 2 }
+  }
+}
+```
+
+- `status`: "ok" or "error"
+- `checks`: object with dependency names as keys, each with `status`, `latency` (ms), optional `message`
+- If BlueMonitor stops receiving heartbeats for 10 minutes, the service is marked as down

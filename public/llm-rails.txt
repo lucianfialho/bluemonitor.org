@@ -1,0 +1,152 @@
+# BlueMonitor — Rails Setup Guide
+
+Add uptime monitoring, heartbeat push, and a status badge to your Rails app.
+
+Documentation: https://www.bluemonitor.org/docs/rails
+
+## 1. Health Endpoint (optional)
+
+Add to `config/routes.rb`:
+
+```ruby
+get "/api/health", to: "health#show"
+```
+
+Create `app/controllers/health_controller.rb`:
+
+```ruby
+class HealthController < ApplicationController
+  skip_before_action :authenticate_user!, raise: false
+
+  def show
+    render json: { status: "ok" }
+  end
+end
+```
+
+BlueMonitor pings this every 5 minutes. If it responds with 200 under 3s → operational. Over 3s → slow. Error/timeout → down.
+
+## 2. Heartbeat Push (recommended)
+
+Push detailed dependency health data to BlueMonitor using a recurring Sidekiq job.
+
+```ruby
+gem "sidekiq-cron"
+```
+
+**Requirements:**
+- A BlueMonitor API key (create at https://www.bluemonitor.org/dashboard)
+- Service in your watchlist
+
+Create `app/jobs/heartbeat_job.rb`:
+
+```ruby
+class HeartbeatJob < ApplicationJob
+  queue_as :default
+
+  def perform
+    checks = {}
+
+    # Database check
+    db_start = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+    begin
+      ActiveRecord::Base.connection.execute("SELECT 1")
+      checks[:database] = {
+        status: "ok",
+        latency: ((Process.clock_gettime(Process::CLOCK_MONOTONIC) - db_start) * 1000).round
+      }
+    rescue => e
+      checks[:database] = {
+        status: "error",
+        latency: ((Process.clock_gettime(Process::CLOCK_MONOTONIC) - db_start) * 1000).round,
+        message: e.message
+      }
+    end
+
+    # Redis check
+    redis_start = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+    begin
+      Redis.current.ping
+      checks[:redis] = {
+        status: "ok",
+        latency: ((Process.clock_gettime(Process::CLOCK_MONOTONIC) - redis_start) * 1000).round
+      }
+    rescue => e
+      checks[:redis] = {
+        status: "error",
+        latency: ((Process.clock_gettime(Process::CLOCK_MONOTONIC) - redis_start) * 1000).round
+      }
+    end
+
+    has_error = checks.values.any? { |c| c[:status] == "error" }
+
+    uri = URI("https://www.bluemonitor.org/api/v1/heartbeat?domain=#{ENV['APP_DOMAIN']}")
+    Net::HTTP.post(
+      uri,
+      {
+        status: has_error ? "error" : "ok",
+        timestamp: Time.now.utc.iso8601,
+        checks: checks
+      }.to_json,
+      "Authorization" => "Bearer #{ENV['BLUEMONITOR_API_KEY']}",
+      "Content-Type" => "application/json"
+    )
+  end
+end
+```
+
+Add to `config/initializers/sidekiq_cron.rb`:
+
+```ruby
+Sidekiq::Cron::Job.create(
+  name: "BlueMonitor heartbeat",
+  cron: "*/5 * * * *",
+  class: "HeartbeatJob"
+)
+```
+
+Add to `.env`:
+
+```
+BLUEMONITOR_API_KEY=bm_your_api_key
+APP_DOMAIN=yourapp.com
+```
+
+## 3. Status Badge
+
+Replace `your-domain-com` with your domain (dots become dashes).
+
+### ERB
+
+```erb
+<a href="https://www.bluemonitor.org/status/your-domain-com" target="_blank" rel="noopener">
+  <img src="https://www.bluemonitor.org/api/badge/your-domain-com" alt="Status on BlueMonitor" height="36" />
+</a>
+```
+
+### Markdown (README.md)
+
+```markdown
+[![Status](https://www.bluemonitor.org/api/badge/your-domain-com)](https://www.bluemonitor.org/status/your-domain-com)
+```
+
+## Heartbeat Request Schema
+
+POST `https://www.bluemonitor.org/api/v1/heartbeat?domain={your-domain}`
+
+Headers: `Authorization: Bearer bm_...`, `Content-Type: application/json`
+
+```json
+{
+  "status": "ok",
+  "timestamp": "2026-02-12T12:00:00.000Z",
+  "checks": {
+    "database": { "status": "ok", "latency": 5 },
+    "redis": { "status": "ok", "latency": 2 }
+  }
+}
+```
+
+- `status`: "ok" or "error"
+- `checks`: object with dependency names as keys, each with `status`, `latency` (ms), optional `message`
+- If BlueMonitor stops receiving heartbeats for 10 minutes, the service is marked as down

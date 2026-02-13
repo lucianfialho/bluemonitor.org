@@ -1,173 +1,46 @@
-# BlueMonitor — Status Badge Installation Guide
+# BlueMonitor — Monitoring Setup Guide
 
-BlueMonitor is a real-time status monitoring service. The badge shows live status of any website: Operational (green), Slow (yellow), Down (red), or Pending (blue).
+BlueMonitor is a real-time status monitoring service. Add a health endpoint, push heartbeats, and embed a status badge.
 
-Badge endpoint: https://www.bluemonitor.org/api/badge/{slug}
-Status page: https://www.bluemonitor.org/status/{slug}
+Documentation: https://www.bluemonitor.org/docs
 
-The slug is the domain with dots replaced by hyphens. Examples:
-- chatgpt → chat-openai-com
-- google.com → google-com
-- api.example.com → api-example-com
+## Framework-Specific Guides
 
-If the slug doesn't exist yet, the badge auto-registers the service as "Pending" for approval.
+For detailed setup instructions with code examples, use the guide for your framework:
 
-## Query Parameters
+- **Next.js**: https://www.bluemonitor.org/llm-nextjs.txt
+- **Express**: https://www.bluemonitor.org/llm-express.txt
+- **Hono**: https://www.bluemonitor.org/llm-hono.txt
+- **FastAPI**: https://www.bluemonitor.org/llm-fastapi.txt
+- **Rails**: https://www.bluemonitor.org/llm-rails.txt
+- **Laravel**: https://www.bluemonitor.org/llm-laravel.txt
 
-- `theme=dark` — Dark background variant (default: light)
+If your framework is not listed, follow the generic instructions below.
 
-## HTML
+## How BlueMonitor Works
 
-```html
-<a href="https://www.bluemonitor.org/status/{slug}" target="_blank" rel="noopener">
-  <img src="https://www.bluemonitor.org/api/badge/{slug}" alt="Status on BlueMonitor" height="36" />
-</a>
-```
+**Uptime monitoring (pull):** We ping your service every 5 minutes and track response time and status code. Optionally add a `GET /api/health` endpoint that returns `{ "status": "ok" }`.
 
-## Markdown
+**Heartbeat push:** Your service pushes detailed health data (database, cache, APIs) to BlueMonitor on a schedule via `POST /api/v1/heartbeat`. No public endpoint needed. If we stop receiving heartbeats for 10 minutes, the service is marked as down.
 
-```markdown
-[![Status on BlueMonitor](https://www.bluemonitor.org/api/badge/{slug})](https://www.bluemonitor.org/status/{slug})
-```
+## Quick Start (any framework)
 
-## React / Next.js
+### 1. Health Endpoint (optional)
 
-```tsx
-function StatusBadge({ slug }: { slug: string }) {
-  return (
-    <a href={`https://www.bluemonitor.org/status/${slug}`} target="_blank" rel="noopener">
-      <img src={`https://www.bluemonitor.org/api/badge/${slug}`} alt="Status on BlueMonitor" height={36} />
-    </a>
-  );
-}
-```
-
-## Vue
-
-```vue
-<template>
-  <a :href="`https://www.bluemonitor.org/status/${slug}`" target="_blank" rel="noopener">
-    <img :src="`https://www.bluemonitor.org/api/badge/${slug}`" alt="Status on BlueMonitor" height="36" />
-  </a>
-</template>
-
-<script setup>
-defineProps({ slug: String });
-</script>
-```
-
-## Svelte
-
-```svelte
-<script>
-  export let slug;
-</script>
-
-<a href="https://www.bluemonitor.org/status/{slug}" target="_blank" rel="noopener">
-  <img src="https://www.bluemonitor.org/api/badge/{slug}" alt="Status on BlueMonitor" height="36" />
-</a>
-```
-
-## Health Endpoint (Optional)
-
-Create a simple health endpoint so BlueMonitor can check if your service is alive. This is a lightweight ping — just return a status and we track response time and availability.
-
-For detailed dependency monitoring (database, redis, external APIs), use **Push Monitoring (Heartbeat)** below instead.
-
-### Route: GET /api/health
-
-The endpoint must:
-1. Be publicly accessible (no auth required)
-2. Return JSON with `{ "status": "ok" }`
-3. Respond within 3 seconds (responses over 3s are marked as "slow")
-4. Return HTTP 200 for healthy, HTTP 503 for unhealthy
-
-### Security
-
-The health endpoint is public by design (same pattern as Kubernetes liveness probes). It only returns a simple status.
-
-To restrict access to BlueMonitor only, check the User-Agent header:
-
-```ts
-export async function GET(req: Request) {
-  const ua = req.headers.get("user-agent") || "";
-  if (!ua.includes("BlueMonitor")) {
-    return Response.json({ error: "Forbidden" }, { status: 403 });
-  }
-  return Response.json({ status: "ok" });
-}
-```
-
-This is optional. BlueMonitor always sends `User-Agent: BlueMonitor/1.0 (status check)`.
-
-### Response Schema
+Create a `GET /api/health` route that returns:
 
 ```json
-{
-  "status": "ok"
-}
+{ "status": "ok" }
 ```
 
-**Status values:**
-- `"ok"` — service is healthy (BlueMonitor marks as "operational")
-- `"error"` — service is unhealthy (BlueMonitor marks as "down")
+- Return HTTP 200 for healthy, HTTP 503 for unhealthy
+- Respond within 3 seconds (over 3s = marked as "slow")
 
-### Next.js (App Router)
+### 2. Heartbeat Push (recommended)
 
-Create `app/api/health/route.ts`:
+POST to `https://www.bluemonitor.org/api/v1/heartbeat?domain={your-domain}`
 
-```ts
-export async function GET() {
-  return Response.json({ status: "ok" });
-}
-```
-
-### Express
-
-```ts
-app.get("/api/health", (req, res) => {
-  res.json({ status: "ok" });
-});
-```
-
-### Hono
-
-```ts
-app.get("/api/health", (c) => {
-  return c.json({ status: "ok" });
-});
-```
-
-### FastAPI
-
-```python
-@app.get("/api/health")
-async def health():
-    return {"status": "ok"}
-```
-
-After creating the health endpoint, add a status badge to your site so users can see your service status in real-time. See the badge section above.
-
-## Push Monitoring (Heartbeat)
-
-For detailed dependency monitoring (database, Redis, external APIs), push heartbeats to BlueMonitor instead of exposing a public endpoint. This is more secure and gives you granular health data per dependency.
-
-**How it works:**
-1. Your service checks its dependencies internally (database, cache, APIs, etc.)
-2. It POSTs the detailed results to BlueMonitor every few minutes
-3. If BlueMonitor stops receiving heartbeats for 10 minutes, the service is marked as down
-
-**Requirements:**
-- A BlueMonitor API key (create one from the dashboard)
-- The service must already be in your watchlist (no auto-creation)
-
-### Endpoint: POST /api/v1/heartbeat?domain={your-domain}
-
-**Headers:**
-- `Authorization: Bearer bm_your_api_key`
-- `Content-Type: application/json`
-
-**Body:** Same schema as the health endpoint response:
+Headers: `Authorization: Bearer bm_your_api_key`, `Content-Type: application/json`
 
 ```json
 {
@@ -180,115 +53,58 @@ For detailed dependency monitoring (database, Redis, external APIs), push heartb
 }
 ```
 
-**Response:**
+Requirements:
+- A BlueMonitor API key (create at https://www.bluemonitor.org/dashboard)
+- The service must be in your watchlist
+- Send heartbeats every 5 minutes via cron or scheduler
 
-```json
-{
-  "ok": true,
-  "service": "My App",
-  "status": "up",
-  "response_time": 5,
-  "checked_at": "2026-02-12T12:00:00.000Z"
+### 3. Status Badge
+
+Badge endpoint: `https://www.bluemonitor.org/api/badge/{slug}`
+Status page: `https://www.bluemonitor.org/status/{slug}`
+
+The slug is the domain with dots replaced by hyphens (e.g., `yourapp.com` → `yourapp-com`).
+
+#### HTML
+
+```html
+<a href="https://www.bluemonitor.org/status/{slug}" target="_blank" rel="noopener">
+  <img src="https://www.bluemonitor.org/api/badge/{slug}" alt="Status on BlueMonitor" height="36" />
+</a>
+```
+
+#### Markdown
+
+```markdown
+[![Status](https://www.bluemonitor.org/api/badge/{slug})](https://www.bluemonitor.org/status/{slug})
+```
+
+#### React / Next.js
+
+```tsx
+function StatusBadge({ slug }: { slug: string }) {
+  return (
+    <a href={`https://www.bluemonitor.org/status/${slug}`} target="_blank" rel="noopener">
+      <img src={`https://www.bluemonitor.org/api/badge/${slug}`} alt="Status on BlueMonitor" height={36} />
+    </a>
+  );
 }
 ```
 
-### Next.js (Vercel Cron + Heartbeat)
+## Badge Parameters
 
-Create `app/api/cron/heartbeat/route.ts`:
+- `theme=dark` — Dark background variant (default: light)
+- If the slug doesn't exist yet, the badge auto-registers the service as "Pending"
 
-```ts
-import { db } from "@/lib/db"; // adjust to your setup
+## API Reference
 
-async function checkDependency(name: string, fn: () => Promise<void>) {
-  const start = Date.now();
-  try {
-    await fn();
-    return { status: "ok" as const, latency: Date.now() - start };
-  } catch (err) {
-    return {
-      status: "error" as const,
-      latency: Date.now() - start,
-      message: err instanceof Error ? err.message : "Unknown error",
-    };
-  }
-}
+Full API docs: https://www.bluemonitor.org/docs/api
 
-export async function GET() {
-  const checks = {
-    database: await checkDependency("database", async () => {
-      await db`SELECT 1`;
-    }),
-  };
-
-  const hasError = Object.values(checks).some((c) => c.status === "error");
-  const status = hasError ? "error" : "ok";
-
-  // Push heartbeat to BlueMonitor
-  await fetch("https://www.bluemonitor.org/api/v1/heartbeat?domain=myapp.com", {
-    method: "POST",
-    headers: {
-      "Authorization": "Bearer bm_your_api_key",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ status, timestamp: new Date().toISOString(), checks }),
-  });
-
-  return Response.json({ ok: true });
-}
-```
-
-Add to `vercel.json`:
-
-```json
-{
-  "crons": [{ "path": "/api/cron/heartbeat", "schedule": "*/5 * * * *" }]
-}
-```
-
-### Node.js (setInterval)
-
-```ts
-async function sendHeartbeat() {
-  // Run your health checks
-  const checks: Record<string, { status: string; latency: number }> = {};
-
-  const dbStart = Date.now();
-  try {
-    await db.query("SELECT 1");
-    checks.database = { status: "ok", latency: Date.now() - dbStart };
-  } catch {
-    checks.database = { status: "error", latency: Date.now() - dbStart };
-  }
-
-  const hasError = Object.values(checks).some((c) => c.status === "error");
-
-  await fetch("https://www.bluemonitor.org/api/v1/heartbeat?domain=myapp.com", {
-    method: "POST",
-    headers: {
-      "Authorization": "Bearer bm_your_api_key",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      status: hasError ? "error" : "ok",
-      timestamp: new Date().toISOString(),
-      checks,
-    }),
-  });
-}
-
-// Send heartbeat every 5 minutes
-setInterval(sendHeartbeat, 5 * 60 * 1000);
-sendHeartbeat(); // Send immediately on startup
-```
-
-### curl (testing)
-
-```bash
-curl -X POST "https://www.bluemonitor.org/api/v1/heartbeat?domain=myapp.com" \
-  -H "Authorization: Bearer bm_your_api_key" \
-  -H "Content-Type: application/json" \
-  -d '{"status":"ok","checks":{"database":{"status":"ok","latency":5}}}'
-```
+- `GET /api/v1/status/:slug` — Get status of a service
+- `GET /api/v1/services` — List all monitored services
+- `GET /api/v1/incidents` — Get recent incidents
+- `POST /api/v1/heartbeat?domain=:domain` — Push heartbeat (requires API key)
+- `GET /api/badge/:slug` — Status badge PNG image
 
 ## Common Slugs
 
@@ -296,28 +112,6 @@ curl -X POST "https://www.bluemonitor.org/api/v1/heartbeat?domain=myapp.com" \
 - claude → `claude`
 - github → `github`
 - vercel → `vercel`
-- openai → `openai`
-- google → `google`
 - stripe → `stripe`
-- aws → `aws`
 
 Full list: https://www.bluemonitor.org/sitemap.xml
-
-## Badge Generator
-
-Interactive badge generator with live preview and copy-paste code:
-https://www.bluemonitor.org/badge
-
-## API Reference
-
-### GET /api/badge/{slug}
-Returns a PNG image (280x36) with the current status of the service.
-Cache: 5 minutes (s-maxage=300).
-
-### GET /api/check/{domain}
-Returns JSON with real-time status check result.
-Response: `{ status: "up"|"down"|"slow", responseTime: number, statusCode: number, checkedAt: string }`
-
-### GET /api/status-history/{slug}
-Returns JSON array with the last 24 hours of status checks.
-Response: `[{ status, response_time, status_code, checked_at }]`

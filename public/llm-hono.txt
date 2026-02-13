@@ -1,0 +1,140 @@
+# BlueMonitor — Hono Setup Guide
+
+Add uptime monitoring, heartbeat push, and a status badge to your Hono app. Works on Cloudflare Workers, Deno, Bun, and Node.js.
+
+Documentation: https://www.bluemonitor.org/docs/hono
+
+## 1. Health Endpoint (optional)
+
+```ts
+import { Hono } from "hono";
+
+const app = new Hono();
+
+app.get("/api/health", (c) => {
+  return c.json({ status: "ok" });
+});
+
+export default app;
+```
+
+BlueMonitor pings this every 5 minutes. If it responds with 200 under 3s → operational. Over 3s → slow. Error/timeout → down.
+
+## 2. Heartbeat Push (recommended)
+
+Push detailed dependency health data to BlueMonitor on a schedule.
+
+**Requirements:**
+- A BlueMonitor API key (create at https://www.bluemonitor.org/dashboard)
+- Service in your watchlist
+
+### Cloudflare Workers
+
+Add to `wrangler.toml`:
+
+```toml
+[triggers]
+crons = ["*/5 * * * *"]
+```
+
+```ts
+export default {
+  fetch: app.fetch,
+
+  async scheduled(event, env, ctx) {
+    const checks = {};
+
+    // Database check (D1, Turso, etc.)
+    const dbStart = Date.now();
+    try {
+      await env.DB.prepare("SELECT 1").run();
+      checks.database = { status: "ok", latency: Date.now() - dbStart };
+    } catch (err) {
+      checks.database = { status: "error", latency: Date.now() - dbStart, message: String(err) };
+    }
+
+    const hasError = Object.values(checks).some((c) => c.status === "error");
+
+    await fetch(
+      `https://www.bluemonitor.org/api/v1/heartbeat?domain=${env.APP_DOMAIN}`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${env.BLUEMONITOR_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          status: hasError ? "error" : "ok",
+          timestamp: new Date().toISOString(),
+          checks,
+        }),
+      }
+    );
+  },
+};
+```
+
+### Node.js / Bun / Deno
+
+Use `setInterval` or a cron library:
+
+```ts
+async function sendHeartbeat() {
+  const checks = {};
+
+  const dbStart = Date.now();
+  try {
+    await db.execute("SELECT 1");
+    checks.database = { status: "ok", latency: Date.now() - dbStart };
+  } catch (err) {
+    checks.database = { status: "error", latency: Date.now() - dbStart };
+  }
+
+  const hasError = Object.values(checks).some((c) => c.status === "error");
+
+  await fetch("https://www.bluemonitor.org/api/v1/heartbeat?domain=yourapp.com", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${process.env.BLUEMONITOR_API_KEY}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      status: hasError ? "error" : "ok",
+      timestamp: new Date().toISOString(),
+      checks,
+    }),
+  });
+}
+
+setInterval(sendHeartbeat, 5 * 60 * 1000);
+sendHeartbeat();
+```
+
+## 3. Status Badge
+
+Replace `your-domain-com` with your domain (dots become dashes).
+
+```markdown
+[![Status](https://www.bluemonitor.org/api/badge/your-domain-com)](https://www.bluemonitor.org/status/your-domain-com)
+```
+
+## Heartbeat Request Schema
+
+POST `https://www.bluemonitor.org/api/v1/heartbeat?domain={your-domain}`
+
+Headers: `Authorization: Bearer bm_...`, `Content-Type: application/json`
+
+```json
+{
+  "status": "ok",
+  "timestamp": "2026-02-12T12:00:00.000Z",
+  "checks": {
+    "database": { "status": "ok", "latency": 5 },
+    "redis": { "status": "ok", "latency": 2 }
+  }
+}
+```
+
+- `status`: "ok" or "error"
+- `checks`: object with dependency names as keys, each with `status`, `latency` (ms), optional `message`
+- If BlueMonitor stops receiving heartbeats for 10 minutes, the service is marked as down

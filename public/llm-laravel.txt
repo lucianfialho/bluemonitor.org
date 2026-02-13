@@ -1,0 +1,157 @@
+# BlueMonitor — Laravel Setup Guide
+
+Add uptime monitoring, heartbeat push, and a status badge to your Laravel app.
+
+Documentation: https://www.bluemonitor.org/docs/laravel
+
+## 1. Health Endpoint (optional)
+
+Add to `routes/api.php`:
+
+```php
+Route::get('/health', function () {
+    return response()->json(['status' => 'ok']);
+});
+```
+
+This exposes `GET /api/health` (Laravel prefixes API routes with `/api`).
+
+BlueMonitor pings this every 5 minutes. If it responds with 200 under 3s → operational. Over 3s → slow. Error/timeout → down.
+
+## 2. Heartbeat Push (recommended)
+
+Push detailed dependency health data to BlueMonitor using Laravel Scheduler.
+
+**Requirements:**
+- A BlueMonitor API key (create at https://www.bluemonitor.org/dashboard)
+- Service in your watchlist
+
+Create `app/Console/Commands/SendHeartbeat.php`:
+
+```php
+<?php
+
+namespace App\Console\Commands;
+
+use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Redis;
+
+class SendHeartbeat extends Command
+{
+    protected $signature = 'heartbeat:send';
+    protected $description = 'Send health heartbeat to BlueMonitor';
+
+    public function handle()
+    {
+        $checks = [];
+
+        // Database check
+        $dbStart = microtime(true);
+        try {
+            DB::select('SELECT 1');
+            $checks['database'] = [
+                'status' => 'ok',
+                'latency' => round((microtime(true) - $dbStart) * 1000),
+            ];
+        } catch (\Exception $e) {
+            $checks['database'] = [
+                'status' => 'error',
+                'latency' => round((microtime(true) - $dbStart) * 1000),
+                'message' => $e->getMessage(),
+            ];
+        }
+
+        // Redis check
+        $redisStart = microtime(true);
+        try {
+            Redis::ping();
+            $checks['redis'] = [
+                'status' => 'ok',
+                'latency' => round((microtime(true) - $redisStart) * 1000),
+            ];
+        } catch (\Exception $e) {
+            $checks['redis'] = [
+                'status' => 'error',
+                'latency' => round((microtime(true) - $redisStart) * 1000),
+            ];
+        }
+
+        // Add more checks as needed
+
+        $hasError = collect($checks)->contains('status', 'error');
+
+        Http::withToken(config('services.bluemonitor.key'))
+            ->post('https://www.bluemonitor.org/api/v1/heartbeat', [
+                'domain' => config('services.bluemonitor.domain'),
+                'status' => $hasError ? 'error' : 'ok',
+                'timestamp' => now()->toISOString(),
+                'checks' => $checks,
+            ]);
+
+        $this->info('Heartbeat sent.');
+    }
+}
+```
+
+Add to `routes/console.php` (Laravel 11+):
+
+```php
+Schedule::command('heartbeat:send')->everyFiveMinutes();
+```
+
+Add to `config/services.php`:
+
+```php
+'bluemonitor' => [
+    'key' => env('BLUEMONITOR_API_KEY'),
+    'domain' => env('APP_DOMAIN'),
+],
+```
+
+Add to `.env`:
+
+```
+BLUEMONITOR_API_KEY=bm_your_api_key
+APP_DOMAIN=yourapp.com
+```
+
+## 3. Status Badge
+
+Replace `your-domain-com` with your domain (dots become dashes).
+
+### Blade
+
+```html
+<a href="https://www.bluemonitor.org/status/your-domain-com" target="_blank" rel="noopener">
+  <img src="https://www.bluemonitor.org/api/badge/your-domain-com" alt="Status on BlueMonitor" height="36" />
+</a>
+```
+
+### Markdown (README.md)
+
+```markdown
+[![Status](https://www.bluemonitor.org/api/badge/your-domain-com)](https://www.bluemonitor.org/status/your-domain-com)
+```
+
+## Heartbeat Request Schema
+
+POST `https://www.bluemonitor.org/api/v1/heartbeat?domain={your-domain}`
+
+Headers: `Authorization: Bearer bm_...`, `Content-Type: application/json`
+
+```json
+{
+  "status": "ok",
+  "timestamp": "2026-02-12T12:00:00.000Z",
+  "checks": {
+    "database": { "status": "ok", "latency": 5 },
+    "redis": { "status": "ok", "latency": 2 }
+  }
+}
+```
+
+- `status`: "ok" or "error"
+- `checks`: object with dependency names as keys, each with `status`, `latency` (ms), optional `message`
+- If BlueMonitor stops receiving heartbeats for 10 minutes, the service is marked as down

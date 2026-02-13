@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import CopyButton from "./CopyButton";
+import CopyButton from "@/components/CopyButton";
 
 export const metadata: Metadata = {
   title: "For Developers — BlueMonitor",

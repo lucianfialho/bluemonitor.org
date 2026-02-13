@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import Link from "next/link";
+import CopyButton from "@/components/CopyButton";
 
 export const metadata: Metadata = {
   title: "Next.js Monitoring Setup — BlueMonitor",
@@ -252,6 +253,25 @@ export async function GET() {
             process.env.BLUEMONITOR_API_KEY
           </code>
         </p>
+      </section>
+
+      {/* AI tool CTA */}
+      <section className="mt-12">
+        <div className="rounded-2xl border border-blue-200 bg-blue-50 p-6 dark:border-blue-900 dark:bg-blue-950/30">
+          <h2 className="mb-2 font-semibold text-zinc-900 dark:text-zinc-100">
+            Using an AI coding tool?
+          </h2>
+          <p className="mb-4 text-sm text-zinc-500 dark:text-zinc-400">
+            Paste this URL in Claude, Cursor, or Copilot and it will set up
+            monitoring for your Next.js app automatically.
+          </p>
+          <div className="flex items-center gap-3">
+            <code className="flex-1 truncate rounded-lg bg-white px-4 py-2.5 text-sm text-zinc-700 dark:bg-zinc-900 dark:text-zinc-300">
+              https://www.bluemonitor.org/llm-nextjs.txt
+            </code>
+            <CopyButton text="https://www.bluemonitor.org/llm-nextjs.txt" />
+          </div>
+        </div>
       </section>
 
       {/* Next steps */}
