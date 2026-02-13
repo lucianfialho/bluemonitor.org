@@ -280,8 +280,32 @@ export default function DashboardClient({
                         }
                       />
                     )}
+                    {service.last_heartbeat_at && (
+                      <span className="rounded bg-purple-100 px-1 py-0.5 text-[10px] font-semibold text-purple-600 dark:bg-purple-900 dark:text-purple-300">
+                        HEARTBEAT
+                      </span>
+                    )}
                   </div>
                   <p className="truncate text-xs text-zinc-500">{service.domain}</p>
+                  {service.last_heartbeat_at && (
+                    <div className="mt-1 flex items-center gap-3 text-[11px] text-zinc-400 dark:text-zinc-500">
+                      {service.current_response_time !== null && (
+                        <span>{service.current_response_time}ms</span>
+                      )}
+                      <span>
+                        Last heartbeat{" "}
+                        {(() => {
+                          const diff = Date.now() - new Date(service.last_heartbeat_at).getTime();
+                          const mins = Math.floor(diff / 60000);
+                          if (mins < 1) return "just now";
+                          if (mins < 60) return `${mins}m ago`;
+                          const hours = Math.floor(mins / 60);
+                          if (hours < 24) return `${hours}h ago`;
+                          return `${Math.floor(hours / 24)}d ago`;
+                        })()}
+                      </span>
+                    </div>
+                  )}
                 </div>
                 <button
                   onClick={(e) => {
