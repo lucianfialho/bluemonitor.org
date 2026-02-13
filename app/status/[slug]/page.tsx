@@ -253,6 +253,55 @@ export default async function StatusPage({
           )}
         </div>
 
+        {/* Heartbeat Info */}
+        {service.last_heartbeat_at && (
+          <div className="mb-10 rounded-2xl border border-purple-200 bg-purple-50/50 p-6 dark:border-purple-900 dark:bg-purple-950/20">
+            <div className="flex items-center gap-2 mb-4">
+              <svg className="h-5 w-5 text-purple-600 dark:text-purple-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+              </svg>
+              <h3 className="text-sm font-semibold text-purple-900 dark:text-purple-100">
+                Push Monitoring Active
+              </h3>
+              <span className="rounded bg-purple-100 px-1.5 py-0.5 text-[10px] font-semibold text-purple-600 dark:bg-purple-900 dark:text-purple-300">
+                HEARTBEAT
+              </span>
+            </div>
+            <div className="grid grid-cols-3 gap-4">
+              <div>
+                <p className="text-xs text-purple-600 dark:text-purple-400">Status</p>
+                <p className="mt-0.5 text-sm font-semibold text-purple-900 dark:text-purple-100">
+                  {service.current_status === "up"
+                    ? "Operational"
+                    : service.current_status === "slow"
+                      ? "Slow"
+                      : service.current_status === "down"
+                        ? "Down"
+                        : service.current_status ?? "Unknown"}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs text-purple-600 dark:text-purple-400">Latency</p>
+                <p className="mt-0.5 text-sm font-semibold text-purple-900 dark:text-purple-100">
+                  {service.current_response_time !== null && service.current_response_time !== undefined
+                    ? `${service.current_response_time}ms`
+                    : "—"}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs text-purple-600 dark:text-purple-400">Last Heartbeat</p>
+                <p className="mt-0.5 text-sm font-semibold text-purple-900 dark:text-purple-100">
+                  {new Date(service.last_heartbeat_at).toLocaleString()}
+                </p>
+              </div>
+            </div>
+            <p className="mt-3 text-xs text-purple-500 dark:text-purple-400">
+              This service reports its health directly to BlueMonitor via heartbeat push.
+              If no heartbeat is received for 10 minutes, the service is marked as down.
+            </p>
+          </div>
+        )}
+
         {/* Status Timeline */}
         <div className="mb-10 rounded-2xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
           <StatusTimeline slug={service.slug} />
