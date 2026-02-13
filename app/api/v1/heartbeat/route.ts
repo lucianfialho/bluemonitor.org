@@ -111,13 +111,27 @@ export async function POST(request: NextRequest) {
     VALUES (${service.id}, ${status}, ${maxLatency}, 200, ${now})
   `;
 
-  // Update service cache columns
+  // Store individual check details
+  const healthData = body.checks ? JSON.stringify(body.checks) : null;
+
+  if (body.checks) {
+    const checkEntries = Object.entries(body.checks);
+    for (const [checkName, check] of checkEntries) {
+      await sql`
+        INSERT INTO heartbeat_checks (service_id, check_name, status, latency, message, checked_at)
+        VALUES (${service.id}, ${checkName}, ${check.status}, ${check.latency ?? null}, ${check.message ?? null}, ${now})
+      `;
+    }
+  }
+
+  // Update service cache columns (including latest health data snapshot)
   await sql`
     UPDATE services
     SET current_status = ${status},
         current_response_time = ${maxLatency},
         last_checked_at = ${now},
-        last_heartbeat_at = ${now}
+        last_heartbeat_at = ${now},
+        last_health_data = ${healthData}::jsonb
     WHERE id = ${service.id}
   `;
 

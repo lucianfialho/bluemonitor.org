@@ -26,6 +26,10 @@ export async function GET(request: NextRequest) {
     WHERE status = 'rejected'
       AND created_at < NOW() - INTERVAL '30 days'
   `;
+  const [heartbeatChecksCount] = await sql`
+    SELECT COUNT(*)::int AS count FROM heartbeat_checks
+    WHERE checked_at < NOW() - INTERVAL '1 day'
+  `;
 
   // Delete status checks older than 30 days
   await sql`
@@ -47,12 +51,19 @@ export async function GET(request: NextRequest) {
       AND created_at < NOW() - INTERVAL '30 days'
   `;
 
+  // Delete heartbeat checks older than 1 day (free plan retention)
+  await sql`
+    DELETE FROM heartbeat_checks
+    WHERE checked_at < NOW() - INTERVAL '1 day'
+  `;
+
   return NextResponse.json({
     ok: true,
     deleted: {
       status_checks: checksCount.count,
       incidents: incidentsCount.count,
       submissions: submissionsCount.count,
+      heartbeat_checks: heartbeatChecksCount.count,
     },
   });
 }
