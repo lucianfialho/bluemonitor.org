@@ -5,6 +5,7 @@ import Link from "next/link";
 import ServiceIcon from "@/components/ServiceIcon";
 import { Category } from "@/lib/types";
 import { trackWebhookCreate, trackWebhookTest, trackApiKeyCreate } from "@/lib/analytics";
+import SetupGuide from "./SetupGuide";
 
 interface Webhook {
   id: number;
@@ -196,6 +197,15 @@ export default function DashboardClient({
           View Plans
         </Link>
       </div>
+
+      {/* Setup Guide */}
+      <SetupGuide
+        hasApiKey={keys.length > 0}
+        apiKeyPreview={keys[0]?.key_preview ?? null}
+        hasHeartbeatService={watchlist.some((s) => s.last_checked_at !== null)}
+        hasWebhook={webhooks.length > 0}
+        onHeartbeatReceived={fetchWatchlist}
+      />
 
       {/* Watchlist */}
       <section className="mb-8">
