@@ -39,6 +39,26 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "monthly",
       priority: 0.6,
     },
+    {
+      url: `${BASE_URL}/docs`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+    {
+      url: `${BASE_URL}/docs/api`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.6,
+    },
+    ...["nextjs", "express", "hono", "fastapi", "rails", "laravel"].map(
+      (fw) => ({
+        url: `${BASE_URL}/docs/${fw}`,
+        lastModified: new Date(),
+        changeFrequency: "monthly" as const,
+        priority: 0.6,
+      })
+    ),
     ...statusPages,
     ...categoryPages,
   ];
