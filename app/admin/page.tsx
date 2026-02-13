@@ -1,19 +1,20 @@
-import { isAuthenticated } from "@/lib/admin-auth";
-import AdminLogin from "./AdminLogin";
+import { requireAdmin } from "@/lib/admin-auth";
 import AdminDashboard from "./AdminDashboard";
 
 export const metadata = { title: "Admin", robots: "noindex, nofollow" };
 
 export default async function AdminPage() {
-  const authed = await isAuthenticated();
+  const user = await requireAdmin();
 
-  if (!authed) {
+  if (!user) {
     return (
-      <div className="mx-auto max-w-md px-4 py-20">
-        <h1 className="mb-6 text-center text-2xl font-bold text-zinc-900 dark:text-zinc-100">
-          Admin Login
+      <div className="mx-auto max-w-md px-4 py-20 text-center">
+        <h1 className="mb-3 text-2xl font-bold text-zinc-900 dark:text-zinc-100">
+          Access Denied
         </h1>
-        <AdminLogin />
+        <p className="text-zinc-500 dark:text-zinc-400">
+          You don&apos;t have admin access. Please sign in with an admin account.
+        </p>
       </div>
     );
   }

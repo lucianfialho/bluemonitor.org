@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 
 interface Submission {
   id: number;
@@ -39,7 +38,6 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<Filter>("all");
   const [promotingId, setPromotingId] = useState<number | null>(null);
-  const router = useRouter();
 
   useEffect(() => {
     fetchSubmissions();
@@ -87,11 +85,6 @@ export default function AdminDashboard() {
     setSubmissions((prev) => prev.filter((s) => s.id !== id));
   }
 
-  async function handleLogout() {
-    await fetch("/api/admin/logout", { method: "POST" });
-    router.refresh();
-  }
-
   const filtered = filter === "all"
     ? submissions
     : submissions.filter((s) => s.status === filter);
@@ -112,16 +105,10 @@ export default function AdminDashboard() {
 
   return (
     <div>
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-6">
         <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">
           Submissions
         </h1>
-        <button
-          onClick={handleLogout}
-          className="rounded-lg border border-zinc-200 px-3 py-1.5 text-sm text-zinc-600 transition-colors hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-400 dark:hover:bg-zinc-800"
-        >
-          Logout
-        </button>
       </div>
 
       <div className="mb-6 flex gap-2">

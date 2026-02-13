@@ -8,8 +8,8 @@ const authMiddleware = neonAuthMiddleware({
 export default async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Protect dashboard — redirect to login if not authenticated
-  if (pathname.startsWith("/dashboard")) {
+  // Protect dashboard and admin — redirect to login if not authenticated
+  if (pathname.startsWith("/dashboard") || pathname.startsWith("/admin")) {
     return authMiddleware(request);
   }
 
@@ -26,5 +26,5 @@ export default async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/auth/sign-in", "/auth/sign-up"],
+  matcher: ["/dashboard/:path*", "/admin/:path*", "/auth/sign-in", "/auth/sign-up"],
 };

@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { isAuthenticated } from "@/lib/admin-auth";
+import { requireAdmin } from "@/lib/admin-auth";
 import { getDb } from "@/lib/db";
 
 export async function GET() {
-  if (!(await isAuthenticated())) {
+  if (!(await requireAdmin())) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -31,7 +31,7 @@ function extractDomain(url: string): string {
 }
 
 export async function PATCH(request: NextRequest) {
-  if (!(await isAuthenticated())) {
+  if (!(await requireAdmin())) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -74,7 +74,7 @@ export async function PATCH(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
-  if (!(await isAuthenticated())) {
+  if (!(await requireAdmin())) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
