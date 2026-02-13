@@ -11,10 +11,48 @@ export async function GET(request: NextRequest) {
 
   const sql = getDb();
 
-  await sql`
-    DELETE FROM status_checks
-    WHERE checked_at < NOW() - INTERVAL '7 days'
+  // Count before deleting
+  const [checksCount] = await sql`
+    SELECT COUNT(*)::int AS count FROM status_checks
+    WHERE checked_at < NOW() - INTERVAL '30 days'
+  `;
+  const [incidentsCount] = await sql`
+    SELECT COUNT(*)::int AS count FROM incidents
+    WHERE status = 'resolved'
+      AND resolved_at < NOW() - INTERVAL '90 days'
+  `;
+  const [submissionsCount] = await sql`
+    SELECT COUNT(*)::int AS count FROM submissions
+    WHERE status = 'rejected'
+      AND created_at < NOW() - INTERVAL '30 days'
   `;
 
-  return NextResponse.json({ ok: true });
+  // Delete status checks older than 30 days
+  await sql`
+    DELETE FROM status_checks
+    WHERE checked_at < NOW() - INTERVAL '30 days'
+  `;
+
+  // Delete resolved incidents older than 90 days
+  await sql`
+    DELETE FROM incidents
+    WHERE status = 'resolved'
+      AND resolved_at < NOW() - INTERVAL '90 days'
+  `;
+
+  // Delete rejected submissions older than 30 days
+  await sql`
+    DELETE FROM submissions
+    WHERE status = 'rejected'
+      AND created_at < NOW() - INTERVAL '30 days'
+  `;
+
+  return NextResponse.json({
+    ok: true,
+    deleted: {
+      status_checks: checksCount.count,
+      incidents: incidentsCount.count,
+      submissions: submissionsCount.count,
+    },
+  });
 }
