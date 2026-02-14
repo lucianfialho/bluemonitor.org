@@ -84,6 +84,10 @@ export default function DashboardClient({
   const [webhookEvents, setWebhookEvents] = useState<string[]>(["down"]);
   const [creatingWebhook, setCreatingWebhook] = useState(false);
   const [testingWebhookId, setTestingWebhookId] = useState<number | null>(null);
+  const [editingWebhookId, setEditingWebhookId] = useState<number | null>(null);
+  const [editWebhookUrl, setEditWebhookUrl] = useState("");
+  const [editWebhookEvents, setEditWebhookEvents] = useState<string[]>([]);
+  const [savingWebhook, setSavingWebhook] = useState(false);
   const [mcpCopied, setMcpCopied] = useState(false);
 
   const fetchKeys = useCallback(async () => {
@@ -210,6 +214,37 @@ export default function DashboardClient({
     setWebhookEvents((prev) =>
       prev.includes(event) ? prev.filter((e) => e !== event) : [...prev, event]
     );
+  }
+
+  function startEditWebhook(wh: Webhook) {
+    setEditingWebhookId(wh.id);
+    setEditWebhookUrl(wh.url);
+    setEditWebhookEvents([...wh.events]);
+  }
+
+  function toggleEditEvent(event: string) {
+    setEditWebhookEvents((prev) =>
+      prev.includes(event) ? prev.filter((e) => e !== event) : [...prev, event]
+    );
+  }
+
+  async function saveWebhookEdit(id: number) {
+    if (!editWebhookUrl || editWebhookEvents.length === 0) return;
+    setSavingWebhook(true);
+    const res = await fetch(`/api/webhooks/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ url: editWebhookUrl, events: editWebhookEvents }),
+    });
+    if (res.ok) {
+      setWebhooks((prev) =>
+        prev.map((w) =>
+          w.id === id ? { ...w, url: editWebhookUrl, events: editWebhookEvents } : w
+        )
+      );
+      setEditingWebhookId(null);
+    }
+    setSavingWebhook(false);
   }
 
   return (
@@ -524,56 +559,121 @@ export default function DashboardClient({
         ) : (
           <div className="divide-y divide-zinc-200 rounded-xl border border-zinc-200 bg-white dark:divide-zinc-800 dark:border-zinc-800 dark:bg-zinc-900">
             {webhooks.map((wh) => (
-              <div
-                key={wh.id}
-                className="flex items-center justify-between gap-3 px-5 py-3"
-              >
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2">
-                    <span className={`inline-block rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase ${
-                      wh.type === "discord"
-                        ? "bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300"
-                        : wh.type === "slack"
-                          ? "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300"
-                          : "bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
-                    }`}>
-                      {wh.type}
-                    </span>
-                    <span className="truncate text-sm text-zinc-900 dark:text-zinc-100">
-                      {wh.url}
-                    </span>
+              <div key={wh.id} className="px-5 py-3">
+                {editingWebhookId === wh.id ? (
+                  /* Inline edit form */
+                  <div className="space-y-3">
+                    <input
+                      type="url"
+                      value={editWebhookUrl}
+                      onChange={(e) => setEditWebhookUrl(e.target.value)}
+                      className="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-blue-500 focus:outline-none dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-100"
+                    />
+                    <div className="flex flex-wrap items-center gap-3">
+                      <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">Events:</span>
+                      {(["down", "slow", "recovered", "dead", "resurrected"] as const).map((event) => {
+                        const allowed = plan?.limits.allowedWebhookEvents?.includes(event) ?? event === "down";
+                        return (
+                          <label
+                            key={event}
+                            onClick={(e) => {
+                              if (!allowed) {
+                                e.preventDefault();
+                                window.location.href = "/pricing";
+                              }
+                            }}
+                            className={`flex items-center gap-1.5 text-sm ${!allowed ? "cursor-pointer text-zinc-400 dark:text-zinc-500" : "text-zinc-700 dark:text-zinc-300"}`}
+                          >
+                            <input
+                              type="checkbox"
+                              checked={allowed && editWebhookEvents.includes(event)}
+                              onChange={() => allowed && toggleEditEvent(event)}
+                              disabled={!allowed}
+                              className="rounded border-zinc-300 text-blue-600 focus:ring-blue-500 disabled:opacity-40 dark:border-zinc-600"
+                            />
+                            {event}
+                            {!allowed && (
+                              <span className="rounded bg-blue-100 px-1 py-0.5 text-[10px] font-semibold text-blue-600 dark:bg-blue-900 dark:text-blue-300">
+                                PRO
+                              </span>
+                            )}
+                          </label>
+                        );
+                      })}
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => saveWebhookEdit(wh.id)}
+                        disabled={savingWebhook || !editWebhookUrl || editWebhookEvents.length === 0}
+                        className="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
+                      >
+                        {savingWebhook ? "Saving..." : "Save"}
+                      </button>
+                      <button
+                        onClick={() => setEditingWebhookId(null)}
+                        className="rounded-lg border border-zinc-200 px-3 py-1.5 text-xs font-medium text-zinc-600 transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-400 dark:hover:bg-zinc-800"
+                      >
+                        Cancel
+                      </button>
+                    </div>
                   </div>
-                  <p className="mt-0.5 text-xs text-zinc-500">
-                    Events: {wh.events.join(", ")} · Created{" "}
-                    {new Date(wh.created_at).toLocaleDateString()}
-                  </p>
-                </div>
-                <div className="flex shrink-0 items-center gap-1">
-                  <button
-                    onClick={() => toggleWebhook(wh.id, !wh.active)}
-                    className={`rounded-md px-2 py-1 text-xs font-medium transition-colors ${
-                      wh.active
-                        ? "text-green-600 hover:bg-green-50 dark:text-green-400 dark:hover:bg-green-950"
-                        : "text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800"
-                    }`}
-                    title={wh.active ? "Disable" : "Enable"}
-                  >
-                    {wh.active ? "On" : "Off"}
-                  </button>
-                  <button
-                    onClick={() => testWebhook(wh.id)}
-                    disabled={testingWebhookId === wh.id}
-                    className="rounded-md px-2 py-1 text-xs font-medium text-blue-600 transition-colors hover:bg-blue-50 disabled:opacity-50 dark:text-blue-400 dark:hover:bg-blue-950"
-                  >
-                    {testingWebhookId === wh.id ? "Sending..." : "Test"}
-                  </button>
-                  <button
-                    onClick={() => deleteWebhook(wh.id)}
-                    className="rounded-md px-2 py-1 text-xs font-medium text-red-600 transition-colors hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950"
-                  >
-                    Delete
-                  </button>
-                </div>
+                ) : (
+                  /* Normal display */
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className={`inline-block rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase ${
+                          wh.type === "discord"
+                            ? "bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300"
+                            : wh.type === "slack"
+                              ? "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300"
+                              : "bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300"
+                        }`}>
+                          {wh.type}
+                        </span>
+                        <span className="truncate text-sm text-zinc-900 dark:text-zinc-100">
+                          {wh.url}
+                        </span>
+                      </div>
+                      <p className="mt-0.5 text-xs text-zinc-500">
+                        Events: {wh.events.join(", ")} · Created{" "}
+                        {new Date(wh.created_at).toLocaleDateString()}
+                      </p>
+                    </div>
+                    <div className="flex shrink-0 items-center gap-1">
+                      <button
+                        onClick={() => toggleWebhook(wh.id, !wh.active)}
+                        className={`rounded-md px-2 py-1 text-xs font-medium transition-colors ${
+                          wh.active
+                            ? "text-green-600 hover:bg-green-50 dark:text-green-400 dark:hover:bg-green-950"
+                            : "text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800"
+                        }`}
+                        title={wh.active ? "Disable" : "Enable"}
+                      >
+                        {wh.active ? "On" : "Off"}
+                      </button>
+                      <button
+                        onClick={() => startEditWebhook(wh)}
+                        className="rounded-md px-2 py-1 text-xs font-medium text-zinc-600 transition-colors hover:bg-zinc-50 dark:text-zinc-400 dark:hover:bg-zinc-800"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => testWebhook(wh.id)}
+                        disabled={testingWebhookId === wh.id}
+                        className="rounded-md px-2 py-1 text-xs font-medium text-blue-600 transition-colors hover:bg-blue-50 disabled:opacity-50 dark:text-blue-400 dark:hover:bg-blue-950"
+                      >
+                        {testingWebhookId === wh.id ? "Sending..." : "Test"}
+                      </button>
+                      <button
+                        onClick={() => deleteWebhook(wh.id)}
+                        className="rounded-md px-2 py-1 text-xs font-medium text-red-600 transition-colors hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             ))}
           </div>
