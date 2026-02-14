@@ -86,8 +86,15 @@ function formatTime(date: Date): string {
   return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 }
 
+function getUptimeColor(uptime: number): string {
+  if (uptime >= 99) return "text-green-600 dark:text-green-400";
+  if (uptime >= 95) return "text-yellow-600 dark:text-yellow-400";
+  return "text-red-600 dark:text-red-400";
+}
+
 export default function StatusTimeline({ slug }: { slug: string }) {
   const [segments, setSegments] = useState<Segment[] | null>(null);
+  const [uptime, setUptime] = useState<number | null>(null);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -98,6 +105,10 @@ export default function StatusTimeline({ slug }: { slug: string }) {
         if (res.ok) {
           const checks: StatusCheck[] = await res.json();
           setSegments(buildSegments(checks));
+          if (checks.length > 0) {
+            const upCount = checks.filter((c) => c.status === "up").length;
+            setUptime(Math.round((upCount / checks.length) * 1000) / 10);
+          }
         }
       } catch {
         // silently fail
@@ -128,9 +139,14 @@ export default function StatusTimeline({ slug }: { slug: string }) {
 
   return (
     <div>
-      <h3 className="mb-3 text-sm font-medium text-zinc-700 dark:text-zinc-300">
-        Status History (24h)
-      </h3>
+      <div className="mb-3 flex items-center justify-between">
+        <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+          Status History (24h)
+        </h3>
+        <span className={`text-sm font-semibold ${uptime !== null ? getUptimeColor(uptime) : "text-zinc-400"}`}>
+          {uptime !== null ? `${uptime}% uptime` : "\u2014"}
+        </span>
+      </div>
       <div className="relative">
         <div className="flex gap-[2px]">
           {segments.map((seg, i) => (

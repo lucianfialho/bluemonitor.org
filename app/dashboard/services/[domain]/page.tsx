@@ -22,6 +22,13 @@ interface WatchlistService {
   last_heartbeat_at: string | null;
   is_private: boolean;
   added_at: string;
+  uptime_24h: number | null;
+}
+
+function getUptimeColor(uptime: number): string {
+  if (uptime >= 99) return "text-green-600 dark:text-green-400";
+  if (uptime >= 95) return "text-yellow-600 dark:text-yellow-400";
+  return "text-red-600 dark:text-red-400";
 }
 
 function StatusLabel({ status }: { status: WatchlistService["current_status"] }) {
@@ -172,9 +179,9 @@ export default function ServiceDetailPage() {
             </p>
           </div>
           <div className="rounded-xl bg-white/80 p-3 dark:bg-zinc-800/60">
-            <p className="mb-1 text-[11px] font-medium uppercase tracking-wider text-blue-500 dark:text-blue-400">Last Checked</p>
-            <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-              {service.last_checked_at ? timeAgo(service.last_checked_at) : "\u2014"}
+            <p className="mb-1 text-[11px] font-medium uppercase tracking-wider text-blue-500 dark:text-blue-400">Uptime (24h)</p>
+            <p className={`text-sm font-semibold ${service.uptime_24h !== null ? getUptimeColor(service.uptime_24h) : "text-zinc-900 dark:text-zinc-100"}`}>
+              {service.uptime_24h !== null ? `${service.uptime_24h}%` : "\u2014"}
             </p>
           </div>
         </div>

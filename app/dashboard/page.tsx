@@ -29,6 +29,13 @@ interface WatchlistService {
   last_heartbeat_at: string | null;
   is_private: boolean;
   added_at: string;
+  uptime_24h: number | null;
+}
+
+function getUptimeColor(uptime: number): string {
+  if (uptime >= 99) return "text-green-600 dark:text-green-400";
+  if (uptime >= 95) return "text-yellow-600 dark:text-yellow-400";
+  return "text-red-600 dark:text-red-400";
 }
 
 export default function OverviewPage() {
@@ -178,17 +185,24 @@ export default function OverviewPage() {
           </div>
           <div className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
             <p className="text-[11px] font-medium uppercase tracking-wider text-blue-500 dark:text-blue-400">
-              Status
+              Uptime (24h)
             </p>
-            <div className="mt-1 flex items-center gap-1.5">
-              <span className="text-2xl font-bold text-green-600 dark:text-green-400">
-                {watchlist.filter((s) => s.current_status === "up").length}
-              </span>
-              <span className="text-sm text-zinc-400">/</span>
-              <span className="text-sm text-zinc-500">
-                {watchlist.length} up
-              </span>
-            </div>
+            <p className={`mt-1 text-2xl font-bold ${(() => {
+              const vals = watchlist
+                .map((s) => s.uptime_24h)
+                .filter((v): v is number => v !== null);
+              if (vals.length === 0) return "text-zinc-400";
+              const avg = Math.round((vals.reduce((a, b) => a + b, 0) / vals.length) * 10) / 10;
+              return getUptimeColor(avg);
+            })()}`}>
+              {(() => {
+                const vals = watchlist
+                  .map((s) => s.uptime_24h)
+                  .filter((v): v is number => v !== null);
+                if (vals.length === 0) return "\u2014";
+                return (Math.round((vals.reduce((a, b) => a + b, 0) / vals.length) * 10) / 10) + "%";
+              })()}
+            </p>
           </div>
           <div className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
             <p className="text-[11px] font-medium uppercase tracking-wider text-blue-500 dark:text-blue-400">
@@ -278,6 +292,11 @@ export default function OverviewPage() {
                                 : "Down"
                         }
                       />
+                    )}
+                    {service.uptime_24h !== null && (
+                      <span className={`text-[11px] font-semibold ${getUptimeColor(service.uptime_24h)}`}>
+                        {service.uptime_24h}%
+                      </span>
                     )}
                     {service.last_heartbeat_at && (
                       <span className="rounded bg-purple-100 px-1 py-0.5 text-[10px] font-semibold text-purple-600 dark:bg-purple-900 dark:text-purple-300">

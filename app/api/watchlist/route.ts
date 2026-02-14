@@ -12,7 +12,14 @@ export async function GET() {
   const sql = getDb();
   const services = await sql`
     SELECT s.id, s.slug, s.name, s.domain, s.category, s.current_status,
-           s.current_response_time, s.last_checked_at, s.last_heartbeat_at, s.is_private, w.added_at
+           s.current_response_time, s.last_checked_at, s.last_heartbeat_at, s.is_private, w.added_at,
+           (SELECT ROUND(
+              COUNT(*) FILTER (WHERE sc.status = 'up') * 100.0 / NULLIF(COUNT(*), 0), 1
+            )
+            FROM status_checks sc
+            WHERE sc.service_id = s.id
+              AND sc.checked_at > NOW() - INTERVAL '24 hours'
+           ) AS uptime_24h
     FROM watchlist w
     JOIN services s ON s.id = w.service_id
     WHERE w.user_id = ${session.user.id}
