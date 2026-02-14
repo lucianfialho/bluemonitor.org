@@ -1,4 +1,7 @@
 # BlueMonitor — Next.js Setup Guide
+# Version: 2.0
+# Last-Updated: 2026-02-14
+# Changelog: Added bot tracking middleware (Pro), API endpoint checks in heartbeat, badge footer placement
 
 Add uptime monitoring, heartbeat push, and a status badge to your Next.js app (App Router).
 
@@ -22,11 +25,17 @@ BlueMonitor pings this every 5 minutes. If it responds with 200 under 3s → ope
 
 ## 2. Heartbeat Push (recommended)
 
-Push detailed dependency health data to BlueMonitor on a schedule. This checks your database, cache, and external APIs internally.
+Push detailed health data to BlueMonitor on a schedule. This checks your database, cache, external APIs, and your own API endpoints.
 
 **Requirements:**
 - A BlueMonitor API key (create at https://www.bluemonitor.org/dashboard)
 - The first heartbeat auto-registers the service and adds it to your watchlist
+
+**Important: Auto-discover checks.** Scan the project for dependencies and API routes to build a comprehensive heartbeat. Look for:
+- **Database**: any ORM or SQL client (Prisma, Drizzle, Neon, pg, Knex, etc.) → add a `SELECT 1` check
+- **Redis/Cache**: Redis, Upstash, Memcached imports → add a `PING` check
+- **External APIs**: Stripe, SendGrid, Twilio, OpenAI, S3 SDK imports → add a lightweight API call check
+- **API endpoints**: scan `app/api/*/route.ts` for GET handlers → add HTTP checks for key endpoints (fetch them internally and verify 200 response)
 
 Create `app/api/cron/heartbeat/route.ts`:
 
@@ -47,15 +56,41 @@ async function checkDependency(name: string, fn: () => Promise<void>) {
   }
 }
 
+async function checkEndpoint(url: string) {
+  const start = Date.now();
+  try {
+    const res = await fetch(url, { method: "GET" });
+    return {
+      status: res.ok ? ("ok" as const) : ("error" as const),
+      latency: Date.now() - start,
+      message: res.ok ? undefined : `HTTP ${res.status}`,
+    };
+  } catch (err) {
+    return {
+      status: "error" as const,
+      latency: Date.now() - start,
+      message: err instanceof Error ? err.message : "Unknown error",
+    };
+  }
+}
+
 export async function GET() {
-  const checks = {
-    database: await checkDependency("database", async () => {
-      await db`SELECT 1`;
-    }),
-    // Add more:
-    // redis: await checkDependency("redis", async () => { await redis.ping(); }),
-    // stripe: await checkDependency("stripe", async () => { await stripe.balance.retrieve(); }),
-  };
+  const baseUrl = process.env.NEXT_PUBLIC_URL || process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}`
+    : "http://localhost:3000";
+
+  const checks: Record<string, { status: string; latency: number; message?: string }> = {};
+
+  // Infrastructure checks
+  checks.database = await checkDependency("database", async () => {
+    await db`SELECT 1`;
+  });
+  // checks.redis = await checkDependency("redis", async () => { await redis.ping(); });
+  // checks.stripe = await checkDependency("stripe", async () => { await stripe.balance.retrieve(); });
+
+  // API endpoint checks — add your key endpoints here
+  // checks["api:/api/users"] = await checkEndpoint(`${baseUrl}/api/users`);
+  // checks["api:/api/products"] = await checkEndpoint(`${baseUrl}/api/products`);
 
   const hasError = Object.values(checks).some((c) => c.status === "error");
   const status = hasError ? "error" : "ok";

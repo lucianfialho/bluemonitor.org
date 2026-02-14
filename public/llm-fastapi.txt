@@ -1,4 +1,7 @@
 # BlueMonitor — FastAPI Setup Guide
+# Version: 2.0
+# Last-Updated: 2026-02-14
+# Changelog: Added bot tracking middleware (Pro), API endpoint checks in heartbeat, badge footer placement
 
 Add uptime monitoring, heartbeat push, and a status badge to your FastAPI app.
 
@@ -20,7 +23,7 @@ BlueMonitor pings this every 5 minutes. If it responds with 200 under 3s → ope
 
 ## 2. Heartbeat Push (recommended)
 
-Push detailed dependency health data to BlueMonitor on a schedule using APScheduler.
+Push detailed health data to BlueMonitor on a schedule using APScheduler. This checks your database, cache, external APIs, and your own API endpoints.
 
 ```bash
 pip install apscheduler httpx
@@ -29,6 +32,12 @@ pip install apscheduler httpx
 **Requirements:**
 - A BlueMonitor API key (create at https://www.bluemonitor.org/dashboard)
 - The first heartbeat auto-registers the service and adds it to your watchlist
+
+**Important: Auto-discover checks.** Scan the project for dependencies and routes to build a comprehensive heartbeat. Look for:
+- **Database**: SQLAlchemy, databases, asyncpg, psycopg2, etc. → add a `SELECT 1` check
+- **Redis/Cache**: redis-py, aioredis imports → add a `PING` check
+- **External APIs**: stripe, boto3, httpx calls to third-party services → add lightweight checks
+- **API endpoints**: scan route decorators (`@app.get`, `@router.get`) → add HTTP checks for key endpoints
 
 ```python
 import os
@@ -39,11 +48,28 @@ from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from contextlib import asynccontextmanager
 
 BLUEMONITOR_API_KEY = os.getenv("BLUEMONITOR_API_KEY")
+BASE_URL = os.getenv("APP_URL", "http://localhost:8000")
+
+async def check_endpoint(client: httpx.AsyncClient, url: str):
+    start = time.monotonic()
+    try:
+        res = await client.get(url, timeout=5)
+        return {
+            "status": "ok" if res.is_success else "error",
+            "latency": round((time.monotonic() - start) * 1000),
+            "message": None if res.is_success else f"HTTP {res.status_code}",
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "latency": round((time.monotonic() - start) * 1000),
+            "message": str(e),
+        }
 
 async def send_heartbeat():
     checks = {}
 
-    # Database check
+    # Infrastructure checks
     db_start = time.monotonic()
     try:
         await database.execute("SELECT 1")
@@ -58,11 +84,16 @@ async def send_heartbeat():
             "message": str(e),
         }
 
-    # Add more checks: redis, external APIs, etc.
+    # checks["redis"] = ...
+    # checks["stripe"] = ...
 
-    has_error = any(c["status"] == "error" for c in checks.values())
-
+    # API endpoint checks — add your key endpoints here
     async with httpx.AsyncClient() as client:
+        # checks["api:/api/users"] = await check_endpoint(client, f"{BASE_URL}/api/users")
+        # checks["api:/api/products"] = await check_endpoint(client, f"{BASE_URL}/api/products")
+
+        has_error = any(c["status"] == "error" for c in checks.values())
+
         await client.post(
             "https://www.bluemonitor.org/api/v1/heartbeat",
             headers={"Authorization": f"Bearer {BLUEMONITOR_API_KEY}"},

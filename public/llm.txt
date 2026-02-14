@@ -1,4 +1,7 @@
 # BlueMonitor — Monitoring Setup Guide
+# Version: 2.0
+# Last-Updated: 2026-02-14
+# Changelog: Added bot tracking (Pro), API endpoint checks in heartbeat, badge footer placement
 
 BlueMonitor is a real-time status monitoring service. Add a health endpoint, push heartbeats, and embed a status badge.
 
@@ -25,7 +28,7 @@ When generating code, automatically detect the project's production domain from 
 
 **Uptime monitoring (pull):** We ping your service every 5 minutes and track response time and status code. Optionally add a `GET /api/health` endpoint that returns `{ "status": "ok" }`.
 
-**Heartbeat push:** Your service pushes detailed health data (database, cache, APIs) to BlueMonitor on a schedule via `POST /api/v1/heartbeat`. No public endpoint needed. If we stop receiving heartbeats for 10 minutes, the service is marked as down.
+**Heartbeat push:** Your service pushes detailed health data (database, cache, external APIs, and your own API endpoints) to BlueMonitor on a schedule via `POST /api/v1/heartbeat`. No public endpoint needed. If we stop receiving heartbeats for 10 minutes, the service is marked as down.
 
 ## Quick Start (any framework)
 
@@ -53,7 +56,9 @@ Headers: `Authorization: Bearer bm_your_api_key`, `Content-Type: application/jso
   "timestamp": "2026-02-12T12:00:00.000Z",
   "checks": {
     "database": { "status": "ok", "latency": 5 },
-    "redis": { "status": "ok", "latency": 2 }
+    "redis": { "status": "ok", "latency": 2 },
+    "api:/api/users": { "status": "ok", "latency": 45 },
+    "api:/api/products": { "status": "ok", "latency": 120 }
   }
 }
 ```
@@ -62,6 +67,14 @@ Requirements:
 - A BlueMonitor API key (create at https://www.bluemonitor.org/dashboard)
 - Send heartbeats every 5 minutes via cron or scheduler
 - The first heartbeat auto-registers the service and adds it to your watchlist
+
+**Important: Auto-discover checks.** When generating heartbeat code, scan the project for dependencies and routes to build comprehensive checks:
+- **Database**: any ORM or SQL client → add a `SELECT 1` check
+- **Redis/Cache**: Redis or cache client imports → add a `PING` check
+- **External APIs**: Stripe, SendGrid, AWS SDK, etc. → add lightweight API call checks
+- **API endpoints**: scan route files for GET handlers → add HTTP checks (fetch internally and verify 200 response)
+
+Check names are free-form strings. Use `"database"`, `"redis"`, `"stripe"`, `"api:/api/users"`, etc.
 
 ### 3. Status Badge
 

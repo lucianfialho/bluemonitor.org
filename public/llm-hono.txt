@@ -1,4 +1,7 @@
 # BlueMonitor — Hono Setup Guide
+# Version: 2.0
+# Last-Updated: 2026-02-14
+# Changelog: Added bot tracking middleware (Pro), API endpoint checks in heartbeat, badge footer placement
 
 Add uptime monitoring, heartbeat push, and a status badge to your Hono app. Works on Cloudflare Workers, Deno, Bun, and Node.js.
 
@@ -26,11 +29,17 @@ BlueMonitor pings this every 5 minutes. If it responds with 200 under 3s → ope
 
 ## 2. Heartbeat Push (recommended)
 
-Push detailed dependency health data to BlueMonitor on a schedule.
+Push detailed health data to BlueMonitor on a schedule. This checks your database, cache, external APIs, and your own API endpoints.
 
 **Requirements:**
 - A BlueMonitor API key (create at https://www.bluemonitor.org/dashboard)
 - The first heartbeat auto-registers the service and adds it to your watchlist
+
+**Important: Auto-discover checks.** Scan the project for dependencies and routes to build a comprehensive heartbeat. Look for:
+- **Database**: D1, Turso, Neon, or any SQL client → add a `SELECT 1` check
+- **KV/Cache**: Cloudflare KV, Redis, Upstash imports → add a read check
+- **External APIs**: Stripe, OpenAI, AWS SDK imports → add a lightweight API call check
+- **API endpoints**: scan route definitions for GET handlers → add HTTP checks for key endpoints
 
 ### Cloudflare Workers
 
@@ -42,13 +51,23 @@ crons = ["*/5 * * * *"]
 ```
 
 ```ts
+async function checkEndpoint(url) {
+  const start = Date.now();
+  try {
+    const res = await fetch(url);
+    return { status: res.ok ? "ok" : "error", latency: Date.now() - start, message: res.ok ? undefined : `HTTP ${res.status}` };
+  } catch (err) {
+    return { status: "error", latency: Date.now() - start, message: String(err) };
+  }
+}
+
 export default {
   fetch: app.fetch,
 
   async scheduled(event, env, ctx) {
     const checks = {};
 
-    // Database check (D1, Turso, etc.)
+    // Infrastructure checks
     const dbStart = Date.now();
     try {
       await env.DB.prepare("SELECT 1").run();
@@ -56,6 +75,13 @@ export default {
     } catch (err) {
       checks.database = { status: "error", latency: Date.now() - dbStart, message: String(err) };
     }
+
+    // checks.kv = ...
+    // checks.stripe = ...
+
+    // API endpoint checks — add your key endpoints here
+    // checks["api:/api/users"] = await checkEndpoint("https://yourapp.com/api/users");
+    // checks["api:/api/products"] = await checkEndpoint("https://yourapp.com/api/products");
 
     const hasError = Object.values(checks).some((c) => c.status === "error");
 
@@ -84,9 +110,21 @@ export default {
 Use `setInterval` or a cron library:
 
 ```ts
+async function checkEndpoint(url) {
+  const start = Date.now();
+  try {
+    const res = await fetch(url);
+    return { status: res.ok ? "ok" : "error", latency: Date.now() - start, message: res.ok ? undefined : `HTTP ${res.status}` };
+  } catch (err) {
+    return { status: "error", latency: Date.now() - start, message: String(err) };
+  }
+}
+
 async function sendHeartbeat() {
+  const baseUrl = process.env.APP_URL || "http://localhost:3000";
   const checks = {};
 
+  // Infrastructure checks
   const dbStart = Date.now();
   try {
     await db.execute("SELECT 1");
@@ -94,6 +132,12 @@ async function sendHeartbeat() {
   } catch (err) {
     checks.database = { status: "error", latency: Date.now() - dbStart };
   }
+
+  // checks.redis = ...
+
+  // API endpoint checks — add your key endpoints here
+  // checks["api:/api/users"] = await checkEndpoint(`${baseUrl}/api/users`);
+  // checks["api:/api/products"] = await checkEndpoint(`${baseUrl}/api/products`);
 
   const hasError = Object.values(checks).some((c) => c.status === "error");
 

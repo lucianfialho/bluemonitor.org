@@ -1,4 +1,7 @@
 # BlueMonitor — Rails Setup Guide
+# Version: 2.0
+# Last-Updated: 2026-02-14
+# Changelog: Added bot tracking middleware (Pro), API endpoint checks in heartbeat, badge footer placement
 
 Add uptime monitoring, heartbeat push, and a status badge to your Rails app.
 
@@ -32,7 +35,7 @@ BlueMonitor pings this every 5 minutes. If it responds with 200 under 3s → ope
 
 ## 2. Heartbeat Push (recommended)
 
-Push detailed dependency health data to BlueMonitor using a recurring Sidekiq job.
+Push detailed health data to BlueMonitor using a recurring Sidekiq job. This checks your database, cache, external APIs, and your own API endpoints.
 
 ```ruby
 gem "sidekiq-cron"
@@ -42,6 +45,12 @@ gem "sidekiq-cron"
 - A BlueMonitor API key (create at https://www.bluemonitor.org/dashboard)
 - The first heartbeat auto-registers the service and adds it to your watchlist
 
+**Important: Auto-discover checks.** Scan the project for dependencies and routes to build a comprehensive heartbeat. Look for:
+- **Database**: ActiveRecord, Sequel, etc. → add a `SELECT 1` check
+- **Redis/Cache**: Redis, Sidekiq (implies Redis) → add a `PING` check
+- **External APIs**: Stripe, AWS SDK, HTTParty/Faraday calls → add lightweight checks
+- **API endpoints**: scan `config/routes.rb` for GET routes → add HTTP checks for key endpoints
+
 Create `app/jobs/heartbeat_job.rb`:
 
 ```ruby
@@ -50,37 +59,16 @@ class HeartbeatJob < ApplicationJob
 
   def perform
     checks = {}
+    base_url = ENV.fetch("APP_URL", "http://localhost:3000")
 
-    # Database check
-    db_start = Process.clock_gettime(Process::CLOCK_MONOTONIC)
-    begin
-      ActiveRecord::Base.connection.execute("SELECT 1")
-      checks[:database] = {
-        status: "ok",
-        latency: ((Process.clock_gettime(Process::CLOCK_MONOTONIC) - db_start) * 1000).round
-      }
-    rescue => e
-      checks[:database] = {
-        status: "error",
-        latency: ((Process.clock_gettime(Process::CLOCK_MONOTONIC) - db_start) * 1000).round,
-        message: e.message
-      }
-    end
+    # Infrastructure checks
+    check_timing(:database, checks) { ActiveRecord::Base.connection.execute("SELECT 1") }
+    check_timing(:redis, checks) { Redis.current.ping }
+    # check_timing(:stripe, checks) { Stripe::Balance.retrieve }
 
-    # Redis check
-    redis_start = Process.clock_gettime(Process::CLOCK_MONOTONIC)
-    begin
-      Redis.current.ping
-      checks[:redis] = {
-        status: "ok",
-        latency: ((Process.clock_gettime(Process::CLOCK_MONOTONIC) - redis_start) * 1000).round
-      }
-    rescue => e
-      checks[:redis] = {
-        status: "error",
-        latency: ((Process.clock_gettime(Process::CLOCK_MONOTONIC) - redis_start) * 1000).round
-      }
-    end
+    # API endpoint checks — add your key routes here
+    # check_endpoint("api:/api/users", "#{base_url}/api/users", checks)
+    # check_endpoint("api:/api/products", "#{base_url}/api/products", checks)
 
     has_error = checks.values.any? { |c| c[:status] == "error" }
 
@@ -96,6 +84,36 @@ class HeartbeatJob < ApplicationJob
       "Authorization" => "Bearer #{ENV['BLUEMONITOR_API_KEY']}",
       "Content-Type" => "application/json"
     )
+  end
+
+  private
+
+  def check_timing(name, checks)
+    start = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+    begin
+      yield
+      checks[name] = { status: "ok", latency: ms_since(start) }
+    rescue => e
+      checks[name] = { status: "error", latency: ms_since(start), message: e.message }
+    end
+  end
+
+  def check_endpoint(name, url, checks)
+    start = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+    begin
+      res = Net::HTTP.get_response(URI(url))
+      checks[name] = {
+        status: res.is_a?(Net::HTTPSuccess) ? "ok" : "error",
+        latency: ms_since(start),
+        message: res.is_a?(Net::HTTPSuccess) ? nil : "HTTP #{res.code}"
+      }
+    rescue => e
+      checks[name] = { status: "error", latency: ms_since(start), message: e.message }
+    end
+  end
+
+  def ms_since(start)
+    ((Process.clock_gettime(Process::CLOCK_MONOTONIC) - start) * 1000).round
   end
 end
 ```
