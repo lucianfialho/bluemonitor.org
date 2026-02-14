@@ -1,11 +1,7 @@
 import Link from "next/link";
 import HeaderAuth from "./HeaderAuth";
-import { authServer } from "@/lib/auth/server";
 
-export default async function Header() {
-  const { data: session } = await authServer.getSession();
-  const isLoggedIn = !!session?.user;
-
+export default function Header() {
   return (
     <header className="sticky top-0 z-40 border-b border-zinc-200 bg-white/80 backdrop-blur-md dark:border-zinc-800 dark:bg-zinc-950/80">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
@@ -45,14 +41,6 @@ export default async function Header() {
           >
             Developers
           </Link>
-          {!isLoggedIn && (
-            <Link
-              href="/pricing"
-              className="text-sm font-medium text-zinc-600 transition-colors hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
-            >
-              Pricing
-            </Link>
-          )}
           <HeaderAuth />
         </nav>
       </div>

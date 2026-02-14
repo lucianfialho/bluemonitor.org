@@ -17,6 +17,12 @@ export default function HeaderAuth() {
       </SignedIn>
       <SignedOut>
         <Link
+          href="/pricing"
+          className="text-sm font-medium text-zinc-600 transition-colors hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
+        >
+          Pricing
+        </Link>
+        <Link
           href="/auth/sign-in"
           className="text-sm font-medium text-zinc-600 transition-colors hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
         >
