@@ -270,7 +270,7 @@ export async function GET() {
         </div>
         <p className="mb-4 text-sm text-zinc-500 dark:text-zinc-400">
           Track which search engines, AI crawlers, and social bots visit your
-          app. Add bot detection middleware to report visits to BlueMonitor.
+          app. Add bot detection to your proxy/middleware to report visits to BlueMonitor.
           Requires a{" "}
           <Link
             href="/pricing"
@@ -280,8 +280,43 @@ export async function GET() {
           </Link>
           .
         </p>
+        <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50 p-4 dark:border-amber-900 dark:bg-amber-950/30">
+          <p className="text-sm font-medium text-amber-800 dark:text-amber-200">
+            Next.js 16+: {" "}
+            <code className="rounded bg-amber-100 px-1 py-0.5 text-xs dark:bg-amber-900/50">
+              middleware.ts
+            </code>{" "}
+            was renamed to{" "}
+            <code className="rounded bg-amber-100 px-1 py-0.5 text-xs dark:bg-amber-900/50">
+              proxy.ts
+            </code>{" "}
+            and the exported function from{" "}
+            <code className="rounded bg-amber-100 px-1 py-0.5 text-xs dark:bg-amber-900/50">
+              middleware
+            </code>{" "}
+            to{" "}
+            <code className="rounded bg-amber-100 px-1 py-0.5 text-xs dark:bg-amber-900/50">
+              proxy
+            </code>
+            . For Next.js 13–15, use{" "}
+            <code className="rounded bg-amber-100 px-1 py-0.5 text-xs dark:bg-amber-900/50">
+              middleware.ts
+            </code>{" "}
+            with the same code but export{" "}
+            <code className="rounded bg-amber-100 px-1 py-0.5 text-xs dark:bg-amber-900/50">
+              function middleware
+            </code>{" "}
+            instead.
+          </p>
+          <p className="mt-2 text-xs text-amber-700 dark:text-amber-300">
+            Migrate with:{" "}
+            <code className="rounded bg-amber-100 px-1 py-0.5 dark:bg-amber-900/50">
+              npx @next/codemod@canary middleware-to-proxy .
+            </code>
+          </p>
+        </div>
         <p className="mb-2 text-xs font-semibold text-zinc-400 dark:text-zinc-500">
-          middleware.ts
+          proxy.ts (Next.js 16+) or middleware.ts (Next.js 13–15)
         </p>
         <pre className="overflow-x-auto rounded-xl bg-zinc-900 p-4 text-sm text-zinc-300 dark:bg-zinc-950">
           <code>{`import { NextRequest, NextResponse } from "next/server";
@@ -289,26 +324,38 @@ export async function GET() {
 const BOT_PATTERNS = [
   { pattern: /Googlebot/i, name: "googlebot", category: "search_engine" },
   { pattern: /bingbot/i, name: "bingbot", category: "search_engine" },
+  { pattern: /YandexBot/i, name: "yandexbot", category: "search_engine" },
+  { pattern: /DuckDuckBot/i, name: "duckduckbot", category: "search_engine" },
   { pattern: /GPTBot/i, name: "gptbot", category: "ai_crawler" },
+  { pattern: /ChatGPT-User/i, name: "chatgpt-user", category: "ai_crawler" },
   { pattern: /ClaudeBot/i, name: "claudebot", category: "ai_crawler" },
+  { pattern: /anthropic-ai/i, name: "anthropic-ai", category: "ai_crawler" },
   { pattern: /PerplexityBot/i, name: "perplexitybot", category: "ai_crawler" },
+  { pattern: /Bytespider/i, name: "bytespider", category: "ai_crawler" },
+  { pattern: /CCBot/i, name: "ccbot", category: "ai_crawler" },
+  { pattern: /Meta-ExternalAgent/i, name: "meta-externalagent", category: "ai_crawler" },
+  { pattern: /Google-Extended/i, name: "google-extended", category: "ai_crawler" },
   { pattern: /Twitterbot/i, name: "twitterbot", category: "social" },
   { pattern: /facebookexternalhit/i, name: "facebookbot", category: "social" },
+  { pattern: /LinkedInBot/i, name: "linkedinbot", category: "social" },
   { pattern: /AhrefsBot/i, name: "ahrefsbot", category: "seo" },
+  { pattern: /SemrushBot/i, name: "semrushbot", category: "seo" },
+  { pattern: /UptimeRobot/i, name: "uptimerobot", category: "monitoring" },
 ];
 
 function identifyBot(ua: string) {
   for (const bot of BOT_PATTERNS) {
-    if (bot.pattern.test(ua)) return bot;
+    if (bot.pattern.test(ua)) return { name: bot.name, category: bot.category };
   }
   return null;
 }
 
-export async function middleware(request: NextRequest) {
+// Next.js 16+: export as "proxy". Next.js 13–15: rename to "middleware".
+export async function proxy(request: NextRequest) {
   const ua = request.headers.get("user-agent") || "";
   const bot = identifyBot(ua);
   if (bot) {
-    // IMPORTANT: await the fetch — Edge Runtime kills unawaited promises
+    // IMPORTANT: await the fetch — unawaited promises are killed when the response returns
     await fetch("https://www.bluemonitor.org/api/v1/bot-visits", {
       method: "POST",
       headers: {
@@ -334,8 +381,23 @@ export const config = {
 };`}</code>
         </pre>
         <p className="mt-3 text-sm text-zinc-500 dark:text-zinc-400">
-          If you already have a middleware, add the bot detection to your
-          existing function. View results in your{" "}
+          If you already have a{" "}
+          <code className="rounded-md bg-zinc-100 px-1.5 py-0.5 text-xs dark:bg-zinc-800">
+            proxy.ts
+          </code>{" "}
+          (or{" "}
+          <code className="rounded-md bg-zinc-100 px-1.5 py-0.5 text-xs dark:bg-zinc-800">
+            middleware.ts
+          </code>
+          ), add the bot detection to your existing function. Make sure it&apos;s{" "}
+          <code className="rounded-md bg-zinc-100 px-1.5 py-0.5 text-xs dark:bg-zinc-800">
+            async
+          </code>{" "}
+          and uses{" "}
+          <code className="rounded-md bg-zinc-100 px-1.5 py-0.5 text-xs dark:bg-zinc-800">
+            await
+          </code>{" "}
+          on the fetch call. View results in your{" "}
           <Link
             href="/dashboard"
             className="font-medium text-zinc-900 underline decoration-zinc-300 underline-offset-2 hover:decoration-zinc-900 dark:text-zinc-100 dark:decoration-zinc-600 dark:hover:decoration-zinc-100"

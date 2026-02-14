@@ -1,7 +1,7 @@
 # BlueMonitor — Next.js Setup Guide
-# Version: 2.0
+# Version: 2.1
 # Last-Updated: 2026-02-14
-# Changelog: Added bot tracking middleware (Pro), API endpoint checks in heartbeat, badge footer placement
+# Changelog: Next.js 16 proxy.ts migration, await fix for edge runtime, bot tracking improvements
 
 Add uptime monitoring, heartbeat push, and a status badge to your Next.js app (App Router).
 
@@ -179,7 +179,9 @@ Headers: `Authorization: Bearer bm_...`, `Content-Type: application/json`
 
 Track which search engines, AI crawlers, and social bots visit your site. Requires a Pro plan and API key.
 
-Create `middleware.ts` in your project root:
+**Important — Next.js 16+:** The `middleware.ts` file convention was renamed to `proxy.ts` and the exported function from `middleware` to `proxy`. If you're on Next.js 16+, use the `proxy.ts` example below. For Next.js 13–15, use `middleware.ts` with the same code but export `function middleware` instead of `function proxy`. You can migrate with: `npx @next/codemod@canary middleware-to-proxy .`
+
+Create `proxy.ts` (Next.js 16+) or `middleware.ts` (Next.js 13–15) in your project root:
 
 ```ts
 import { NextRequest, NextResponse } from "next/server";
@@ -213,12 +215,13 @@ function identifyBot(ua: string) {
   return null;
 }
 
-export async function middleware(request: NextRequest) {
+// Next.js 16+: export as "proxy". Next.js 13–15: rename to "middleware".
+export async function proxy(request: NextRequest) {
   const ua = request.headers.get("user-agent") || "";
   const bot = identifyBot(ua);
 
   if (bot) {
-    // IMPORTANT: await the fetch — Edge Runtime may kill unawaited promises
+    // IMPORTANT: await the fetch — unawaited promises are killed when the response returns
     await fetch("https://www.bluemonitor.org/api/v1/bot-visits", {
       method: "POST",
       headers: {
@@ -245,9 +248,9 @@ export const config = {
 };
 ```
 
-If you already have a `middleware.ts`, add the bot detection logic to your existing middleware function instead of creating a new one. Make sure your middleware is `async` and uses `await` on the fetch call.
+If you already have a `proxy.ts` (or `middleware.ts`), add the bot detection logic to your existing function instead of creating a new one. Make sure your function is `async` and uses `await` on the fetch call.
 
-**Important:** Next.js middleware runs on the Edge Runtime. You MUST `await` the fetch call — unawaited promises may be killed when the response is returned.
+**Important:** Next.js proxy/middleware runs on the Edge Runtime by default. You MUST `await` the fetch call — unawaited promises may be killed when the response is returned.
 
 - Requires Pro plan + `BLUEMONITOR_API_KEY` env variable
 - View results in the BlueMonitor dashboard under "Bot Tracking"
