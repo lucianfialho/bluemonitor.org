@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Script from "next/script";
 import { Geist, Geist_Mono } from "next/font/google";
 import Header from "@/components/Header";
-import Footer from "@/components/Footer";
+import FooterWrapper from "@/components/FooterWrapper";
 import Providers from "@/components/Providers";
 import "./globals.css";
 
@@ -70,7 +70,7 @@ gtag('config', 'G-0P1450794K');`}
         <Providers>
           <Header />
           <main className="min-h-screen">{children}</main>
-          <Footer />
+          <FooterWrapper />
         </Providers>
       </body>
     </html>
