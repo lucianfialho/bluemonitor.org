@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { UserButton } from "@neondatabase/auth/react";
 import { useDashboard } from "./DashboardContext";
 
 const navItems = [
@@ -35,9 +36,16 @@ const navItems = [
   },
 ];
 
+const siteLinks = [
+  { label: "Services", href: "/" },
+  { label: "Incidents", href: "/incidents" },
+  { label: "API", href: "/docs" },
+  { label: "Developers", href: "/developers" },
+];
+
 export default function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
-  const { plan } = useDashboard();
+  const { user, plan } = useDashboard();
 
   function isActive(href: string) {
     if (href === "/dashboard") return pathname === "/dashboard";
@@ -46,7 +54,22 @@ export default function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
 
   return (
     <nav className="flex h-full flex-col">
-      <div className="flex-1 space-y-0.5 px-3 py-5">
+      {/* Logo */}
+      <div className="px-4 pt-5 pb-4">
+        <Link href="/" className="flex items-center gap-2" onClick={onNavigate}>
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600">
+            <svg className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9.348 14.652a3.75 3.75 0 010-5.304m5.304 0a3.75 3.75 0 010 5.304m-7.425 2.121a6.75 6.75 0 010-9.546m9.546 0a6.75 6.75 0 010 9.546M5.106 18.894c-3.808-3.807-3.808-9.98 0-13.788m13.788 0c3.808 3.807 3.808 9.98 0 13.788M12 12h.008v.008H12V12zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+            </svg>
+          </div>
+          <span className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+            BlueMonitor
+          </span>
+        </Link>
+      </div>
+
+      {/* Dashboard nav */}
+      <div className="flex-1 space-y-0.5 px-3">
         {navItems.map((item) => {
           const active = isActive(item.href);
           return (
@@ -67,13 +90,30 @@ export default function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
             </Link>
           );
         })}
+
+        {/* Site links */}
+        <div className="pt-4">
+          <p className="mb-1 px-3 text-[10px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">
+            Explore
+          </p>
+          {siteLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              onClick={onNavigate}
+              className="flex items-center rounded-lg px-3 py-2 text-[13px] font-medium text-zinc-500 transition-colors duration-150 hover:bg-zinc-50 hover:text-zinc-700 dark:text-zinc-400 dark:hover:bg-zinc-800/50 dark:hover:text-zinc-300"
+            >
+              {link.label}
+            </Link>
+          ))}
+        </div>
       </div>
 
       {/* Bottom section */}
       <div className="px-3 pb-4">
         <div className="mb-3 h-px bg-zinc-100 dark:bg-zinc-800" />
         {plan?.tier === "pro" ? (
-          <div className="flex items-center gap-2.5 rounded-lg px-3 py-2">
+          <div className="mb-3 flex items-center gap-2.5 rounded-lg px-3 py-2">
             <svg className="h-4 w-4 text-blue-500" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
             </svg>
@@ -85,7 +125,7 @@ export default function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
           <Link
             href="/pricing"
             onClick={onNavigate}
-            className="group flex items-center gap-2.5 rounded-lg px-3 py-2 transition-colors duration-150 hover:bg-zinc-50 dark:hover:bg-zinc-800/50"
+            className="group mb-3 flex items-center gap-2.5 rounded-lg px-3 py-2 transition-colors duration-150 hover:bg-zinc-50 dark:hover:bg-zinc-800/50"
           >
             <svg className="h-4 w-4 text-zinc-400 transition-colors group-hover:text-blue-500 dark:text-zinc-500" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
@@ -95,6 +135,19 @@ export default function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
             </span>
           </Link>
         ) : null}
+
+        {/* User */}
+        <div className="flex items-center gap-3 rounded-lg px-3 py-2">
+          <UserButton size="icon" />
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-[13px] font-medium text-zinc-700 dark:text-zinc-300">
+              {user.name || "Account"}
+            </p>
+            <p className="truncate text-[11px] text-zinc-400 dark:text-zinc-500">
+              {user.email}
+            </p>
+          </div>
+        </div>
       </div>
     </nav>
   );
