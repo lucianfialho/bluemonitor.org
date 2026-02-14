@@ -3,8 +3,7 @@
 import { useEffect, useState } from "react";
 import { StatusCheck } from "@/lib/types";
 
-const SEGMENTS = 48; // 30min each = 24h
-const SEGMENT_MS = 30 * 60 * 1000;
+const SEGMENTS = 48;
 
 type SegmentStatus = "up" | "down" | "slow" | "no-data";
 
@@ -42,14 +41,31 @@ function getSegmentLabel(status: SegmentStatus): string {
   }
 }
 
-function buildSegments(checks: StatusCheck[]): Segment[] {
+function detectSpanMs(checks: StatusCheck[]): number {
+  if (checks.length === 0) return 24 * 60 * 60 * 1000;
+  const earliest = new Date(checks[0].checked_at).getTime();
   const now = Date.now();
-  const start = now - SEGMENTS * SEGMENT_MS;
+  const span = now - earliest;
+  // If data spans more than 25 hours, treat as extended (30d); otherwise 24h
+  return span > 25 * 60 * 60 * 1000 ? span : 24 * 60 * 60 * 1000;
+}
+
+function getSpanLabel(spanMs: number): string {
+  const hours = spanMs / (60 * 60 * 1000);
+  if (hours <= 25) return "24h";
+  const days = Math.round(hours / 24);
+  return `${days}d`;
+}
+
+function buildSegments(checks: StatusCheck[], spanMs: number): Segment[] {
+  const now = Date.now();
+  const segmentMs = spanMs / SEGMENTS;
+  const start = now - spanMs;
   const segments: Segment[] = [];
 
   for (let i = 0; i < SEGMENTS; i++) {
-    const from = new Date(start + i * SEGMENT_MS);
-    const to = new Date(start + (i + 1) * SEGMENT_MS);
+    const from = new Date(start + i * segmentMs);
+    const to = new Date(start + (i + 1) * segmentMs);
 
     const segChecks = checks.filter((c) => {
       const t = new Date(c.checked_at).getTime();
@@ -82,7 +98,11 @@ function buildSegments(checks: StatusCheck[]): Segment[] {
   return segments;
 }
 
-function formatTime(date: Date): string {
+function formatTime(date: Date, includeDate: boolean): string {
+  if (includeDate) {
+    return date.toLocaleDateString([], { month: "short", day: "numeric" }) + " " +
+      date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  }
   return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 }
 
@@ -95,6 +115,7 @@ function getUptimeColor(uptime: number): string {
 export default function StatusTimeline({ slug }: { slug: string }) {
   const [segments, setSegments] = useState<Segment[] | null>(null);
   const [uptime, setUptime] = useState<number | null>(null);
+  const [spanLabel, setSpanLabel] = useState("24h");
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -104,7 +125,9 @@ export default function StatusTimeline({ slug }: { slug: string }) {
         const res = await fetch(`/api/status-history/${encodeURIComponent(slug)}`);
         if (res.ok) {
           const checks: StatusCheck[] = await res.json();
-          setSegments(buildSegments(checks));
+          const spanMs = detectSpanMs(checks);
+          setSpanLabel(getSpanLabel(spanMs));
+          setSegments(buildSegments(checks, spanMs));
           if (checks.length > 0) {
             const upCount = checks.filter((c) => c.status === "up").length;
             setUptime(Math.round((upCount / checks.length) * 1000) / 10);
@@ -141,7 +164,7 @@ export default function StatusTimeline({ slug }: { slug: string }) {
     <div>
       <div className="mb-3 flex items-center justify-between">
         <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300">
-          Status History (24h)
+          Status History ({spanLabel})
         </h3>
         <span className={`text-sm font-semibold ${uptime !== null ? getUptimeColor(uptime) : "text-zinc-400"}`}>
           {uptime !== null ? `${uptime}% uptime` : "\u2014"}
@@ -167,7 +190,7 @@ export default function StatusTimeline({ slug }: { slug: string }) {
                     {getSegmentLabel(seg.status)}
                   </div>
                   <div className="text-zinc-500 dark:text-zinc-400">
-                    {formatTime(seg.from)} — {formatTime(seg.to)}
+                    {formatTime(seg.from, spanLabel !== "24h")} — {formatTime(seg.to, spanLabel !== "24h")}
                   </div>
                   {seg.checks > 0 && (
                     <div className="text-zinc-500 dark:text-zinc-400">
@@ -180,7 +203,7 @@ export default function StatusTimeline({ slug }: { slug: string }) {
           ))}
         </div>
         <div className="mt-1 flex justify-between text-xs text-zinc-400 dark:text-zinc-500">
-          <span>24h ago</span>
+          <span>{spanLabel} ago</span>
           <span>Now</span>
         </div>
       </div>

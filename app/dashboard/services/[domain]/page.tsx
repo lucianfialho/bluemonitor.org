@@ -22,7 +22,7 @@ interface WatchlistService {
   last_heartbeat_at: string | null;
   is_private: boolean;
   added_at: string;
-  uptime_24h: number | null;
+  uptime_pct: number | null;
 }
 
 function getUptimeColor(uptime: number): string {
@@ -64,12 +64,14 @@ export default function ServiceDetailPage() {
   const { plan } = useDashboard();
 
   const [service, setService] = useState<WatchlistService | null>(null);
+  const [uptimePeriod, setUptimePeriod] = useState("24h");
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
 
   const fetchService = useCallback(async () => {
     const res = await fetch("/api/watchlist");
     const data = await res.json();
+    setUptimePeriod(data.uptime_period || "24h");
     const services: WatchlistService[] = data.services || [];
     const match = services.find((s) => s.domain === domain);
     if (match) {
@@ -179,9 +181,9 @@ export default function ServiceDetailPage() {
             </p>
           </div>
           <div className="rounded-xl bg-white/80 p-3 dark:bg-zinc-800/60">
-            <p className="mb-1 text-[11px] font-medium uppercase tracking-wider text-blue-500 dark:text-blue-400">Uptime (24h)</p>
-            <p className={`text-sm font-semibold ${service.uptime_24h !== null ? getUptimeColor(service.uptime_24h) : "text-zinc-900 dark:text-zinc-100"}`}>
-              {service.uptime_24h !== null ? `${service.uptime_24h}%` : "\u2014"}
+            <p className="mb-1 text-[11px] font-medium uppercase tracking-wider text-blue-500 dark:text-blue-400">Uptime ({uptimePeriod})</p>
+            <p className={`text-sm font-semibold ${service.uptime_pct !== null ? getUptimeColor(service.uptime_pct) : "text-zinc-900 dark:text-zinc-100"}`}>
+              {service.uptime_pct !== null ? `${service.uptime_pct}%` : "\u2014"}
             </p>
           </div>
         </div>

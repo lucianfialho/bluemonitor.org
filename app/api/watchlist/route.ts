@@ -10,6 +10,11 @@ export async function GET() {
   }
 
   const sql = getDb();
+  const plan = await getUserPlan(session.user.id);
+  const retentionDays = plan.limits.historyRetentionDays;
+  const interval = `${retentionDays} days`;
+  const uptimePeriod = retentionDays >= 30 ? "30d" : "24h";
+
   const services = await sql`
     SELECT s.id, s.slug, s.name, s.domain, s.category, s.current_status,
            s.current_response_time, s.last_checked_at, s.last_heartbeat_at, s.is_private, w.added_at,
@@ -18,15 +23,15 @@ export async function GET() {
             )::float
             FROM status_checks sc
             WHERE sc.service_id = s.id
-              AND sc.checked_at > NOW() - INTERVAL '24 hours'
-           ) AS uptime_24h
+              AND sc.checked_at > NOW() - CAST(${interval} AS INTERVAL)
+           ) AS uptime_pct
     FROM watchlist w
     JOIN services s ON s.id = w.service_id
     WHERE w.user_id = ${session.user.id}
     ORDER BY w.added_at DESC
   `;
 
-  return NextResponse.json({ services });
+  return NextResponse.json({ services, uptime_period: uptimePeriod });
 }
 
 export async function POST(request: NextRequest) {

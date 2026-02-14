@@ -29,7 +29,7 @@ interface WatchlistService {
   last_heartbeat_at: string | null;
   is_private: boolean;
   added_at: string;
-  uptime_24h: number | null;
+  uptime_pct: number | null;
 }
 
 function getUptimeColor(uptime: number): string {
@@ -49,6 +49,7 @@ export default function OverviewPage() {
   const [keys, setKeys] = useState<ApiKey[]>([]);
   const [watchlist, setWatchlist] = useState<WatchlistService[]>([]);
   const [watchlistLoading, setWatchlistLoading] = useState(true);
+  const [uptimePeriod, setUptimePeriod] = useState("24h");
   const [webhookCount, setWebhookCount] = useState(0);
 
   const fetchKeys = useCallback(async () => {
@@ -61,6 +62,7 @@ export default function OverviewPage() {
     const res = await fetch("/api/watchlist");
     const data = await res.json();
     setWatchlist(data.services || []);
+    setUptimePeriod(data.uptime_period || "24h");
     setWatchlistLoading(false);
   }, []);
 
@@ -185,11 +187,11 @@ export default function OverviewPage() {
           </div>
           <div className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
             <p className="text-[11px] font-medium uppercase tracking-wider text-blue-500 dark:text-blue-400">
-              Uptime (24h)
+              Uptime ({uptimePeriod})
             </p>
             <p className={`mt-1 text-2xl font-bold ${(() => {
               const vals = watchlist
-                .map((s) => s.uptime_24h)
+                .map((s) => s.uptime_pct)
                 .filter((v): v is number => v !== null);
               if (vals.length === 0) return "text-zinc-400";
               const avg = Math.round((vals.reduce((a, b) => a + b, 0) / vals.length) * 10) / 10;
@@ -197,7 +199,7 @@ export default function OverviewPage() {
             })()}`}>
               {(() => {
                 const vals = watchlist
-                  .map((s) => s.uptime_24h)
+                  .map((s) => s.uptime_pct)
                   .filter((v): v is number => v !== null);
                 if (vals.length === 0) return "\u2014";
                 return (Math.round((vals.reduce((a, b) => a + b, 0) / vals.length) * 10) / 10) + "%";
@@ -293,9 +295,9 @@ export default function OverviewPage() {
                         }
                       />
                     )}
-                    {service.uptime_24h !== null && (
-                      <span className={`text-[11px] font-semibold ${getUptimeColor(service.uptime_24h)}`}>
-                        {service.uptime_24h}%
+                    {service.uptime_pct !== null && (
+                      <span className={`text-[11px] font-semibold ${getUptimeColor(service.uptime_pct)}`}>
+                        {service.uptime_pct}%
                       </span>
                     )}
                     {service.last_heartbeat_at && (
