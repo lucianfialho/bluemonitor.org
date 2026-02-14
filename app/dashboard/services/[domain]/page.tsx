@@ -32,7 +32,7 @@ function StatusLabel({ status }: { status: WatchlistService["current_status"] })
   } as const;
   const s = map[status];
   return (
-    <span className={`flex items-center gap-1.5 text-xs font-medium ${s.text}`}>
+    <span className={`flex items-center gap-1.5 text-sm font-semibold ${s.text}`}>
       <span className={`inline-block h-2 w-2 rounded-full ${s.color}`} />
       {s.label}
     </span>
@@ -88,18 +88,18 @@ export default function ServiceDetailPage() {
       <div className="mx-auto max-w-3xl px-4 py-6 sm:px-6 sm:py-8">
         <Link
           href="/dashboard"
-          className="mb-4 inline-flex items-center gap-1 text-sm text-zinc-500 transition-colors hover:text-zinc-700 dark:hover:text-zinc-300"
+          className="mb-4 inline-flex items-center gap-1 text-sm text-blue-600 transition-colors hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
         >
           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
           </svg>
           Back to Dashboard
         </Link>
-        <div className="rounded-xl border border-dashed border-zinc-300 bg-white px-5 py-8 text-center dark:border-zinc-700 dark:bg-zinc-900">
+        <div className="rounded-2xl border border-dashed border-zinc-300 bg-white px-5 py-8 text-center dark:border-zinc-700 dark:bg-zinc-900">
           <p className="text-sm text-zinc-500">Service not found in your watchlist.</p>
           <Link
             href="/dashboard"
-            className="mt-3 inline-block text-sm font-medium text-blue-600 hover:underline dark:text-blue-400"
+            className="mt-3 inline-block rounded-full bg-blue-600 px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
           >
             Go to Dashboard
           </Link>
@@ -113,7 +113,7 @@ export default function ServiceDetailPage() {
       {/* Back link */}
       <Link
         href="/dashboard"
-        className="mb-4 inline-flex items-center gap-1 text-sm text-zinc-500 transition-colors hover:text-zinc-700 dark:hover:text-zinc-300"
+        className="mb-5 inline-flex items-center gap-1 text-sm text-blue-600 transition-colors hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
       >
         <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
@@ -121,64 +121,78 @@ export default function ServiceDetailPage() {
         Back to Dashboard
       </Link>
 
-      {/* Service header */}
-      <div className="mb-6 flex items-center gap-3">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-zinc-100 dark:bg-zinc-800">
-          <ServiceIcon domain={service.domain} name={service.name} size={24} />
-        </div>
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2">
-            <h1 className="truncate text-xl font-bold text-zinc-900 dark:text-zinc-100">
-              {service.name}
-            </h1>
-            {service.last_heartbeat_at && (
-              <span className="rounded bg-purple-100 px-1.5 py-0.5 text-[10px] font-semibold text-purple-600 dark:bg-purple-900 dark:text-purple-300">
-                HEARTBEAT
-              </span>
-            )}
+      {/* Service hero card */}
+      <div className="mb-6 rounded-2xl border border-blue-200 bg-gradient-to-b from-blue-50/80 to-white p-6 dark:border-blue-900/60 dark:from-blue-950/30 dark:to-zinc-900">
+        <div className="flex items-center gap-4">
+          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-white shadow-sm dark:bg-zinc-800">
+            <ServiceIcon domain={service.domain} name={service.name} size={32} />
           </div>
-          <p className="text-sm text-zinc-500">{service.domain}</p>
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2">
+              <h1 className="truncate text-xl font-bold text-zinc-900 dark:text-zinc-100">
+                {service.name}
+              </h1>
+              {service.last_heartbeat_at && (
+                <span className="rounded-full bg-purple-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-purple-700 dark:bg-purple-900/30 dark:text-purple-400">
+                  Heartbeat
+                </span>
+              )}
+            </div>
+            <p className="text-sm text-zinc-500 dark:text-zinc-400">{service.domain}</p>
+          </div>
+          <Link
+            href={`/status/${service.slug}`}
+            className="hidden shrink-0 items-center gap-1.5 rounded-full border border-blue-200 bg-white px-3.5 py-1.5 text-xs font-medium text-blue-600 transition-colors hover:bg-blue-50 sm:inline-flex dark:border-blue-800 dark:bg-blue-950/50 dark:text-blue-400 dark:hover:bg-blue-950"
+          >
+            <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+            </svg>
+            Public page
+          </Link>
         </div>
-      </div>
 
-      {/* Service stats */}
-      <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <div className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
-          <p className="mb-1 text-[11px] font-medium text-zinc-400">Status</p>
-          <StatusLabel status={service.current_status} />
+        {/* Stats row inside hero */}
+        <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <div className="rounded-xl bg-white/80 p-3 dark:bg-zinc-800/60">
+            <p className="mb-1 text-[11px] font-medium uppercase tracking-wider text-blue-500 dark:text-blue-400">Status</p>
+            <StatusLabel status={service.current_status} />
+          </div>
+          <div className="rounded-xl bg-white/80 p-3 dark:bg-zinc-800/60">
+            <p className="mb-1 text-[11px] font-medium uppercase tracking-wider text-blue-500 dark:text-blue-400">Response Time</p>
+            <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+              {service.current_response_time !== null ? `${service.current_response_time}ms` : "\u2014"}
+            </p>
+          </div>
+          <div className="rounded-xl bg-white/80 p-3 dark:bg-zinc-800/60">
+            <p className="mb-1 text-[11px] font-medium uppercase tracking-wider text-blue-500 dark:text-blue-400">Last Heartbeat</p>
+            <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+              {service.last_heartbeat_at ? timeAgo(service.last_heartbeat_at) : "\u2014"}
+            </p>
+          </div>
+          <div className="rounded-xl bg-white/80 p-3 dark:bg-zinc-800/60">
+            <p className="mb-1 text-[11px] font-medium uppercase tracking-wider text-blue-500 dark:text-blue-400">Last Checked</p>
+            <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+              {service.last_checked_at ? timeAgo(service.last_checked_at) : "\u2014"}
+            </p>
+          </div>
         </div>
-        <div className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
-          <p className="mb-1 text-[11px] font-medium text-zinc-400">Response Time</p>
-          <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-            {service.current_response_time !== null ? `${service.current_response_time}ms` : "—"}
-          </p>
-        </div>
-        <div className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
-          <p className="mb-1 text-[11px] font-medium text-zinc-400">Last Heartbeat</p>
-          <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-            {service.last_heartbeat_at ? timeAgo(service.last_heartbeat_at) : "—"}
-          </p>
-        </div>
-        <div className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
-          <p className="mb-1 text-[11px] font-medium text-zinc-400">Last Checked</p>
-          <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-            {service.last_checked_at ? timeAgo(service.last_checked_at) : "—"}
-          </p>
+
+        {/* Mobile-only public page link */}
+        <div className="mt-4 sm:hidden">
+          <Link
+            href={`/status/${service.slug}`}
+            className="inline-flex items-center gap-1.5 text-sm text-blue-600 transition-colors hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+          >
+            <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+            </svg>
+            View public status page
+          </Link>
         </div>
       </div>
 
       {/* Bot Tracking */}
       <BotTrackingSection isPro={plan?.tier === "pro"} domains={[service.domain]} />
-
-      {/* Link to public status page */}
-      <div className="mt-2">
-        <Link
-          href={`/status/${service.slug}`}
-          className="text-sm text-blue-600 transition-colors hover:underline dark:text-blue-400"
-        >
-          View public status page
-        </Link>
-      </div>
     </div>
   );
 }

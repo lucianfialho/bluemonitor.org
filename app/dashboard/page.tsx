@@ -165,6 +165,48 @@ export default function OverviewPage() {
         onHeartbeatReceived={fetchWatchlist}
       />
 
+      {/* Quick stats */}
+      {!watchlistLoading && watchlist.length > 0 && (
+        <div className="mb-6 grid grid-cols-3 gap-3">
+          <div className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+            <p className="text-[11px] font-medium uppercase tracking-wider text-blue-500 dark:text-blue-400">
+              Services
+            </p>
+            <p className="mt-1 text-2xl font-bold text-zinc-900 dark:text-zinc-100">
+              {watchlist.length}
+            </p>
+          </div>
+          <div className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+            <p className="text-[11px] font-medium uppercase tracking-wider text-blue-500 dark:text-blue-400">
+              Status
+            </p>
+            <div className="mt-1 flex items-center gap-1.5">
+              <span className="text-2xl font-bold text-green-600 dark:text-green-400">
+                {watchlist.filter((s) => s.current_status === "up").length}
+              </span>
+              <span className="text-sm text-zinc-400">/</span>
+              <span className="text-sm text-zinc-500">
+                {watchlist.length} up
+              </span>
+            </div>
+          </div>
+          <div className="rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900">
+            <p className="text-[11px] font-medium uppercase tracking-wider text-blue-500 dark:text-blue-400">
+              Avg Response
+            </p>
+            <p className="mt-1 text-2xl font-bold text-zinc-900 dark:text-zinc-100">
+              {(() => {
+                const times = watchlist
+                  .map((s) => s.current_response_time)
+                  .filter((t): t is number => t !== null);
+                if (times.length === 0) return "\u2014";
+                return Math.round(times.reduce((a, b) => a + b, 0) / times.length) + "ms";
+              })()}
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Watchlist */}
       <section>
         <div className="mb-4 flex items-center justify-between">
@@ -308,6 +350,50 @@ export default function OverviewPage() {
             ))}
           </div>
         )}
+      </section>
+
+      {/* Add a Host guide */}
+      <section className="mt-8">
+        <h2 className="mb-4 text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+          Add a Host
+        </h2>
+        <div className="grid gap-3 sm:grid-cols-2">
+          {/* Option 1: Browse services */}
+          <Link
+            href="/"
+            className="group rounded-2xl border border-zinc-200 bg-white p-5 transition-all duration-150 hover:border-blue-300 hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-blue-700"
+          >
+            <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-blue-100 text-blue-600 dark:bg-blue-900/50 dark:text-blue-400">
+              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+              </svg>
+            </div>
+            <h3 className="text-sm font-semibold text-zinc-900 group-hover:text-blue-600 dark:text-zinc-100 dark:group-hover:text-blue-400">
+              Browse &amp; add a service
+            </h3>
+            <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+              Pick from hundreds of popular services. We ping them automatically and track their status for you.
+            </p>
+          </Link>
+
+          {/* Option 2: Push heartbeat */}
+          <Link
+            href="/developers"
+            className="group rounded-2xl border border-zinc-200 bg-white p-5 transition-all duration-150 hover:border-purple-300 hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-purple-700"
+          >
+            <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-purple-100 text-purple-600 dark:bg-purple-900/50 dark:text-purple-400">
+              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 6.75 22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3-4.5 16.5" />
+              </svg>
+            </div>
+            <h3 className="text-sm font-semibold text-zinc-900 group-hover:text-purple-600 dark:text-zinc-100 dark:group-hover:text-purple-400">
+              Monitor your own app
+            </h3>
+            <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
+              Add a few lines of code to send heartbeats from your app. Track uptime, response times, and bot visits.
+            </p>
+          </Link>
+        </div>
       </section>
     </div>
   );
