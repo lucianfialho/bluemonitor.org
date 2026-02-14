@@ -12,7 +12,6 @@ interface DashboardShellProps {
 
 const PAGE_TITLES: Record<string, string> = {
   "/dashboard": "Overview",
-  "/dashboard/bots": "Bot Tracking",
   "/dashboard/webhooks": "Webhooks",
   "/dashboard/settings": "Settings",
 };
@@ -20,7 +19,7 @@ const PAGE_TITLES: Record<string, string> = {
 export default function DashboardShell({ user, children }: DashboardShellProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const pathname = usePathname();
-  const pageTitle = PAGE_TITLES[pathname] ?? "Dashboard";
+  const pageTitle = PAGE_TITLES[pathname] ?? (pathname.startsWith("/dashboard/services/") ? "Service Details" : "Dashboard");
 
   const closeSidebar = useCallback(() => setSidebarOpen(false), []);
 

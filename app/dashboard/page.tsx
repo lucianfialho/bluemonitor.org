@@ -203,7 +203,7 @@ export default function OverviewPage() {
                 className="group relative flex items-center gap-3 rounded-xl border border-zinc-200 bg-white p-4 transition-all duration-150 hover:border-blue-300 hover:shadow-md active:scale-[0.99] dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-blue-700"
               >
                 <Link
-                  href={`/status/${service.slug}`}
+                  href={`/dashboard/services/${encodeURIComponent(service.domain)}`}
                   className="absolute inset-0 z-0"
                   aria-label={service.name}
                 />
