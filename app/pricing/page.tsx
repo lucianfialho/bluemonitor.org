@@ -5,6 +5,15 @@ export const metadata: Metadata = {
   title: "Pricing",
   description:
     "BlueMonitor pricing plans. Monitor services for free or upgrade to Pro for higher limits and priority alerts.",
+  alternates: {
+    canonical: "/pricing",
+  },
+  openGraph: {
+    title: "Pricing — BlueMonitor",
+    description:
+      "Monitor services for free or upgrade to Pro for higher limits and priority alerts.",
+    url: "https://www.bluemonitor.org/pricing",
+  },
 };
 
 export default function PricingPage() {
