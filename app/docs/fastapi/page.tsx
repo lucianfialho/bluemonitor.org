@@ -137,6 +137,98 @@ app = FastAPI(lifespan=lifespan)`}</code>
         </pre>
       </section>
 
+      {/* Step 4: Bot tracking */}
+      <section className="mt-12">
+        <div className="mb-4 flex items-center gap-3">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-zinc-900 text-sm font-bold text-white dark:bg-zinc-100 dark:text-zinc-900">
+            4
+          </div>
+          <div className="flex items-center gap-2">
+            <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">
+              Bot tracking
+            </h2>
+            <span className="rounded bg-purple-100 px-1.5 py-0.5 text-[10px] font-semibold text-purple-600 dark:bg-purple-900 dark:text-purple-300">
+              PRO
+            </span>
+          </div>
+        </div>
+        <p className="mb-4 text-sm text-zinc-500 dark:text-zinc-400">
+          Track which search engines, AI crawlers, and social bots visit your
+          app. Add bot detection middleware to report visits to BlueMonitor.
+          Requires a{" "}
+          <Link
+            href="/pricing"
+            className="font-medium text-zinc-900 underline decoration-zinc-300 underline-offset-2 hover:decoration-zinc-900 dark:text-zinc-100 dark:decoration-zinc-600 dark:hover:decoration-zinc-100"
+          >
+            Pro plan
+          </Link>
+          .
+        </p>
+        <p className="mb-2 text-xs font-semibold text-zinc-400 dark:text-zinc-500">
+          FastAPI middleware
+        </p>
+        <pre className="overflow-x-auto rounded-xl bg-zinc-900 p-4 text-sm text-zinc-300 dark:bg-zinc-950">
+          <code>{`import re, os, httpx
+from starlette.middleware.base import BaseHTTPMiddleware
+
+BOT_PATTERNS = [
+    (re.compile(r"Googlebot", re.I), "googlebot", "search_engine"),
+    (re.compile(r"bingbot", re.I), "bingbot", "search_engine"),
+    (re.compile(r"GPTBot", re.I), "gptbot", "ai_crawler"),
+    (re.compile(r"ClaudeBot", re.I), "claudebot", "ai_crawler"),
+    (re.compile(r"PerplexityBot", re.I), "perplexitybot", "ai_crawler"),
+    (re.compile(r"Twitterbot", re.I), "twitterbot", "social"),
+    (re.compile(r"facebookexternalhit", re.I), "facebookbot", "social"),
+    (re.compile(r"AhrefsBot", re.I), "ahrefsbot", "seo"),
+]
+
+def identify_bot(ua: str):
+    for pattern, name, category in BOT_PATTERNS:
+        if pattern.search(ua):
+            return {"name": name, "category": category}
+    return None
+
+class BotTrackingMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request, call_next):
+        ua = request.headers.get("user-agent", "")
+        bot = identify_bot(ua)
+        if bot:
+            try:
+                async with httpx.AsyncClient() as client:
+                    await client.post(
+                        "https://www.bluemonitor.org/api/v1/bot-visits",
+                        headers={
+                            "Authorization": f"Bearer {os.getenv('BLUEMONITOR_API_KEY')}"
+                        },
+                        json={
+                            "domain": "yourapp.com",
+                            "visits": [{
+                                "bot_name": bot["name"],
+                                "bot_category": bot["category"],
+                                "path": str(request.url.path),
+                                "user_agent": ua,
+                            }],
+                        },
+                        timeout=5,
+                    )
+            except Exception:
+                pass
+        return await call_next(request)
+
+app.add_middleware(BotTrackingMiddleware)`}</code>
+        </pre>
+        <p className="mt-3 text-sm text-zinc-500 dark:text-zinc-400">
+          View results in your{" "}
+          <Link
+            href="/dashboard"
+            className="font-medium text-zinc-900 underline decoration-zinc-300 underline-offset-2 hover:decoration-zinc-900 dark:text-zinc-100 dark:decoration-zinc-600 dark:hover:decoration-zinc-100"
+          >
+            dashboard
+          </Link>{" "}
+          under Bot Tracking.
+        </p>
+      </section>
+
       {/* AI tool CTA */}
       <section className="mt-12">
         <div className="rounded-2xl border border-blue-200 bg-blue-50 p-6 dark:border-blue-900 dark:bg-blue-950/30">

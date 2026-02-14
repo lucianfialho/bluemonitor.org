@@ -253,6 +253,98 @@ export async function GET() {
         </p>
       </section>
 
+      {/* Step 4: Bot tracking */}
+      <section className="mt-12">
+        <div className="mb-4 flex items-center gap-3">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-zinc-900 text-sm font-bold text-white dark:bg-zinc-100 dark:text-zinc-900">
+            4
+          </div>
+          <div className="flex items-center gap-2">
+            <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">
+              Bot tracking
+            </h2>
+            <span className="rounded bg-purple-100 px-1.5 py-0.5 text-[10px] font-semibold text-purple-600 dark:bg-purple-900 dark:text-purple-300">
+              PRO
+            </span>
+          </div>
+        </div>
+        <p className="mb-4 text-sm text-zinc-500 dark:text-zinc-400">
+          Track which search engines, AI crawlers, and social bots visit your
+          app. Add bot detection middleware to report visits to BlueMonitor.
+          Requires a{" "}
+          <Link
+            href="/pricing"
+            className="font-medium text-zinc-900 underline decoration-zinc-300 underline-offset-2 hover:decoration-zinc-900 dark:text-zinc-100 dark:decoration-zinc-600 dark:hover:decoration-zinc-100"
+          >
+            Pro plan
+          </Link>
+          .
+        </p>
+        <p className="mb-2 text-xs font-semibold text-zinc-400 dark:text-zinc-500">
+          middleware.ts
+        </p>
+        <pre className="overflow-x-auto rounded-xl bg-zinc-900 p-4 text-sm text-zinc-300 dark:bg-zinc-950">
+          <code>{`import { NextRequest, NextResponse } from "next/server";
+
+const BOT_PATTERNS = [
+  { pattern: /Googlebot/i, name: "googlebot", category: "search_engine" },
+  { pattern: /bingbot/i, name: "bingbot", category: "search_engine" },
+  { pattern: /GPTBot/i, name: "gptbot", category: "ai_crawler" },
+  { pattern: /ClaudeBot/i, name: "claudebot", category: "ai_crawler" },
+  { pattern: /PerplexityBot/i, name: "perplexitybot", category: "ai_crawler" },
+  { pattern: /Twitterbot/i, name: "twitterbot", category: "social" },
+  { pattern: /facebookexternalhit/i, name: "facebookbot", category: "social" },
+  { pattern: /AhrefsBot/i, name: "ahrefsbot", category: "seo" },
+];
+
+function identifyBot(ua: string) {
+  for (const bot of BOT_PATTERNS) {
+    if (bot.pattern.test(ua)) return bot;
+  }
+  return null;
+}
+
+export function middleware(request: NextRequest) {
+  const ua = request.headers.get("user-agent") || "";
+  const bot = identifyBot(ua);
+  if (bot) {
+    fetch("https://www.bluemonitor.org/api/v1/bot-visits", {
+      method: "POST",
+      headers: {
+        Authorization: \`Bearer \${process.env.BLUEMONITOR_API_KEY}\`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        domain: "yourapp.com",
+        visits: [{
+          bot_name: bot.name,
+          bot_category: bot.category,
+          path: request.nextUrl.pathname,
+          user_agent: ua,
+        }],
+      }),
+    }).catch(() => {});
+  }
+  return NextResponse.next();
+}
+
+export const config = {
+  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
+};`}</code>
+        </pre>
+        <p className="mt-3 text-sm text-zinc-500 dark:text-zinc-400">
+          If you already have a middleware, add the bot detection to your
+          existing function. View results in your{" "}
+          <Link
+            href="/dashboard"
+            className="font-medium text-zinc-900 underline decoration-zinc-300 underline-offset-2 hover:decoration-zinc-900 dark:text-zinc-100 dark:decoration-zinc-600 dark:hover:decoration-zinc-100"
+          >
+            dashboard
+          </Link>{" "}
+          under Bot Tracking.
+        </p>
+      </section>
+
       {/* AI tool CTA */}
       <section className="mt-12">
         <div className="rounded-2xl border border-blue-200 bg-blue-50 p-6 dark:border-blue-900 dark:bg-blue-950/30">

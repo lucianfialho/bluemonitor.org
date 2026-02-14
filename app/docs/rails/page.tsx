@@ -180,6 +180,102 @@ end`}</code>
         </pre>
       </section>
 
+      {/* Step 4: Bot tracking */}
+      <section className="mt-12">
+        <div className="mb-4 flex items-center gap-3">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-zinc-900 text-sm font-bold text-white dark:bg-zinc-100 dark:text-zinc-900">
+            4
+          </div>
+          <div className="flex items-center gap-2">
+            <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">
+              Bot tracking
+            </h2>
+            <span className="rounded bg-purple-100 px-1.5 py-0.5 text-[10px] font-semibold text-purple-600 dark:bg-purple-900 dark:text-purple-300">
+              PRO
+            </span>
+          </div>
+        </div>
+        <p className="mb-4 text-sm text-zinc-500 dark:text-zinc-400">
+          Track which search engines, AI crawlers, and social bots visit your
+          app. Add bot detection middleware to report visits to BlueMonitor.
+          Requires a{" "}
+          <Link
+            href="/pricing"
+            className="font-medium text-zinc-900 underline decoration-zinc-300 underline-offset-2 hover:decoration-zinc-900 dark:text-zinc-100 dark:decoration-zinc-600 dark:hover:decoration-zinc-100"
+          >
+            Pro plan
+          </Link>
+          .
+        </p>
+        <p className="mb-2 text-xs font-semibold text-zinc-400 dark:text-zinc-500">
+          app/middleware/bot_tracking_middleware.rb
+        </p>
+        <pre className="overflow-x-auto rounded-xl bg-zinc-900 p-4 text-sm text-zinc-300 dark:bg-zinc-950">
+          <code>{`class BotTrackingMiddleware
+  BOT_PATTERNS = [
+    [/Googlebot/i, "googlebot", "search_engine"],
+    [/bingbot/i, "bingbot", "search_engine"],
+    [/GPTBot/i, "gptbot", "ai_crawler"],
+    [/ClaudeBot/i, "claudebot", "ai_crawler"],
+    [/PerplexityBot/i, "perplexitybot", "ai_crawler"],
+    [/Twitterbot/i, "twitterbot", "social"],
+    [/facebookexternalhit/i, "facebookbot", "social"],
+    [/AhrefsBot/i, "ahrefsbot", "seo"],
+  ].freeze
+
+  def initialize(app)
+    @app = app
+  end
+
+  def call(env)
+    ua = env["HTTP_USER_AGENT"] || ""
+    bot = identify_bot(ua)
+    if bot
+      Thread.new do
+        uri = URI("https://www.bluemonitor.org/api/v1/bot-visits")
+        Net::HTTP.post(uri, {
+          domain: "yourapp.com",
+          visits: [{
+            bot_name: bot[:name],
+            bot_category: bot[:category],
+            path: env["PATH_INFO"],
+            user_agent: ua,
+          }]
+        }.to_json,
+          "Authorization" => "Bearer #{ENV['BLUEMONITOR_API_KEY']}",
+          "Content-Type" => "application/json"
+        )
+      rescue StandardError
+      end
+    end
+    @app.call(env)
+  end
+
+  private
+
+  def identify_bot(ua)
+    BOT_PATTERNS.each do |pattern, name, category|
+      return { name: name, category: category } if ua.match?(pattern)
+    end
+    nil
+  end
+end
+
+# config/application.rb
+# config.middleware.use BotTrackingMiddleware`}</code>
+        </pre>
+        <p className="mt-3 text-sm text-zinc-500 dark:text-zinc-400">
+          View results in your{" "}
+          <Link
+            href="/dashboard"
+            className="font-medium text-zinc-900 underline decoration-zinc-300 underline-offset-2 hover:decoration-zinc-900 dark:text-zinc-100 dark:decoration-zinc-600 dark:hover:decoration-zinc-100"
+          >
+            dashboard
+          </Link>{" "}
+          under Bot Tracking.
+        </p>
+      </section>
+
       {/* AI tool CTA */}
       <section className="mt-12">
         <div className="rounded-2xl border border-blue-200 bg-blue-50 p-6 dark:border-blue-900 dark:bg-blue-950/30">

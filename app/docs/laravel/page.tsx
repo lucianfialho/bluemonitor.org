@@ -197,6 +197,107 @@ class SendHeartbeat extends Command
         </pre>
       </section>
 
+      {/* Step 4: Bot tracking */}
+      <section className="mt-12">
+        <div className="mb-4 flex items-center gap-3">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-zinc-900 text-sm font-bold text-white dark:bg-zinc-100 dark:text-zinc-900">
+            4
+          </div>
+          <div className="flex items-center gap-2">
+            <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">
+              Bot tracking
+            </h2>
+            <span className="rounded bg-purple-100 px-1.5 py-0.5 text-[10px] font-semibold text-purple-600 dark:bg-purple-900 dark:text-purple-300">
+              PRO
+            </span>
+          </div>
+        </div>
+        <p className="mb-4 text-sm text-zinc-500 dark:text-zinc-400">
+          Track which search engines, AI crawlers, and social bots visit your
+          app. Add bot detection middleware to report visits to BlueMonitor.
+          Requires a{" "}
+          <Link
+            href="/pricing"
+            className="font-medium text-zinc-900 underline decoration-zinc-300 underline-offset-2 hover:decoration-zinc-900 dark:text-zinc-100 dark:decoration-zinc-600 dark:hover:decoration-zinc-100"
+          >
+            Pro plan
+          </Link>
+          .
+        </p>
+        <p className="mb-2 text-xs font-semibold text-zinc-400 dark:text-zinc-500">
+          app/Http/Middleware/TrackBots.php
+        </p>
+        <pre className="overflow-x-auto rounded-xl bg-zinc-900 p-4 text-sm text-zinc-300 dark:bg-zinc-950">
+          <code>{`<?php
+namespace App\\Http\\Middleware;
+
+use Closure;
+use Illuminate\\Http\\Request;
+use Illuminate\\Support\\Facades\\Http;
+
+class TrackBots
+{
+    private const BOT_PATTERNS = [
+        ['/Googlebot/i', 'googlebot', 'search_engine'],
+        ['/bingbot/i', 'bingbot', 'search_engine'],
+        ['/GPTBot/i', 'gptbot', 'ai_crawler'],
+        ['/ClaudeBot/i', 'claudebot', 'ai_crawler'],
+        ['/PerplexityBot/i', 'perplexitybot', 'ai_crawler'],
+        ['/Twitterbot/i', 'twitterbot', 'social'],
+        ['/facebookexternalhit/i', 'facebookbot', 'social'],
+        ['/AhrefsBot/i', 'ahrefsbot', 'seo'],
+    ];
+
+    public function handle(Request $request, Closure $next)
+    {
+        $ua = $request->userAgent() ?? '';
+        $bot = $this->identifyBot($ua);
+        if ($bot) {
+            try {
+                Http::withToken(config('services.bluemonitor.key'))
+                    ->timeout(5)
+                    ->post('https://www.bluemonitor.org/api/v1/bot-visits', [
+                        'domain' => 'yourapp.com',
+                        'visits' => [[
+                            'bot_name' => $bot['name'],
+                            'bot_category' => $bot['category'],
+                            'path' => $request->path(),
+                            'user_agent' => $ua,
+                        ]],
+                    ]);
+            } catch (\\Exception $e) {}
+        }
+        return $next($request);
+    }
+
+    private function identifyBot(string $ua): ?array
+    {
+        foreach (self::BOT_PATTERNS as [$pattern, $name, $cat]) {
+            if (preg_match($pattern, $ua)) {
+                return ['name' => $name, 'category' => $cat];
+            }
+        }
+        return null;
+    }
+}
+
+// Register in bootstrap/app.php (Laravel 11+):
+// ->withMiddleware(function (Middleware $middleware) {
+//     $middleware->web(append: [TrackBots::class]);
+// })`}</code>
+        </pre>
+        <p className="mt-3 text-sm text-zinc-500 dark:text-zinc-400">
+          View results in your{" "}
+          <Link
+            href="/dashboard"
+            className="font-medium text-zinc-900 underline decoration-zinc-300 underline-offset-2 hover:decoration-zinc-900 dark:text-zinc-100 dark:decoration-zinc-600 dark:hover:decoration-zinc-100"
+          >
+            dashboard
+          </Link>{" "}
+          under Bot Tracking.
+        </p>
+      </section>
+
       {/* AI tool CTA */}
       <section className="mt-12">
         <div className="rounded-2xl border border-blue-200 bg-blue-50 p-6 dark:border-blue-900 dark:bg-blue-950/30">
