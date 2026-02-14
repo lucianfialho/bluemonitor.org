@@ -39,7 +39,7 @@ export const metadata: Metadata = {
         url: "/api/og",
         width: 1200,
         height: 630,
-        alt: "BlueMonitor — Turn on monitoring",
+        alt: "BlueMonitor — Don't let downtime kill your vibe",
       },
     ],
   },

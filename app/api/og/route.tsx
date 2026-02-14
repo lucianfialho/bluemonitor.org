@@ -3,6 +3,10 @@ import { ImageResponse } from "next/og";
 export const runtime = "edge";
 
 export async function GET() {
+  const baseUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : "http://localhost:3000";
+
   return new ImageResponse(
     (
       <div
@@ -10,82 +14,81 @@ export async function GET() {
           width: "100%",
           height: "100%",
           display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          backgroundColor: "#fafafa",
+          position: "relative",
         }}
       >
-        {/* Headline */}
-        <div style={{ display: "flex", fontSize: 52, fontWeight: 400, color: "#27272a", marginBottom: 60 }}>
-          Turn on monitoring.
-        </div>
+        {/* Background image */}
+        <img
+          src={`${baseUrl}/og-base.png`}
+          width={1200}
+          height={630}
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+          }}
+        />
 
-        {/* Toggle switch */}
+        {/* Text overlay */}
         <div
           style={{
             display: "flex",
-            alignItems: "center",
-            justifyContent: "flex-end",
-            width: 280,
-            height: 130,
-            borderRadius: 70,
-            backgroundColor: "#2563eb",
-            padding: 12,
-            boxShadow: "0 8px 32px rgba(37,99,235,0.3)",
+            position: "absolute",
+            top: 60,
+            left: 0,
+            right: 0,
+            justifyContent: "center",
           }}
         >
-          {/* Knob */}
           <div
             style={{
               display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              width: 106,
-              height: 106,
-              borderRadius: 53,
-              backgroundColor: "#ffffff",
-              boxShadow: "0 4px 16px rgba(0,0,0,0.15)",
+              fontSize: 48,
+              fontWeight: 400,
+              color: "#27272a",
+              letterSpacing: "-0.02em",
             }}
           >
-            {/* Pulse dot */}
-            <div
-              style={{
-                display: "flex",
-                width: 24,
-                height: 24,
-                borderRadius: 12,
-                backgroundColor: "#22c55e",
-              }}
-            />
+            Don&apos;t let downtime kill your vibe.
           </div>
         </div>
 
-        {/* Brand */}
-        <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 60 }}>
-          {/* Logo square */}
+        {/* Logo bottom-right */}
+        <div
+          style={{
+            display: "flex",
+            position: "absolute",
+            bottom: 32,
+            right: 40,
+            alignItems: "center",
+            gap: 10,
+          }}
+        >
           <div
             style={{
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              width: 36,
-              height: 36,
-              borderRadius: 8,
+              width: 32,
+              height: 32,
+              borderRadius: 7,
               backgroundColor: "#2563eb",
             }}
           >
             <div
               style={{
                 display: "flex",
-                width: 18,
-                height: 18,
-                borderRadius: 9,
-                border: "3px solid #ffffff",
+                width: 16,
+                height: 16,
+                borderRadius: 8,
+                border: "2.5px solid #ffffff",
               }}
             />
           </div>
-          <div style={{ display: "flex", fontSize: 24, fontWeight: 600, color: "#71717a" }}>
+          <div style={{ display: "flex", fontSize: 20, fontWeight: 600, color: "#71717a" }}>
             BlueMonitor
           </div>
         </div>

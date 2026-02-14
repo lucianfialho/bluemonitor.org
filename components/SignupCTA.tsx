@@ -13,10 +13,10 @@ export default function SignupCTA() {
           </svg>
         </div>
         <h2 className="mb-2 text-xl font-bold text-zinc-900 dark:text-zinc-100">
-          Monitor your own services
+          Don&apos;t let downtime kill your vibe.
         </h2>
         <p className="mx-auto mb-5 max-w-md text-sm text-zinc-500 dark:text-zinc-400">
-          Get real-time alerts, uptime history, bot tracking, and more.
+          Real-time alerts, uptime history, and bot tracking.
           Set up monitoring for your app in under 2 minutes.
         </p>
         <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
