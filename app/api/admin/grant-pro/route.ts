@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/admin-auth";
+import { authServer } from "@/lib/auth/server";
 import { getDb } from "@/lib/db";
 
 // POST: Grant Pro to a user by email
@@ -15,21 +16,25 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Email is required" }, { status: 400 });
   }
 
-  const sql = getDb();
+  // Find user via Neon Auth admin API
+  const { data: usersData } = await authServer.admin.listUsers({
+    query: {
+      searchValue: email,
+      searchField: "email",
+      searchOperator: "contains",
+      limit: 1,
+    },
+  });
 
-  // Find user by email in the auth system
-  const users = await sql`
-    SELECT id, email, name FROM "user" WHERE email = ${email} LIMIT 1
-  `;
-
-  if (users.length === 0) {
+  if (!usersData?.users?.length) {
     return NextResponse.json(
       { error: `No user found with email: ${email}` },
       { status: 404 }
     );
   }
 
-  const user = users[0];
+  const user = usersData.users[0];
+  const sql = getDb();
 
   if (action === "revoke") {
     await sql`
@@ -68,18 +73,44 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  // Fetch users from Neon Auth admin API
+  const { data: usersData } = await authServer.admin.listUsers({
+    query: {
+      limit: 100,
+      sortBy: "createdAt",
+      sortDirection: "desc",
+    },
+  });
+
+  if (!usersData?.users?.length) {
+    return NextResponse.json({ users: [] });
+  }
+
+  // Fetch plan info from our DB
   const sql = getDb();
-  const rows = await sql`
-    SELECT u.id as user_id, u.email, u.name,
-           COALESCE(up.plan, 'free') as plan,
-           COALESCE(up.status, 'active') as status,
-           up.billing_period,
-           up.current_period_end,
-           u.created_at
-    FROM "user" u
-    LEFT JOIN user_plans up ON up.user_id = u.id
-    ORDER BY u.created_at DESC
+  const userIds = usersData.users.map((u: { id: string }) => u.id);
+  const plans = await sql`
+    SELECT user_id, plan, status, billing_period, current_period_end, created_at
+    FROM user_plans
+    WHERE user_id = ANY(${userIds})
   `;
 
-  return NextResponse.json({ users: rows });
+  const planMap = new Map(plans.map((p: Record<string, unknown>) => [p.user_id, p]));
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const users = usersData.users.map((u: any) => {
+    const plan = planMap.get(u.id) as Record<string, unknown> | undefined;
+    return {
+      user_id: u.id,
+      email: u.email,
+      name: u.name,
+      plan: plan?.plan ?? "free",
+      status: plan?.status ?? "active",
+      billing_period: plan?.billing_period ?? null,
+      current_period_end: plan?.current_period_end ?? null,
+      created_at: u.createdAt,
+    };
+  });
+
+  return NextResponse.json({ users });
 }
