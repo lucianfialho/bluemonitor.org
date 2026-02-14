@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { rateLimit, RATE_LIMITS } from "./rate-limit";
 import { getDb } from "./db";
+import { getUserPlanByApiKey } from "./plans";
 
 export function getClientIp(request: NextRequest): string {
   return (
@@ -66,7 +67,8 @@ export async function withRateLimit(
     const valid = await validateApiKey(apiKey);
     if (valid) {
       identifier = `key:${apiKey}`;
-      limit = RATE_LIMITS.authenticated;
+      const plan = await getUserPlanByApiKey(apiKey);
+      limit = plan.limits.rateLimitAuthenticated;
     } else {
       return NextResponse.json(
         { error: "Invalid API key." },

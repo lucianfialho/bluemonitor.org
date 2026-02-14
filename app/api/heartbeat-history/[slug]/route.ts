@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDb } from "@/lib/db";
+import { authServer } from "@/lib/auth/server";
+import { getUserPlan } from "@/lib/plans";
 
 export const dynamic = "force-dynamic";
 
@@ -13,15 +15,27 @@ export async function GET(
     return NextResponse.json({ error: "Slug is required" }, { status: 400 });
   }
 
-  const sql = getDb();
+  // Determine retention based on user's plan (default 1 day for unauthenticated)
+  let retentionDays = 1;
+  try {
+    const { data: session } = await authServer.getSession();
+    if (session?.user) {
+      const plan = await getUserPlan(session.user.id);
+      retentionDays = plan.limits.historyRetentionDays;
+    }
+  } catch {
+    // Not authenticated — use free retention
+  }
 
-  // Free plan: 1-day retention
+  const sql = getDb();
+  const interval = `${retentionDays} days`;
+
   const rows = await sql`
     SELECT hc.check_name, hc.status, hc.latency, hc.message, hc.checked_at
     FROM heartbeat_checks hc
     JOIN services s ON s.id = hc.service_id
     WHERE s.slug = ${slug}
-      AND hc.checked_at > NOW() - INTERVAL '1 day'
+      AND hc.checked_at > NOW() - CAST(${interval} AS INTERVAL)
     ORDER BY hc.checked_at ASC
   `;
 

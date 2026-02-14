@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { authServer } from "@/lib/auth/server";
 import { getDb } from "@/lib/db";
+import { getUserPlan } from "@/lib/plans";
 
 const VALID_TYPES = ["discord", "slack", "custom"];
 const VALID_EVENTS = ["down", "slow", "recovered", "dead", "resurrected"];
-const FREE_EVENTS = ["down"];
-const MAX_WEBHOOKS = 2;
 
 export async function GET() {
   const { data: session } = await authServer.getSession();
@@ -61,23 +60,25 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // TODO: check Pro plan when available — for now only "down" is free
-  const proOnly = events.filter((e: string) => !FREE_EVENTS.includes(e));
-  if (proOnly.length > 0) {
+  const sql = getDb();
+  const plan = await getUserPlan(session.user.id);
+
+  const disallowed = events.filter(
+    (e: string) => !plan.limits.allowedWebhookEvents.includes(e)
+  );
+  if (disallowed.length > 0) {
     return NextResponse.json(
-      { error: `Events ${proOnly.join(", ")} require the Pro plan` },
+      { error: `Events ${disallowed.join(", ")} require the Pro plan` },
       { status: 403 }
     );
   }
 
-  const sql = getDb();
-
   const countResult = await sql`
     SELECT COUNT(*)::int as count FROM webhooks WHERE user_id = ${session.user.id}
   `;
-  if (countResult[0].count >= MAX_WEBHOOKS) {
+  if (countResult[0].count >= plan.limits.maxWebhooks) {
     return NextResponse.json(
-      { error: `Maximum ${MAX_WEBHOOKS} webhooks allowed` },
+      { error: `Maximum ${plan.limits.maxWebhooks} webhooks allowed (${plan.tier} plan)` },
       { status: 400 }
     );
   }

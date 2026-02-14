@@ -2,10 +2,28 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import ServiceIcon from "@/components/ServiceIcon";
+import ManageSubscriptionButton from "@/components/ManageSubscriptionButton";
 import { Category } from "@/lib/types";
 import { trackWebhookCreate, trackWebhookTest, trackApiKeyCreate } from "@/lib/analytics";
 import SetupGuide from "./SetupGuide";
+
+interface PlanInfo {
+  tier: "free" | "pro";
+  limits: {
+    maxWatchlist: number; // -1 means unlimited
+    maxWebhooks: number;
+    allowedWebhookEvents: string[];
+    rateLimitAuthenticated: number;
+    historyRetentionDays: number;
+    recheckIntervalMinutes: number;
+    mcpAccess: boolean;
+  };
+  status: string;
+  billingPeriod: string | null;
+  currentPeriodEnd: string | null;
+}
 
 interface Webhook {
   id: number;
@@ -42,6 +60,13 @@ export default function DashboardClient({
 }: {
   user: { id: string; name: string; email: string; image?: string | null };
 }) {
+  const searchParams = useSearchParams();
+  const [showUpgradeSuccess, setShowUpgradeSuccess] = useState(
+    searchParams.get("upgraded") === "true"
+  );
+
+  const [plan, setPlan] = useState<PlanInfo | null>(null);
+
   const [keys, setKeys] = useState<ApiKey[]>([]);
   const [newKeyName, setNewKeyName] = useState("");
   const [createdKey, setCreatedKey] = useState<string | null>(null);
@@ -81,11 +106,18 @@ export default function DashboardClient({
     setWebhooksLoading(false);
   }, []);
 
+  const fetchPlan = useCallback(async () => {
+    const res = await fetch("/api/user/plan");
+    const data = await res.json();
+    setPlan(data);
+  }, []);
+
   useEffect(() => {
+    fetchPlan();
     fetchKeys();
     fetchWatchlist();
     fetchWebhooks();
-  }, [fetchKeys, fetchWatchlist, fetchWebhooks]);
+  }, [fetchPlan, fetchKeys, fetchWatchlist, fetchWebhooks]);
 
   async function createKey() {
     setCreating(true);
@@ -181,23 +213,57 @@ export default function DashboardClient({
         </p>
       </div>
 
-      {/* Free plan banner */}
-      <div className="mb-8 flex items-center justify-between rounded-xl border border-blue-200 bg-blue-50 px-5 py-4 dark:border-blue-900 dark:bg-blue-950/40">
-        <div>
-          <p className="text-sm font-medium text-blue-900 dark:text-blue-100">
-            Free plan — 3 watchlist services, 2 webhooks, 15 API req/min
+      {/* Upgrade success banner */}
+      {showUpgradeSuccess && (
+        <div className="mb-4 flex items-center justify-between rounded-xl border border-green-200 bg-green-50 px-5 py-4 dark:border-green-900 dark:bg-green-950/40">
+          <p className="text-sm font-medium text-green-900 dark:text-green-100">
+            Welcome to Pro! Your limits have been upgraded.
           </p>
-          <p className="mt-0.5 text-xs text-blue-700 dark:text-blue-300">
-            Need more? Pro is coming soon with unlimited watchlist and priority alerts.
-          </p>
+          <button
+            onClick={() => setShowUpgradeSuccess(false)}
+            className="text-green-600 hover:text-green-800 dark:text-green-400"
+          >
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
         </div>
-        <Link
-          href="/pricing"
-          className="shrink-0 rounded-lg bg-blue-600 px-3.5 py-1.5 text-sm font-medium text-white transition-colors hover:bg-blue-700"
-        >
-          View Plans
-        </Link>
-      </div>
+      )}
+
+      {/* Plan banner */}
+      {plan?.tier === "pro" ? (
+        <div className="mb-8 flex items-center justify-between rounded-xl border border-purple-200 bg-purple-50 px-5 py-4 dark:border-purple-900 dark:bg-purple-950/40">
+          <div>
+            <p className="text-sm font-medium text-purple-900 dark:text-purple-100">
+              <span className="mr-1.5 inline-block rounded bg-purple-600 px-1.5 py-0.5 text-[10px] font-bold text-white">PRO</span>
+              Unlimited watchlist, {plan.limits.maxWebhooks} webhooks, {plan.limits.rateLimitAuthenticated} API req/min
+            </p>
+            {plan.status === "canceling" && plan.currentPeriodEnd && (
+              <p className="mt-0.5 text-xs text-purple-700 dark:text-purple-300">
+                Cancels on {new Date(plan.currentPeriodEnd).toLocaleDateString()}
+              </p>
+            )}
+          </div>
+          <ManageSubscriptionButton />
+        </div>
+      ) : (
+        <div className="mb-8 flex items-center justify-between rounded-xl border border-blue-200 bg-blue-50 px-5 py-4 dark:border-blue-900 dark:bg-blue-950/40">
+          <div>
+            <p className="text-sm font-medium text-blue-900 dark:text-blue-100">
+              Free plan — {plan?.limits.maxWatchlist ?? 3} watchlist services, {plan?.limits.maxWebhooks ?? 2} webhooks, 15 API req/min
+            </p>
+            <p className="mt-0.5 text-xs text-blue-700 dark:text-blue-300">
+              Need more? Upgrade to Pro for unlimited watchlist and priority alerts.
+            </p>
+          </div>
+          <Link
+            href="/pricing"
+            className="shrink-0 rounded-lg bg-blue-600 px-3.5 py-1.5 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+          >
+            Upgrade
+          </Link>
+        </div>
+      )}
 
       {/* Setup Guide */}
       <SetupGuide
@@ -333,7 +399,7 @@ export default function DashboardClient({
             Webhooks
           </h2>
           <span className="text-xs text-zinc-500 dark:text-zinc-400">
-            {webhooks.length}/2 max
+            {webhooks.length}/{plan?.limits.maxWebhooks ?? 2} max
           </span>
         </div>
 
@@ -359,21 +425,21 @@ export default function DashboardClient({
           <div className="mb-3 flex items-center gap-4">
             <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">Events:</span>
             {(["down", "slow", "recovered", "dead", "resurrected"] as const).map((event) => {
-              const isPro = event !== "down";
+              const allowed = plan?.limits.allowedWebhookEvents?.includes(event) ?? event === "down";
               return (
                 <label
                   key={event}
-                  className={`flex items-center gap-1.5 text-sm ${isPro ? "text-zinc-400 dark:text-zinc-500" : "text-zinc-700 dark:text-zinc-300"}`}
+                  className={`flex items-center gap-1.5 text-sm ${!allowed ? "text-zinc-400 dark:text-zinc-500" : "text-zinc-700 dark:text-zinc-300"}`}
                 >
                   <input
                     type="checkbox"
-                    checked={!isPro && webhookEvents.includes(event)}
-                    onChange={() => !isPro && toggleEvent(event)}
-                    disabled={isPro}
+                    checked={allowed && webhookEvents.includes(event)}
+                    onChange={() => allowed && toggleEvent(event)}
+                    disabled={!allowed}
                     className="rounded border-zinc-300 text-blue-600 focus:ring-blue-500 disabled:opacity-40 dark:border-zinc-600"
                   />
                   {event}
-                  {isPro && (
+                  {!allowed && (
                     <span className="rounded bg-blue-100 px-1 py-0.5 text-[10px] font-semibold text-blue-600 dark:bg-blue-900 dark:text-blue-300">
                       PRO
                     </span>
@@ -384,7 +450,7 @@ export default function DashboardClient({
           </div>
           <button
             onClick={createWebhook}
-            disabled={creatingWebhook || !webhookUrl || webhookEvents.length === 0 || webhooks.length >= 2}
+            disabled={creatingWebhook || !webhookUrl || webhookEvents.length === 0 || webhooks.length >= (plan?.limits.maxWebhooks ?? 2)}
             className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
           >
             {creatingWebhook ? "Adding..." : "Add Webhook"}
@@ -558,7 +624,7 @@ export default function DashboardClient({
         )}
 
         <p className="mt-3 text-xs text-zinc-500 dark:text-zinc-400">
-          60 req/min with key.{" "}
+          {plan?.limits.rateLimitAuthenticated ?? 60} req/min with key.{" "}
           <Link href="/docs" className="text-blue-600 hover:underline">
             API docs
           </Link>

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { authServer } from "@/lib/auth/server";
 import { getDb } from "@/lib/db";
+import { getUserPlan } from "@/lib/plans";
 
 export async function GET() {
   const { data: session } = await authServer.getSession();
@@ -36,12 +37,14 @@ export async function POST(request: NextRequest) {
 
   const sql = getDb();
 
+  const plan = await getUserPlan(session.user.id);
+
   const countResult = await sql`
     SELECT COUNT(*)::int as count FROM watchlist WHERE user_id = ${session.user.id}
   `;
-  if (countResult[0].count >= 3) {
+  if (plan.limits.maxWatchlist !== Infinity && countResult[0].count >= plan.limits.maxWatchlist) {
     return NextResponse.json(
-      { error: "Maximum 3 services in watchlist" },
+      { error: `Maximum ${plan.limits.maxWatchlist} services in watchlist (${plan.tier} plan)` },
       { status: 400 }
     );
   }

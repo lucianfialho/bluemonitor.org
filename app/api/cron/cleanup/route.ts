@@ -26,9 +26,10 @@ export async function GET(request: NextRequest) {
     WHERE status = 'rejected'
       AND created_at < NOW() - INTERVAL '30 days'
   `;
+  // Keep 30 days for pro users; query-time filtering enforces free plan limits
   const [heartbeatChecksCount] = await sql`
     SELECT COUNT(*)::int AS count FROM heartbeat_checks
-    WHERE checked_at < NOW() - INTERVAL '1 day'
+    WHERE checked_at < NOW() - INTERVAL '30 days'
   `;
 
   // Delete status checks older than 30 days
@@ -51,10 +52,10 @@ export async function GET(request: NextRequest) {
       AND created_at < NOW() - INTERVAL '30 days'
   `;
 
-  // Delete heartbeat checks older than 1 day (free plan retention)
+  // Delete heartbeat checks older than 30 days (pro plan retention)
   await sql`
     DELETE FROM heartbeat_checks
-    WHERE checked_at < NOW() - INTERVAL '1 day'
+    WHERE checked_at < NOW() - INTERVAL '30 days'
   `;
 
   return NextResponse.json({

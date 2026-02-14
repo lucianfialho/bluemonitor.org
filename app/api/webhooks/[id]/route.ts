@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { authServer } from "@/lib/auth/server";
 import { getDb } from "@/lib/db";
+import { getUserPlan } from "@/lib/plans";
 
-const VALID_EVENTS = ["down", "slow", "recovered"];
-const FREE_EVENTS = ["down"];
+const VALID_EVENTS = ["down", "slow", "recovered", "dead", "resurrected"];
 
 export async function DELETE(
   _request: NextRequest,
@@ -61,10 +61,13 @@ export async function PATCH(
         { status: 400 }
       );
     }
-    const proOnly = body.events.filter((e: string) => !FREE_EVENTS.includes(e));
-    if (proOnly.length > 0) {
+    const plan = await getUserPlan(session.user.id);
+    const disallowed = body.events.filter(
+      (e: string) => !plan.limits.allowedWebhookEvents.includes(e)
+    );
+    if (disallowed.length > 0) {
       return NextResponse.json(
-        { error: `Events ${proOnly.join(", ")} require the Pro plan` },
+        { error: `Events ${disallowed.join(", ")} require the Pro plan` },
         { status: 403 }
       );
     }
