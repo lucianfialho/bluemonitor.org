@@ -4,6 +4,8 @@ import { useCallback, useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import ServiceIcon from "@/components/ServiceIcon";
+import StatusTimeline from "@/components/StatusTimeline";
+import HeartbeatChecks from "@/components/HeartbeatChecks";
 import BotTrackingSection from "../../BotTrackingSection";
 import { useDashboard } from "../../DashboardContext";
 import { Category } from "@/lib/types";
@@ -190,6 +192,18 @@ export default function ServiceDetailPage() {
           </Link>
         </div>
       </div>
+
+      {/* Status Timeline — 24h overview */}
+      <div className="mb-6 rounded-2xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
+        <StatusTimeline slug={service.slug} />
+      </div>
+
+      {/* Health Checks — latency charts per check */}
+      {service.last_heartbeat_at && (
+        <div className="mb-6">
+          <HeartbeatChecks slug={service.slug} currentChecks={null} />
+        </div>
+      )}
 
       {/* Bot Tracking */}
       <BotTrackingSection isPro={plan?.tier === "pro"} domains={[service.domain]} />
