@@ -4,6 +4,7 @@ import SearchBar from "@/components/SearchBar";
 import ServiceIcon from "@/components/ServiceIcon";
 import Link from "next/link";
 import { Service } from "@/lib/types";
+import HeroTerminal from "@/components/HeroTerminal";
 
 export const revalidate = 60;
 
@@ -74,59 +75,8 @@ export default async function Home() {
             </div>
           </div>
 
-          {/* Right — terminal mockup */}
-          <div className="hidden lg:block">
-            <div className="rounded-2xl bg-zinc-900 p-6 font-mono text-sm leading-relaxed text-zinc-300 shadow-2xl dark:bg-zinc-950">
-              <div className="mb-4 flex items-center gap-2">
-                <div className="h-3 w-3 rounded-full bg-red-500/80" />
-                <div className="h-3 w-3 rounded-full bg-yellow-500/80" />
-                <div className="h-3 w-3 rounded-full bg-green-500/80" />
-                <span className="ml-2 text-xs text-zinc-500">
-                  bluemonitor — health check
-                </span>
-              </div>
-              <div className="text-green-400">
-                GET api.stripe.com → 200 OK
-              </div>
-              <div className="mt-3 space-y-1 text-zinc-500">
-                <div>
-                  <span className="text-green-400">✓</span> status{" "}
-                  <span className="text-zinc-600">· operational</span>
-                </div>
-                <div>
-                  <span className="text-green-400">✓</span> response{" "}
-                  <span className="text-zinc-600">· 142ms</span>
-                </div>
-                <div>
-                  <span className="text-green-400">✓</span> uptime{" "}
-                  <span className="text-zinc-600">· 99.98%</span>
-                </div>
-                <div>
-                  <span className="text-green-400">✓</span> ssl{" "}
-                  <span className="text-zinc-600">· valid (342 days)</span>
-                </div>
-              </div>
-              <div className="mt-4 border-t border-zinc-800 pt-4 text-blue-400">
-                POST /api/v1/heartbeat
-              </div>
-              <div className="mt-2 space-y-1 text-zinc-500">
-                <div>
-                  <span className="text-green-400">✓</span> database{" "}
-                  <span className="text-zinc-600">· 3ms</span>
-                </div>
-                <div>
-                  <span className="text-green-400">✓</span> redis{" "}
-                  <span className="text-zinc-600">· 1ms</span>
-                </div>
-                <div>
-                  <span className="text-red-400">✗</span>{" "}
-                  <span className="text-red-400">sendgrid</span>{" "}
-                  <span className="text-zinc-600">· timeout</span>
-                </div>
-              </div>
-              <div className="mt-3 text-green-400">→ 200 received</div>
-            </div>
-          </div>
+          {/* Right — animated terminal mockup */}
+          <HeroTerminal />
         </div>
       </section>
 
