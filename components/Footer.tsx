@@ -70,9 +70,25 @@ export default function Footer() {
         </div>
 
         <div className="mt-10 border-t border-zinc-200 pt-6 dark:border-zinc-800">
-          <p className="text-center text-sm text-zinc-400 dark:text-zinc-500">
-            &copy; {new Date().getFullYear()} BlueMonitor. Service status checks are automated and may not reflect all types of outages.
-          </p>
+          <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-between">
+            <p className="text-sm text-zinc-400 dark:text-zinc-500">
+              &copy; {new Date().getFullYear()} BlueMonitor. Service status checks are automated and may not reflect all types of outages.
+            </p>
+            <div className="flex gap-4">
+              <Link
+                href="/privacy"
+                className="text-sm text-zinc-400 transition-colors hover:text-zinc-900 dark:text-zinc-500 dark:hover:text-zinc-100"
+              >
+                Privacy
+              </Link>
+              <Link
+                href="/terms"
+                className="text-sm text-zinc-400 transition-colors hover:text-zinc-900 dark:text-zinc-500 dark:hover:text-zinc-100"
+              >
+                Terms
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
     </footer>
