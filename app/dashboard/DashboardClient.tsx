@@ -429,7 +429,13 @@ export default function DashboardClient({
               return (
                 <label
                   key={event}
-                  className={`flex items-center gap-1.5 text-sm ${!allowed ? "text-zinc-400 dark:text-zinc-500" : "text-zinc-700 dark:text-zinc-300"}`}
+                  onClick={(e) => {
+                    if (!allowed) {
+                      e.preventDefault();
+                      window.location.href = "/pricing";
+                    }
+                  }}
+                  className={`flex items-center gap-1.5 text-sm ${!allowed ? "cursor-pointer text-zinc-400 hover:text-zinc-600 dark:text-zinc-500 dark:hover:text-zinc-300" : "text-zinc-700 dark:text-zinc-300"}`}
                 >
                   <input
                     type="checkbox"
