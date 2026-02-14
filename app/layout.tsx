@@ -17,6 +17,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  icons: { icon: "/icon.svg" },
   title: {
     default: "BlueMonitor — Real-Time Service Status Monitoring",
     template: "%s | BlueMonitor",
