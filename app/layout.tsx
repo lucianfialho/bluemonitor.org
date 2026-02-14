@@ -34,12 +34,21 @@ export const metadata: Metadata = {
     url: "https://www.bluemonitor.org",
     siteName: "BlueMonitor",
     type: "website",
+    images: [
+      {
+        url: "/api/og",
+        width: 1200,
+        height: 630,
+        alt: "BlueMonitor — Turn on monitoring",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "BlueMonitor — Real-Time Service Status Monitoring",
     description:
       "Check if your favorite services are down. Real-time status monitoring for hundreds of popular services.",
+    images: ["/api/og"],
   },
   robots: {
     index: true,

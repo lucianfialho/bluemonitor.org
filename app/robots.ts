@@ -4,7 +4,7 @@ export default function robots(): MetadataRoute.Robots {
   return {
     rules: {
       userAgent: "*",
-      allow: ["/", "/api/badge/"],
+      allow: ["/", "/api/badge/", "/api/og/"],
       disallow: ["/api/", "/admin/", "/dashboard/"],
     },
     sitemap: "https://www.bluemonitor.org/sitemap.xml",
