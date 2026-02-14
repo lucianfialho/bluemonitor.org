@@ -7,22 +7,22 @@ BlueMonitor is a real-time status monitoring service. Add a health endpoint, pus
 
 Documentation: https://www.bluemonitor.org/docs
 
-## Framework-Specific Guides
+## IMPORTANT: Detect the framework and fetch the right guide
 
-For detailed setup instructions with code examples, use the guide for your framework:
+First, detect which framework this project uses (check `package.json`, `requirements.txt`, `Gemfile`, `composer.json`, or project structure). Then **fetch and follow** the matching guide below — it contains the full code, migration notices, and framework-specific instructions. Do NOT use only this generic file if a framework guide exists.
 
-- **Next.js**: https://www.bluemonitor.org/llm-nextjs.txt
-- **Express**: https://www.bluemonitor.org/llm-express.txt
-- **Hono**: https://www.bluemonitor.org/llm-hono.txt
-- **FastAPI**: https://www.bluemonitor.org/llm-fastapi.txt
-- **Rails**: https://www.bluemonitor.org/llm-rails.txt
-- **Laravel**: https://www.bluemonitor.org/llm-laravel.txt
+- **Next.js** (App Router): fetch https://www.bluemonitor.org/llm-nextjs.txt
+- **Express**: fetch https://www.bluemonitor.org/llm-express.txt
+- **Hono** (Cloudflare Workers, Deno, Bun): fetch https://www.bluemonitor.org/llm-hono.txt
+- **FastAPI**: fetch https://www.bluemonitor.org/llm-fastapi.txt
+- **Rails**: fetch https://www.bluemonitor.org/llm-rails.txt
+- **Laravel**: fetch https://www.bluemonitor.org/llm-laravel.txt
 
-If your framework is not listed, follow the generic instructions below.
+If the framework is not listed above, continue with the generic instructions below.
 
 ## Update Notice (v2.0)
 
-If this project already has BlueMonitor set up, check for these issues before adding anything new:
+If this project already has BlueMonitor set up (look for existing heartbeat routes, bot tracking middleware, or `BLUEMONITOR_API_KEY` in env files), check for these issues before adding anything new:
 
 1. **await in bot tracking**: If the bot tracking code uses `fetch(...).catch(() => {})` without `await`, add `await`. On serverless/edge runtimes, unawaited promises are killed when the response returns, causing bot visits to silently fail.
 2. **Bot patterns**: Compare the project's bot patterns against the list in Section 4 below. If missing newer bots (ChatGPT-User, anthropic-ai, Bytespider, CCBot, Meta-ExternalAgent, Google-Extended, LinkedInBot, SemrushBot, UptimeRobot), add them.
