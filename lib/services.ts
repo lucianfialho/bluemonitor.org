@@ -45,12 +45,13 @@ function mapRow(row: Record<string, unknown>): Service {
     feed_url: (row.feed_url as string) ?? null,
     feed_api_url: (row.feed_api_url as string) ?? null,
     feed_provider: (row.feed_provider as string) ?? null,
+    is_private: (row.is_private as boolean) ?? false,
   };
 }
 
 export async function getServices(): Promise<Service[]> {
   const sql = getDb();
-  const rows = await sql`SELECT * FROM services ORDER BY name`;
+  const rows = await sql`SELECT * FROM services WHERE is_private = false ORDER BY name`;
   return rows.map(mapRow);
 }
 
@@ -62,7 +63,7 @@ export async function getServiceBySlug(slug: string): Promise<Service | undefine
 
 export async function getServicesByCategory(category: string): Promise<Service[]> {
   const sql = getDb();
-  const rows = await sql`SELECT * FROM services WHERE category = ${category} ORDER BY name`;
+  const rows = await sql`SELECT * FROM services WHERE category = ${category} AND is_private = false ORDER BY name`;
   return rows.map(mapRow);
 }
 
@@ -80,13 +81,13 @@ export async function getRelatedServices(slug: string, limit = 6): Promise<Servi
 
 export async function getServiceCount(): Promise<number> {
   const sql = getDb();
-  const rows = await sql`SELECT COUNT(*)::int as count FROM services`;
+  const rows = await sql`SELECT COUNT(*)::int as count FROM services WHERE is_private = false`;
   return rows[0].count as number;
 }
 
 export async function getServiceCountByCategory(category: string): Promise<number> {
   const sql = getDb();
-  const rows = await sql`SELECT COUNT(*)::int as count FROM services WHERE category = ${category}`;
+  const rows = await sql`SELECT COUNT(*)::int as count FROM services WHERE category = ${category} AND is_private = false`;
   return rows[0].count as number;
 }
 

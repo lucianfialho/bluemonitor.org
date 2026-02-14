@@ -8,6 +8,7 @@ export interface PlanLimits {
   historyRetentionDays: number;
   recheckIntervalMinutes: number;
   mcpAccess: boolean;
+  canSetPrivate: boolean;
 }
 
 export type PlanTier = "free" | "pro";
@@ -30,6 +31,7 @@ export const FREE_LIMITS: PlanLimits = {
   historyRetentionDays: 1,
   recheckIntervalMinutes: 10,
   mcpAccess: false,
+  canSetPrivate: false,
 };
 
 export const PRO_LIMITS: PlanLimits = {
@@ -40,6 +42,7 @@ export const PRO_LIMITS: PlanLimits = {
   historyRetentionDays: 30,
   recheckIntervalMinutes: 1,
   mcpAccess: true,
+  canSetPrivate: true,
 };
 
 const FREE_PLAN: UserPlan = {

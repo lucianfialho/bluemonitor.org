@@ -16,6 +16,7 @@ export interface Service {
   feed_url?: string | null;
   feed_api_url?: string | null;
   feed_provider?: string | null;
+  is_private?: boolean;
 }
 
 export type Category =

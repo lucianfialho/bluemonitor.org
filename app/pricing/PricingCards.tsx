@@ -21,6 +21,7 @@ const PRO_FEATURES = [
   "1-minute recheck interval",
   "30-day history retention",
   "MCP integration for AI assistants",
+  "Private monitoring for your services",
   "Priority support",
 ];
 

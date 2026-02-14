@@ -26,7 +26,7 @@ export async function generateMetadata({
   const { slug } = await params;
   const service = await getServiceBySlug(slug);
 
-  if (!service) {
+  if (!service || service.is_private) {
     return { title: "Service Not Found — BlueMonitor" };
   }
 
@@ -102,7 +102,7 @@ export default async function StatusPage({
   const { slug } = await params;
   const service = await getServiceBySlug(slug);
 
-  if (!service) {
+  if (!service || service.is_private) {
     notFound();
   }
 

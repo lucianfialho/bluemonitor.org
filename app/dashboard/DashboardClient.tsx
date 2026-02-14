@@ -52,6 +52,7 @@ interface WatchlistService {
   current_response_time: number | null;
   last_checked_at: string | null;
   last_heartbeat_at: string | null;
+  is_private: boolean;
   added_at: string;
 }
 
@@ -145,6 +146,26 @@ export default function DashboardClient({
   async function removeFromWatchlist(serviceId: number) {
     setWatchlist((prev) => prev.filter((s) => s.id !== serviceId));
     await fetch(`/api/watchlist/${serviceId}`, { method: "DELETE" });
+  }
+
+  async function togglePrivate(serviceId: number, isPrivate: boolean) {
+    setWatchlist((prev) =>
+      prev.map((s) => (s.id === serviceId ? { ...s, is_private: isPrivate } : s))
+    );
+    const res = await fetch(`/api/watchlist/${serviceId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ is_private: isPrivate }),
+    });
+    if (!res.ok) {
+      // Revert on error
+      setWatchlist((prev) =>
+        prev.map((s) => (s.id === serviceId ? { ...s, is_private: !isPrivate } : s))
+      );
+      if (res.status === 403) {
+        window.location.href = "/pricing";
+      }
+    }
   }
 
   async function createWebhook() {
@@ -373,19 +394,46 @@ export default function DashboardClient({
                     </div>
                   )}
                 </div>
-                <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    removeFromWatchlist(service.id);
-                  }}
-                  className="relative z-10 rounded-md p-1 text-zinc-400 transition-colors hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-950 dark:hover:text-red-400"
-                  title="Remove from watchlist"
-                >
-                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
+                <div className="relative z-10 flex items-center gap-1">
+                  {service.last_heartbeat_at && (
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        togglePrivate(service.id, !service.is_private);
+                      }}
+                      className={`rounded-md p-1 transition-colors ${
+                        service.is_private
+                          ? "text-purple-500 hover:bg-purple-50 dark:hover:bg-purple-950"
+                          : "text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800"
+                      }`}
+                      title={service.is_private ? "Private (click to make public)" : "Public (click to make private)"}
+                    >
+                      {service.is_private ? (
+                        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                        </svg>
+                      ) : (
+                        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 10.5V6.75a4.5 4.5 0 119 0v3.75M3.75 21.75h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H3.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                        </svg>
+                      )}
+                    </button>
+                  )}
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      removeFromWatchlist(service.id);
+                    }}
+                    className="rounded-md p-1 text-zinc-400 transition-colors hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-950 dark:hover:text-red-400"
+                    title="Remove from watchlist"
+                  >
+                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
               </div>
             ))}
           </div>
