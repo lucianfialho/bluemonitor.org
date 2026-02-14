@@ -7,6 +7,15 @@ Add uptime monitoring, heartbeat push, and a status badge to your Express app.
 
 Documentation: https://www.bluemonitor.org/docs/express
 
+## Update Notice (v2.0)
+
+If this project already has BlueMonitor set up, check for these issues before adding anything new:
+
+1. **await fetch in bot tracking**: If the bot tracking middleware uses `fetch(...).catch(() => {})` without `await`, add `await` before the fetch call. On serverless runtimes (AWS Lambda, Vercel Functions, etc.), unawaited promises are killed when the response returns, causing bot visits to silently fail.
+2. **Bot patterns**: Compare the project's `BOT_PATTERNS` array against the list in Section 4 below. If missing newer bots (ChatGPT-User, anthropic-ai, Bytespider, CCBot, Meta-ExternalAgent, Google-Extended, LinkedInBot, SemrushBot, UptimeRobot), add them.
+
+If none of these apply or BlueMonitor is not yet set up, proceed with the fresh install below.
+
 ## Important: Auto-detect the domain
 
 Automatically detect the project's production domain from the codebase (check `package.json`, `.env` files for `APP_URL`, `BASE_URL`, or similar). Use the detected domain directly in the heartbeat URL — do NOT use placeholders like `yourapp.com`.

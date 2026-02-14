@@ -7,6 +7,15 @@ Add uptime monitoring, heartbeat push, and a status badge to your FastAPI app.
 
 Documentation: https://www.bluemonitor.org/docs/fastapi
 
+## Update Notice (v2.0)
+
+If this project already has BlueMonitor set up, check for these issues before adding anything new:
+
+1. **Bot patterns**: Compare the project's bot patterns against the list in Section 4 below. If missing newer bots (ChatGPT-User, anthropic-ai, Bytespider, CCBot, Meta-ExternalAgent, Google-Extended, LinkedInBot, SemrushBot, UptimeRobot), add them.
+2. **Async bot tracking**: Ensure the bot tracking middleware uses `await` on the `httpx.post` call. Fire-and-forget calls may silently fail on serverless runtimes.
+
+If none of these apply or BlueMonitor is not yet set up, proceed with the fresh install below.
+
 ## Important: Auto-detect the domain
 
 Automatically detect the project's production domain from the codebase (check `.env`, `pyproject.toml`, or similar config files for `APP_URL`, `BASE_URL`, or domain references). Use the detected domain directly in the heartbeat URL — do NOT use placeholders like `yourapp.com`.

@@ -20,6 +20,16 @@ For detailed setup instructions with code examples, use the guide for your frame
 
 If your framework is not listed, follow the generic instructions below.
 
+## Update Notice (v2.0)
+
+If this project already has BlueMonitor set up, check for these issues before adding anything new:
+
+1. **await in bot tracking**: If the bot tracking code uses `fetch(...).catch(() => {})` without `await`, add `await`. On serverless/edge runtimes, unawaited promises are killed when the response returns, causing bot visits to silently fail.
+2. **Bot patterns**: Compare the project's bot patterns against the list in Section 4 below. If missing newer bots (ChatGPT-User, anthropic-ai, Bytespider, CCBot, Meta-ExternalAgent, Google-Extended, LinkedInBot, SemrushBot, UptimeRobot), add them.
+3. **Next.js 16+ only**: If using Next.js 16+, `middleware.ts` must be renamed to `proxy.ts` and the export from `middleware` to `proxy`. See the Next.js-specific guide for details.
+
+If none of these apply or BlueMonitor is not yet set up, proceed with the fresh install below.
+
 ## Important: Auto-detect the domain
 
 When generating code, automatically detect the project's production domain from the codebase (check `vercel.json`, `package.json` homepage field, `.env` files for `NEXT_PUBLIC_URL`, `APP_URL`, `VERCEL_PROJECT_PRODUCTION_URL`, or similar). Use the detected domain directly in the heartbeat URL — do NOT ask the user or use placeholders.
