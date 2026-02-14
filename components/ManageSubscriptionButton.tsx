@@ -14,10 +14,15 @@ export default function ManageSubscriptionButton() {
       const data = await res.json();
       if (data.url) {
         window.location.href = data.url;
+        return;
+      }
+      if (res.status === 404) {
+        alert("You're on the beta plan — no subscription to manage.");
       }
     } catch {
-      setLoading(false);
+      // network error
     }
+    setLoading(false);
   }
 
   return (
