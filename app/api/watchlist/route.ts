@@ -15,7 +15,7 @@ export async function GET() {
            s.current_response_time, s.last_checked_at, s.last_heartbeat_at, s.is_private, w.added_at,
            (SELECT ROUND(
               COUNT(*) FILTER (WHERE sc.status = 'up') * 100.0 / NULLIF(COUNT(*), 0), 1
-            )
+            )::float
             FROM status_checks sc
             WHERE sc.service_id = s.id
               AND sc.checked_at > NOW() - INTERVAL '24 hours'
