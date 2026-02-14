@@ -67,27 +67,12 @@ export async function GET() {
             gap: 10,
           }}
         >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              width: 32,
-              height: 32,
-              borderRadius: 7,
-              backgroundColor: "#2563eb",
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                width: 16,
-                height: 16,
-                borderRadius: 8,
-                border: "2.5px solid #ffffff",
-              }}
-            />
-          </div>
+          <img
+            src={`${baseUrl}/logo.png`}
+            width={32}
+            height={32}
+            style={{ display: "flex", width: 32, height: 32, borderRadius: 7 }}
+          />
           <div style={{ display: "flex", fontSize: 20, fontWeight: 600, color: "#71717a" }}>
             BlueMonitor
           </div>

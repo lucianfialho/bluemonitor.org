@@ -9,6 +9,10 @@ export async function GET(request: NextRequest) {
   const domain = searchParams.get("domain") || "";
   const status = searchParams.get("status") || "up";
 
+  const baseUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : "http://localhost:3000";
+
   const isUp = status === "up";
   const isSlow = status === "slow";
   const statusLabel = isUp ? "Operational" : isSlow ? "Slow" : "Down";
@@ -80,20 +84,13 @@ export async function GET(request: NextRequest) {
         </div>
 
         {/* Brand */}
-        <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 52 }}>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              width: 32,
-              height: 32,
-              borderRadius: 7,
-              backgroundColor: "#2563eb",
-            }}
-          >
-            <div style={{ display: "flex", width: 16, height: 16, borderRadius: 8, border: "2.5px solid #ffffff" }} />
-          </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 52 }}>
+          <img
+            src={`${baseUrl}/logo.png`}
+            width={32}
+            height={32}
+            style={{ display: "flex", width: 32, height: 32, borderRadius: 7 }}
+          />
           <div style={{ display: "flex", fontSize: 20, fontWeight: 600, color: "#a1a1aa" }}>
             BlueMonitor
           </div>
