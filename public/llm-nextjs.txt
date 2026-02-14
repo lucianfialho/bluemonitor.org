@@ -213,13 +213,13 @@ function identifyBot(ua: string) {
   return null;
 }
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const ua = request.headers.get("user-agent") || "";
   const bot = identifyBot(ua);
 
   if (bot) {
-    // Fire-and-forget: report bot visit to BlueMonitor
-    fetch("https://www.bluemonitor.org/api/v1/bot-visits", {
+    // IMPORTANT: await the fetch — Edge Runtime may kill unawaited promises
+    await fetch("https://www.bluemonitor.org/api/v1/bot-visits", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${process.env.BLUEMONITOR_API_KEY}`,
@@ -245,7 +245,9 @@ export const config = {
 };
 ```
 
-If you already have a `middleware.ts`, add the bot detection logic to your existing middleware function instead of creating a new one.
+If you already have a `middleware.ts`, add the bot detection logic to your existing middleware function instead of creating a new one. Make sure your middleware is `async` and uses `await` on the fetch call.
+
+**Important:** Next.js middleware runs on the Edge Runtime. You MUST `await` the fetch call — unawaited promises may be killed when the response is returned.
 
 - Requires Pro plan + `BLUEMONITOR_API_KEY` env variable
 - View results in the BlueMonitor dashboard under "Bot Tracking"

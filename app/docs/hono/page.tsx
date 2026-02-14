@@ -191,7 +191,8 @@ const botTracking = createMiddleware(async (c, next) => {
   const ua = c.req.header("user-agent") || "";
   const bot = identifyBot(ua);
   if (bot) {
-    fetch("https://www.bluemonitor.org/api/v1/bot-visits", {
+    // Use waitUntil on Workers, await on other runtimes
+    const promise = fetch("https://www.bluemonitor.org/api/v1/bot-visits", {
       method: "POST",
       headers: {
         Authorization: \`Bearer \${c.env?.BLUEMONITOR_API_KEY}\`,
@@ -207,6 +208,11 @@ const botTracking = createMiddleware(async (c, next) => {
         }],
       }),
     }).catch(() => {});
+    if (c.executionCtx?.waitUntil) {
+      c.executionCtx.waitUntil(promise);
+    } else {
+      await promise;
+    }
   }
   await next();
 });

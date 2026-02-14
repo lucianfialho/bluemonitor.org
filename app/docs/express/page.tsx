@@ -200,11 +200,12 @@ function identifyBot(ua) {
   return null;
 }
 
-app.use((req, res, next) => {
+// If on serverless (Lambda, etc.), use await
+app.use(async (req, res, next) => {
   const ua = req.headers["user-agent"] || "";
   const bot = identifyBot(ua);
   if (bot) {
-    fetch("https://www.bluemonitor.org/api/v1/bot-visits", {
+    await fetch("https://www.bluemonitor.org/api/v1/bot-visits", {
       method: "POST",
       headers: {
         Authorization: \`Bearer \${process.env.BLUEMONITOR_API_KEY}\`,

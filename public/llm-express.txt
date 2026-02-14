@@ -180,11 +180,12 @@ function identifyBot(ua: string) {
 }
 
 // Add as Express middleware
-app.use((req, res, next) => {
+// NOTE: If running on serverless (AWS Lambda, etc.), use await instead of fire-and-forget
+app.use(async (req, res, next) => {
   const ua = req.headers["user-agent"] || "";
   const bot = identifyBot(ua);
   if (bot) {
-    fetch("https://www.bluemonitor.org/api/v1/bot-visits", {
+    await fetch("https://www.bluemonitor.org/api/v1/bot-visits", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${process.env.BLUEMONITOR_API_KEY}`,

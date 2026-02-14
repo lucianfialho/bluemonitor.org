@@ -195,11 +195,13 @@ function identifyBot(ua) {
 }
 
 // In your request handler, check user-agent and report:
-function handleRequest(req) {
+// IMPORTANT: Always await the fetch in serverless/edge runtimes (Vercel, Cloudflare Workers, etc.)
+// Unawaited promises may be killed when the response is returned.
+async function handleRequest(req) {
   const ua = req.headers["user-agent"] || "";
   const bot = identifyBot(ua);
   if (bot) {
-    fetch("https://www.bluemonitor.org/api/v1/bot-visits", {
+    await fetch("https://www.bluemonitor.org/api/v1/bot-visits", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${process.env.BLUEMONITOR_API_KEY}`,
