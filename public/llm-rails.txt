@@ -118,7 +118,7 @@ BLUEMONITOR_API_KEY=bm_your_api_key
 
 ## 3. Status Badge
 
-Replace `your-domain-com` with your domain (dots become dashes).
+Replace `your-domain-com` with your domain (dots become dashes). Place the badge in your footer for maximum visibility.
 
 ### ERB
 
@@ -156,3 +156,79 @@ Headers: `Authorization: Bearer bm_...`, `Content-Type: application/json`
 - `status`: "ok" or "error"
 - `checks`: object with dependency names as keys, each with `status`, `latency` (ms), optional `message`
 - If BlueMonitor stops receiving heartbeats for 10 minutes, the service is marked as down
+
+## 4. Bot Tracking (Pro)
+
+Track which bots crawl your Rails app. Requires a Pro plan and API key.
+
+Create `app/middleware/bot_tracking_middleware.rb`:
+
+```ruby
+class BotTrackingMiddleware
+  BOT_PATTERNS = [
+    [/Googlebot/i, "googlebot", "search_engine"],
+    [/bingbot/i, "bingbot", "search_engine"],
+    [/GPTBot/i, "gptbot", "ai_crawler"],
+    [/ChatGPT-User/i, "chatgpt-user", "ai_crawler"],
+    [/ClaudeBot/i, "claudebot", "ai_crawler"],
+    [/anthropic-ai/i, "anthropic-ai", "ai_crawler"],
+    [/PerplexityBot/i, "perplexitybot", "ai_crawler"],
+    [/Bytespider/i, "bytespider", "ai_crawler"],
+    [/CCBot/i, "ccbot", "ai_crawler"],
+    [/Meta-ExternalAgent/i, "meta-externalagent", "ai_crawler"],
+    [/Google-Extended/i, "google-extended", "ai_crawler"],
+    [/Twitterbot/i, "twitterbot", "social"],
+    [/facebookexternalhit/i, "facebookbot", "social"],
+    [/LinkedInBot/i, "linkedinbot", "social"],
+    [/AhrefsBot/i, "ahrefsbot", "seo"],
+    [/SemrushBot/i, "semrushbot", "seo"],
+    [/UptimeRobot/i, "uptimerobot", "monitoring"],
+  ].freeze
+
+  def initialize(app)
+    @app = app
+  end
+
+  def call(env)
+    ua = env["HTTP_USER_AGENT"] || ""
+    bot = identify_bot(ua)
+
+    if bot
+      Thread.new do
+        uri = URI("https://www.bluemonitor.org/api/v1/bot-visits")
+        Net::HTTP.post(
+          uri,
+          {
+            domain: "yourapp.com",
+            visits: [{ bot_name: bot[:name], bot_category: bot[:category], path: env["PATH_INFO"], user_agent: ua }]
+          }.to_json,
+          "Authorization" => "Bearer #{ENV['BLUEMONITOR_API_KEY']}",
+          "Content-Type" => "application/json"
+        )
+      rescue StandardError
+        # ignore
+      end
+    end
+
+    @app.call(env)
+  end
+
+  private
+
+  def identify_bot(ua)
+    BOT_PATTERNS.each do |pattern, name, category|
+      return { name: name, category: category } if ua.match?(pattern)
+    end
+    nil
+  end
+end
+```
+
+Add to `config/application.rb`:
+
+```ruby
+config.middleware.use BotTrackingMiddleware
+```
+
+- Requires Pro plan + `BLUEMONITOR_API_KEY` env variable
+- View results in the BlueMonitor dashboard under "Bot Tracking"

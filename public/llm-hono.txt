@@ -118,7 +118,7 @@ sendHeartbeat();
 
 ## 3. Status Badge
 
-Replace `your-domain-com` with your domain (dots become dashes).
+Replace `your-domain-com` with your domain (dots become dashes). Place the badge in your footer for maximum visibility.
 
 ```markdown
 [![Status](https://www.bluemonitor.org/api/badge/your-domain-com)](https://www.bluemonitor.org/status/your-domain-com)
@@ -146,3 +146,64 @@ Headers: `Authorization: Bearer bm_...`, `Content-Type: application/json`
 - `status`: "ok" or "error"
 - `checks`: object with dependency names as keys, each with `status`, `latency` (ms), optional `message`
 - If BlueMonitor stops receiving heartbeats for 10 minutes, the service is marked as down
+
+## 4. Bot Tracking (Pro)
+
+Track which bots crawl your Hono app. Requires a Pro plan and API key.
+
+Add bot detection middleware:
+
+```ts
+import { createMiddleware } from "hono/factory";
+
+const BOT_PATTERNS = [
+  { pattern: /Googlebot/i, name: "googlebot", category: "search_engine" },
+  { pattern: /bingbot/i, name: "bingbot", category: "search_engine" },
+  { pattern: /GPTBot/i, name: "gptbot", category: "ai_crawler" },
+  { pattern: /ChatGPT-User/i, name: "chatgpt-user", category: "ai_crawler" },
+  { pattern: /ClaudeBot/i, name: "claudebot", category: "ai_crawler" },
+  { pattern: /anthropic-ai/i, name: "anthropic-ai", category: "ai_crawler" },
+  { pattern: /PerplexityBot/i, name: "perplexitybot", category: "ai_crawler" },
+  { pattern: /Bytespider/i, name: "bytespider", category: "ai_crawler" },
+  { pattern: /CCBot/i, name: "ccbot", category: "ai_crawler" },
+  { pattern: /Meta-ExternalAgent/i, name: "meta-externalagent", category: "ai_crawler" },
+  { pattern: /Google-Extended/i, name: "google-extended", category: "ai_crawler" },
+  { pattern: /Twitterbot/i, name: "twitterbot", category: "social" },
+  { pattern: /facebookexternalhit/i, name: "facebookbot", category: "social" },
+  { pattern: /LinkedInBot/i, name: "linkedinbot", category: "social" },
+  { pattern: /AhrefsBot/i, name: "ahrefsbot", category: "seo" },
+  { pattern: /SemrushBot/i, name: "semrushbot", category: "seo" },
+  { pattern: /UptimeRobot/i, name: "uptimerobot", category: "monitoring" },
+];
+
+function identifyBot(ua: string) {
+  for (const bot of BOT_PATTERNS) {
+    if (bot.pattern.test(ua)) return { name: bot.name, category: bot.category };
+  }
+  return null;
+}
+
+const botTracking = createMiddleware(async (c, next) => {
+  const ua = c.req.header("user-agent") || "";
+  const bot = identifyBot(ua);
+  if (bot) {
+    fetch("https://www.bluemonitor.org/api/v1/bot-visits", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${c.env?.BLUEMONITOR_API_KEY || process.env.BLUEMONITOR_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        domain: "yourapp.com",
+        visits: [{ bot_name: bot.name, bot_category: bot.category, path: new URL(c.req.url).pathname, user_agent: ua }],
+      }),
+    }).catch(() => {});
+  }
+  await next();
+});
+
+app.use("*", botTracking);
+```
+
+- Requires Pro plan + `BLUEMONITOR_API_KEY` env variable
+- View results in the BlueMonitor dashboard under "Bot Tracking"

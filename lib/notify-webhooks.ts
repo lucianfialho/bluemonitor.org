@@ -166,6 +166,100 @@ export async function notifyStatusChanges(
   await Promise.allSettled(sends);
 }
 
+// --- LLM Update notifications ---
+
+export interface LlmUpdate {
+  message: string;
+  changes: string[];
+}
+
+function buildLlmDiscordPayload(update: LlmUpdate) {
+  return {
+    embeds: [
+      {
+        title: "LLM.txt Updated",
+        description: update.message,
+        color: 0x3b82f6,
+        fields: update.changes.map((c) => ({
+          name: "Change",
+          value: c,
+          inline: false,
+        })),
+        timestamp: new Date().toISOString(),
+        footer: { text: "BlueMonitor" },
+      },
+    ],
+  };
+}
+
+function buildLlmSlackPayload(update: LlmUpdate) {
+  const changesList = update.changes.map((c) => `• ${c}`).join("\n");
+  return {
+    blocks: [
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: `:page_facing_up: *LLM.txt Updated*\n${update.message}\n\n${changesList}`,
+        },
+      },
+      {
+        type: "context",
+        elements: [
+          {
+            type: "mrkdwn",
+            text: `BlueMonitor · ${new Date().toISOString()}`,
+          },
+        ],
+      },
+    ],
+  };
+}
+
+function buildLlmCustomPayload(update: LlmUpdate) {
+  return {
+    event: "llm_update",
+    message: update.message,
+    changes: update.changes,
+    llm_url: "https://www.bluemonitor.org/llm.txt",
+    timestamp: new Date().toISOString(),
+  };
+}
+
+function buildLlmPayload(type: string, update: LlmUpdate): object {
+  switch (type) {
+    case "discord":
+      return buildLlmDiscordPayload(update);
+    case "slack":
+      return buildLlmSlackPayload(update);
+    default:
+      return buildLlmCustomPayload(update);
+  }
+}
+
+export async function notifyLlmUpdate(update: LlmUpdate): Promise<number> {
+  const sql = getDb();
+
+  // Find all active webhooks that have llm_update event enabled
+  const webhooks = (await sql`
+    SELECT DISTINCT url, type, events
+    FROM webhooks
+    WHERE active = true
+      AND 'llm_update' = ANY(events)
+  `) as WebhookRow[];
+
+  if (webhooks.length === 0) return 0;
+
+  const sends: Promise<void>[] = [];
+  for (const wh of webhooks) {
+    const payload = buildLlmPayload(wh.type, update);
+    sends.push(sendWebhook(wh.url, payload));
+  }
+
+  await Promise.allSettled(sends);
+  return webhooks.length;
+}
+
 export async function sendTestWebhook(
   url: string,
   type: string

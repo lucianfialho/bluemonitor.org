@@ -9,6 +9,7 @@ export interface PlanLimits {
   recheckIntervalMinutes: number;
   mcpAccess: boolean;
   canSetPrivate: boolean;
+  botTracking: boolean;
 }
 
 export type PlanTier = "free" | "pro";
@@ -26,23 +27,25 @@ export interface UserPlan {
 export const FREE_LIMITS: PlanLimits = {
   maxWatchlist: 3,
   maxWebhooks: 2,
-  allowedWebhookEvents: ["down"],
+  allowedWebhookEvents: ["down", "llm_update"],
   rateLimitAuthenticated: 60,
   historyRetentionDays: 1,
   recheckIntervalMinutes: 10,
   mcpAccess: false,
   canSetPrivate: false,
+  botTracking: false,
 };
 
 export const PRO_LIMITS: PlanLimits = {
   maxWatchlist: Infinity,
   maxWebhooks: 10,
-  allowedWebhookEvents: ["down", "slow", "recovered", "dead", "resurrected"],
+  allowedWebhookEvents: ["down", "slow", "recovered", "dead", "resurrected", "llm_update"],
   rateLimitAuthenticated: 300,
   historyRetentionDays: 30,
   recheckIntervalMinutes: 1,
   mcpAccess: true,
   canSetPrivate: true,
+  botTracking: true,
 };
 
 const FREE_PLAN: UserPlan = {

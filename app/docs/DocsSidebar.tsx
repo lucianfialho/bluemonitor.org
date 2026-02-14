@@ -16,6 +16,7 @@ const frameworks = [
 const navItems = [
   { href: "/docs", label: "Overview" },
   { href: "/docs/api", label: "API Reference" },
+  { href: "/docs/mcp", label: "MCP Integration" },
 ];
 
 export default function DocsSidebar() {

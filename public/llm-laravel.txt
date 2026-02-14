@@ -121,7 +121,7 @@ BLUEMONITOR_API_KEY=bm_your_api_key
 
 ## 3. Status Badge
 
-Replace `your-domain-com` with your domain (dots become dashes).
+Replace `your-domain-com` with your domain (dots become dashes). Place the badge in your footer for maximum visibility.
 
 ### Blade
 
@@ -159,3 +159,91 @@ Headers: `Authorization: Bearer bm_...`, `Content-Type: application/json`
 - `status`: "ok" or "error"
 - `checks`: object with dependency names as keys, each with `status`, `latency` (ms), optional `message`
 - If BlueMonitor stops receiving heartbeats for 10 minutes, the service is marked as down
+
+## 4. Bot Tracking (Pro)
+
+Track which bots crawl your Laravel app. Requires a Pro plan and API key.
+
+Create `app/Http/Middleware/TrackBots.php`:
+
+```php
+<?php
+
+namespace App\Http\Middleware;
+
+use Closure;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
+
+class TrackBots
+{
+    private const BOT_PATTERNS = [
+        ['/Googlebot/i', 'googlebot', 'search_engine'],
+        ['/bingbot/i', 'bingbot', 'search_engine'],
+        ['/GPTBot/i', 'gptbot', 'ai_crawler'],
+        ['/ChatGPT-User/i', 'chatgpt-user', 'ai_crawler'],
+        ['/ClaudeBot/i', 'claudebot', 'ai_crawler'],
+        ['/anthropic-ai/i', 'anthropic-ai', 'ai_crawler'],
+        ['/PerplexityBot/i', 'perplexitybot', 'ai_crawler'],
+        ['/Bytespider/i', 'bytespider', 'ai_crawler'],
+        ['/CCBot/i', 'ccbot', 'ai_crawler'],
+        ['/Meta-ExternalAgent/i', 'meta-externalagent', 'ai_crawler'],
+        ['/Google-Extended/i', 'google-extended', 'ai_crawler'],
+        ['/Twitterbot/i', 'twitterbot', 'social'],
+        ['/facebookexternalhit/i', 'facebookbot', 'social'],
+        ['/LinkedInBot/i', 'linkedinbot', 'social'],
+        ['/AhrefsBot/i', 'ahrefsbot', 'seo'],
+        ['/SemrushBot/i', 'semrushbot', 'seo'],
+        ['/UptimeRobot/i', 'uptimerobot', 'monitoring'],
+    ];
+
+    public function handle(Request $request, Closure $next)
+    {
+        $ua = $request->userAgent() ?? '';
+        $bot = $this->identifyBot($ua);
+
+        if ($bot) {
+            try {
+                Http::withToken(config('services.bluemonitor.key'))
+                    ->timeout(5)
+                    ->post('https://www.bluemonitor.org/api/v1/bot-visits', [
+                        'domain' => 'yourapp.com',
+                        'visits' => [[
+                            'bot_name' => $bot['name'],
+                            'bot_category' => $bot['category'],
+                            'path' => $request->path(),
+                            'user_agent' => $ua,
+                        ]],
+                    ]);
+            } catch (\Exception $e) {
+                // ignore
+            }
+        }
+
+        return $next($request);
+    }
+
+    private function identifyBot(string $ua): ?array
+    {
+        foreach (self::BOT_PATTERNS as [$pattern, $name, $category]) {
+            if (preg_match($pattern, $ua)) {
+                return ['name' => $name, 'category' => $category];
+            }
+        }
+        return null;
+    }
+}
+```
+
+Register in `bootstrap/app.php` (Laravel 11+):
+
+```php
+->withMiddleware(function (Middleware $middleware) {
+    $middleware->web(append: [
+        \App\Http\Middleware\TrackBots::class,
+    ]);
+})
+```
+
+- Requires Pro plan + `BLUEMONITOR_API_KEY` in `config/services.php`
+- View results in the BlueMonitor dashboard under "Bot Tracking"

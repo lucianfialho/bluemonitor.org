@@ -96,6 +96,8 @@ function StatusBadge({ slug }: { slug: string }) {
 }
 ```
 
+**Placement:** Place the status badge in the footer of the app/site for maximum visibility.
+
 ## Badge Parameters
 
 - `theme=dark` — Dark background variant (default: light)
@@ -120,3 +122,85 @@ Full API docs: https://www.bluemonitor.org/docs/api
 - stripe → `stripe`
 
 Full list: https://www.bluemonitor.org/sitemap.xml
+
+## 4. Bot Tracking (Pro)
+
+Track which bots and crawlers visit your site. Requires a Pro plan and API key.
+
+POST to `https://www.bluemonitor.org/api/v1/bot-visits`
+
+Headers: `Authorization: Bearer bm_your_api_key`, `Content-Type: application/json`
+
+```json
+{
+  "domain": "yourapp.com",
+  "visits": [
+    {
+      "bot_name": "googlebot",
+      "bot_category": "search_engine",
+      "path": "/about",
+      "user_agent": "Googlebot/2.1 (+http://www.google.com/bot.html)"
+    }
+  ]
+}
+```
+
+Known bot names: googlebot, bingbot, yandexbot, baiduspider, duckduckbot, gptbot, chatgpt-user, claudebot, anthropic-ai, perplexitybot, bytespider, ccbot, meta-externalagent, google-extended, twitterbot, facebookbot, linkedinbot, slackbot, discordbot, telegrambot, ahrefsbot, semrushbot, dotbot, mj12bot, uptimerobot, pingdom.
+
+Categories: search_engine, ai_crawler, social, seo, monitoring.
+
+### Generic bot detection (any framework)
+
+Detect bots by user-agent and report visits:
+
+```js
+const BOT_PATTERNS = [
+  { pattern: /Googlebot/i, name: "googlebot", category: "search_engine" },
+  { pattern: /bingbot/i, name: "bingbot", category: "search_engine" },
+  { pattern: /GPTBot/i, name: "gptbot", category: "ai_crawler" },
+  { pattern: /ChatGPT-User/i, name: "chatgpt-user", category: "ai_crawler" },
+  { pattern: /ClaudeBot/i, name: "claudebot", category: "ai_crawler" },
+  { pattern: /anthropic-ai/i, name: "anthropic-ai", category: "ai_crawler" },
+  { pattern: /PerplexityBot/i, name: "perplexitybot", category: "ai_crawler" },
+  { pattern: /Bytespider/i, name: "bytespider", category: "ai_crawler" },
+  { pattern: /CCBot/i, name: "ccbot", category: "ai_crawler" },
+  { pattern: /Meta-ExternalAgent/i, name: "meta-externalagent", category: "ai_crawler" },
+  { pattern: /Google-Extended/i, name: "google-extended", category: "ai_crawler" },
+  { pattern: /Twitterbot/i, name: "twitterbot", category: "social" },
+  { pattern: /facebookexternalhit/i, name: "facebookbot", category: "social" },
+  { pattern: /LinkedInBot/i, name: "linkedinbot", category: "social" },
+  { pattern: /AhrefsBot/i, name: "ahrefsbot", category: "seo" },
+  { pattern: /SemrushBot/i, name: "semrushbot", category: "seo" },
+  { pattern: /UptimeRobot/i, name: "uptimerobot", category: "monitoring" },
+];
+
+function identifyBot(ua) {
+  for (const bot of BOT_PATTERNS) {
+    if (bot.pattern.test(ua)) return { name: bot.name, category: bot.category };
+  }
+  return null;
+}
+
+// In your request handler, check user-agent and report:
+function handleRequest(req) {
+  const ua = req.headers["user-agent"] || "";
+  const bot = identifyBot(ua);
+  if (bot) {
+    fetch("https://www.bluemonitor.org/api/v1/bot-visits", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.BLUEMONITOR_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        domain: "yourapp.com",
+        visits: [{ bot_name: bot.name, bot_category: bot.category, path: req.url, user_agent: ua }],
+      }),
+    }).catch(() => {});
+  }
+}
+```
+
+- Max 100 visits per batch
+- The first report auto-creates the tracking entry
+- View results in the BlueMonitor dashboard under "Bot Tracking"

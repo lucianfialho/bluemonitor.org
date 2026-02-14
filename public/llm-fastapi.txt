@@ -94,7 +94,7 @@ BLUEMONITOR_API_KEY=bm_your_api_key
 
 ## 3. Status Badge
 
-Replace `your-domain-com` with your domain (dots become dashes).
+Replace `your-domain-com` with your domain (dots become dashes). Place the badge in your footer for maximum visibility.
 
 ```markdown
 [![Status](https://www.bluemonitor.org/api/badge/your-domain-com)](https://www.bluemonitor.org/status/your-domain-com)
@@ -122,3 +122,67 @@ Headers: `Authorization: Bearer bm_...`, `Content-Type: application/json`
 - `status`: "ok" or "error"
 - `checks`: object with dependency names as keys, each with `status`, `latency` (ms), optional `message`
 - If BlueMonitor stops receiving heartbeats for 10 minutes, the service is marked as down
+
+## 4. Bot Tracking (Pro)
+
+Track which bots crawl your FastAPI app. Requires a Pro plan and API key.
+
+Add bot detection middleware:
+
+```python
+import re
+import os
+import httpx
+from starlette.middleware.base import BaseHTTPMiddleware
+
+BOT_PATTERNS = [
+    (re.compile(r"Googlebot", re.I), "googlebot", "search_engine"),
+    (re.compile(r"bingbot", re.I), "bingbot", "search_engine"),
+    (re.compile(r"GPTBot", re.I), "gptbot", "ai_crawler"),
+    (re.compile(r"ChatGPT-User", re.I), "chatgpt-user", "ai_crawler"),
+    (re.compile(r"ClaudeBot", re.I), "claudebot", "ai_crawler"),
+    (re.compile(r"anthropic-ai", re.I), "anthropic-ai", "ai_crawler"),
+    (re.compile(r"PerplexityBot", re.I), "perplexitybot", "ai_crawler"),
+    (re.compile(r"Bytespider", re.I), "bytespider", "ai_crawler"),
+    (re.compile(r"CCBot", re.I), "ccbot", "ai_crawler"),
+    (re.compile(r"Meta-ExternalAgent", re.I), "meta-externalagent", "ai_crawler"),
+    (re.compile(r"Google-Extended", re.I), "google-extended", "ai_crawler"),
+    (re.compile(r"Twitterbot", re.I), "twitterbot", "social"),
+    (re.compile(r"facebookexternalhit", re.I), "facebookbot", "social"),
+    (re.compile(r"LinkedInBot", re.I), "linkedinbot", "social"),
+    (re.compile(r"AhrefsBot", re.I), "ahrefsbot", "seo"),
+    (re.compile(r"SemrushBot", re.I), "semrushbot", "seo"),
+    (re.compile(r"UptimeRobot", re.I), "uptimerobot", "monitoring"),
+]
+
+def identify_bot(ua: str):
+    for pattern, name, category in BOT_PATTERNS:
+        if pattern.search(ua):
+            return {"name": name, "category": category}
+    return None
+
+class BotTrackingMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request, call_next):
+        ua = request.headers.get("user-agent", "")
+        bot = identify_bot(ua)
+        if bot:
+            try:
+                async with httpx.AsyncClient() as client:
+                    await client.post(
+                        "https://www.bluemonitor.org/api/v1/bot-visits",
+                        headers={"Authorization": f"Bearer {os.getenv('BLUEMONITOR_API_KEY')}"},
+                        json={
+                            "domain": "yourapp.com",
+                            "visits": [{"bot_name": bot["name"], "bot_category": bot["category"], "path": str(request.url.path), "user_agent": ua}],
+                        },
+                        timeout=5,
+                    )
+            except Exception:
+                pass
+        return await call_next(request)
+
+app.add_middleware(BotTrackingMiddleware)
+```
+
+- Requires Pro plan + `BLUEMONITOR_API_KEY` env variable
+- View results in the BlueMonitor dashboard under "Bot Tracking"

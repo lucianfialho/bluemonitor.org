@@ -8,6 +8,7 @@ import ManageSubscriptionButton from "@/components/ManageSubscriptionButton";
 import { Category } from "@/lib/types";
 import { trackWebhookCreate, trackWebhookTest, trackApiKeyCreate } from "@/lib/analytics";
 import SetupGuide from "./SetupGuide";
+import BotTrackingSection from "./BotTrackingSection";
 
 interface PlanInfo {
   tier: "free" | "pro";
@@ -475,6 +476,12 @@ export default function DashboardClient({
         )}
       </section>
 
+      {/* Bot Tracking */}
+      <BotTrackingSection
+        isPro={plan?.tier === "pro"}
+        domains={[...new Set(watchlist.filter((s) => s.last_heartbeat_at).map((s) => s.domain))]}
+      />
+
       {/* Webhooks */}
       <section className="mb-8">
         <div className="mb-4 flex items-center justify-between">
@@ -507,7 +514,7 @@ export default function DashboardClient({
           </div>
           <div className="mb-3 flex items-center gap-4">
             <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">Events:</span>
-            {(["down", "slow", "recovered", "dead", "resurrected"] as const).map((event) => {
+            {(["down", "slow", "recovered", "dead", "resurrected", "llm_update"] as const).map((event) => {
               const allowed = plan?.limits.allowedWebhookEvents?.includes(event) ?? event === "down";
               return (
                 <label
@@ -571,7 +578,7 @@ export default function DashboardClient({
                     />
                     <div className="flex flex-wrap items-center gap-3">
                       <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">Events:</span>
-                      {(["down", "slow", "recovered", "dead", "resurrected"] as const).map((event) => {
+                      {(["down", "slow", "recovered", "dead", "resurrected", "llm_update"] as const).map((event) => {
                         const allowed = plan?.limits.allowedWebhookEvents?.includes(event) ?? event === "down";
                         return (
                           <label
