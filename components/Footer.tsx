@@ -87,6 +87,12 @@ export default function Footer() {
               >
                 Terms
               </Link>
+              <Link
+                href="/changelog"
+                className="text-sm text-zinc-400 transition-colors hover:text-zinc-900 dark:text-zinc-500 dark:hover:text-zinc-100"
+              >
+                Changelog
+              </Link>
             </div>
           </div>
         </div>

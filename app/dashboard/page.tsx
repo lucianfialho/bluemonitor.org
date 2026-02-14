@@ -8,6 +8,7 @@ import ManageSubscriptionButton from "@/components/ManageSubscriptionButton";
 import { Category } from "@/lib/types";
 import SetupGuide from "./SetupGuide";
 import { useDashboard } from "./DashboardContext";
+import { changelog } from "@/lib/changelog";
 
 interface ApiKey {
   id: number;
@@ -45,6 +46,22 @@ export default function OverviewPage() {
   const [showUpgradeSuccess, setShowUpgradeSuccess] = useState(
     searchParams.get("upgraded") === "true"
   );
+
+  const [showWhatsNew, setShowWhatsNew] = useState(false);
+
+  useEffect(() => {
+    const lastSeen = localStorage.getItem("bluemonitor:lastSeenChangelogId");
+    if (changelog.length > 0 && lastSeen !== changelog[0].id) {
+      setShowWhatsNew(true);
+    }
+  }, []);
+
+  function dismissWhatsNew() {
+    if (changelog.length > 0) {
+      localStorage.setItem("bluemonitor:lastSeenChangelogId", changelog[0].id);
+    }
+    setShowWhatsNew(false);
+  }
 
   const [keys, setKeys] = useState<ApiKey[]>([]);
   const [watchlist, setWatchlist] = useState<WatchlistService[]>([]);
@@ -122,6 +139,31 @@ export default function OverviewPage() {
           <button
             onClick={() => setShowUpgradeSuccess(false)}
             className="text-green-600 transition-transform hover:text-green-800 active:scale-90 dark:text-green-400"
+          >
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      )}
+
+      {/* What's new banner */}
+      {showWhatsNew && changelog.length > 0 && (
+        <div className="mb-4 flex animate-[fadeSlideIn_0.3s_ease-out] items-center justify-between rounded-xl border border-blue-200 bg-blue-50 px-5 py-4 dark:border-blue-900 dark:bg-blue-950/40">
+          <div className="min-w-0">
+            <p className="text-sm font-medium text-blue-900 dark:text-blue-100">
+              {changelog[0].title}
+            </p>
+            <Link
+              href="/changelog"
+              className="mt-0.5 inline-block text-xs text-blue-600 hover:underline dark:text-blue-400"
+            >
+              See all updates
+            </Link>
+          </div>
+          <button
+            onClick={dismissWhatsNew}
+            className="shrink-0 text-blue-600 transition-transform hover:text-blue-800 active:scale-90 dark:text-blue-400"
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
