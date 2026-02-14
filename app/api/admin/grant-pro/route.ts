@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
   });
 }
 
-// GET: List all Pro users
+// GET: List all users with their plan info
 export async function GET() {
   if (!(await requireAdmin())) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -70,11 +70,15 @@ export async function GET() {
 
   const sql = getDb();
   const rows = await sql`
-    SELECT up.user_id, u.email, u.name, up.plan, up.status, up.billing_period,
-           up.current_period_end, up.created_at
-    FROM user_plans up
-    JOIN "user" u ON u.id = up.user_id
-    ORDER BY up.created_at DESC
+    SELECT u.id as user_id, u.email, u.name,
+           COALESCE(up.plan, 'free') as plan,
+           COALESCE(up.status, 'active') as status,
+           up.billing_period,
+           up.current_period_end,
+           u.created_at
+    FROM "user" u
+    LEFT JOIN user_plans up ON up.user_id = u.id
+    ORDER BY u.created_at DESC
   `;
 
   return NextResponse.json({ users: rows });

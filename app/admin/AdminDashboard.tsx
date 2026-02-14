@@ -356,8 +356,10 @@ function UsersTab() {
     setActionLoading(null);
   }
 
+  const isPro = (user: ProUser) => user.plan === "pro" && user.status === "active";
+
   function getPlanBadge(user: ProUser) {
-    if (user.plan === "pro" && user.status === "active") {
+    if (isPro(user)) {
       if (user.billing_period === "beta") {
         return (
           <span className="rounded-full bg-purple-100 px-2 py-0.5 text-xs font-medium text-purple-700 dark:bg-purple-900 dark:text-purple-300">
@@ -371,8 +373,15 @@ function UsersTab() {
         </span>
       );
     }
+    if (user.plan === "free" && !user.billing_period) {
+      return (
+        <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-medium text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400">
+          Free
+        </span>
+      );
+    }
     return (
-      <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-medium text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400">
+      <span className="rounded-full bg-yellow-100 px-2 py-0.5 text-xs font-medium text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300">
         {user.plan} / {user.status}
       </span>
     );
@@ -419,7 +428,7 @@ function UsersTab() {
       {loading ? (
         <p className="text-zinc-500">Loading...</p>
       ) : proUsers.length === 0 ? (
-        <p className="text-zinc-500">No users with plans yet.</p>
+        <p className="text-zinc-500">No registered users yet.</p>
       ) : (
         <div className="space-y-3">
           {proUsers.map((user) => (
@@ -446,7 +455,7 @@ function UsersTab() {
                   </div>
                 </div>
                 <div className="flex shrink-0 gap-2">
-                  {user.plan === "pro" && user.status === "active" ? (
+                  {isPro(user) ? (
                     <button
                       onClick={() => handleRevoke(user.email)}
                       disabled={actionLoading === user.email}
@@ -460,7 +469,7 @@ function UsersTab() {
                       disabled={actionLoading === user.email}
                       className="rounded-lg border border-green-200 px-3 py-1.5 text-sm text-green-600 transition-colors hover:bg-green-50 disabled:opacity-50 dark:border-green-800 dark:text-green-400 dark:hover:bg-green-950"
                     >
-                      {actionLoading === user.email ? "Granting..." : "Re-grant"}
+                      {actionLoading === user.email ? "Granting..." : "Grant Pro"}
                     </button>
                   )}
                 </div>
