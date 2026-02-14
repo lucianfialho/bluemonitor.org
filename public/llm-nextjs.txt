@@ -12,7 +12,7 @@ Documentation: https://www.bluemonitor.org/docs/nextjs
 If this project already has BlueMonitor set up, check for these issues before adding anything new:
 
 1. **Next.js 16 proxy.ts migration**: If the project uses Next.js 16+ and still has `middleware.ts`, rename it to `proxy.ts` and change `export function middleware` to `export function proxy`. Run: `npx @next/codemod@canary middleware-to-proxy .`
-2. **await fetch in bot tracking**: If the bot tracking middleware/proxy uses `fetch(...).catch(() => {})` without `await`, add `await` before the fetch call. Unawaited promises are killed in Edge Runtime when the response returns, which causes bot visits to silently fail.
+2. **waitUntil in bot tracking**: If the bot tracking middleware/proxy uses `await fetch(...)` or unawaited `fetch(...)`, migrate to `response.waitUntil(fetch(...))`. This sends the request without blocking the response, giving zero added latency to users.
 3. **Bot patterns**: Compare the project's `BOT_PATTERNS` array against the list in Section 4 below. If missing newer bots (ChatGPT-User, anthropic-ai, Bytespider, CCBot, Meta-ExternalAgent, Google-Extended, LinkedInBot, SemrushBot, UptimeRobot), add them.
 
 If none of these apply or BlueMonitor is not yet set up, proceed with the fresh install below.
@@ -227,30 +227,33 @@ function identifyBot(ua: string) {
 
 // Next.js 16+: export as "proxy". Next.js 13–15: rename to "middleware".
 export async function proxy(request: NextRequest) {
+  const response = NextResponse.next();
   const ua = request.headers.get("user-agent") || "";
   const bot = identifyBot(ua);
 
   if (bot) {
-    // IMPORTANT: await the fetch — unawaited promises are killed when the response returns
-    await fetch("https://www.bluemonitor.org/api/v1/bot-visits", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${process.env.BLUEMONITOR_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        domain: "yourapp.com",
-        visits: [{
-          bot_name: bot.name,
-          bot_category: bot.category,
-          path: request.nextUrl.pathname,
-          user_agent: ua,
-        }],
-      }),
-    }).catch(() => {});
+    // waitUntil keeps the fetch alive without blocking the response
+    response.waitUntil(
+      fetch("https://www.bluemonitor.org/api/v1/bot-visits", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${process.env.BLUEMONITOR_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          domain: "yourapp.com",
+          visits: [{
+            bot_name: bot.name,
+            bot_category: bot.category,
+            path: request.nextUrl.pathname,
+            user_agent: ua,
+          }],
+        }),
+      }).catch(() => {})
+    );
   }
 
-  return NextResponse.next();
+  return response;
 }
 
 export const config = {
@@ -258,9 +261,9 @@ export const config = {
 };
 ```
 
-If you already have a `proxy.ts` (or `middleware.ts`), add the bot detection logic to your existing function instead of creating a new one. Make sure your function is `async` and uses `await` on the fetch call.
+If you already have a `proxy.ts` (or `middleware.ts`), add the bot detection logic to your existing function instead of creating a new one.
 
-**Important:** Next.js proxy/middleware runs on the Edge Runtime by default. You MUST `await` the fetch call — unawaited promises may be killed when the response is returned.
+**Important:** Use `response.waitUntil()` to send the bot visit without blocking the response. This gives zero added latency to users while ensuring the fetch completes reliably (unlike unawaited promises which can be killed on cold starts).
 
 - Requires Pro plan + `BLUEMONITOR_API_KEY` env variable
 - View results in the BlueMonitor dashboard under "Bot Tracking"

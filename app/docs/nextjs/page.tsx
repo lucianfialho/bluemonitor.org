@@ -352,28 +352,31 @@ function identifyBot(ua: string) {
 
 // Next.js 16+: export as "proxy". Next.js 13–15: rename to "middleware".
 export async function proxy(request: NextRequest) {
+  const response = NextResponse.next();
   const ua = request.headers.get("user-agent") || "";
   const bot = identifyBot(ua);
   if (bot) {
-    // IMPORTANT: await the fetch — unawaited promises are killed when the response returns
-    await fetch("https://www.bluemonitor.org/api/v1/bot-visits", {
-      method: "POST",
-      headers: {
-        Authorization: \`Bearer \${process.env.BLUEMONITOR_API_KEY}\`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        domain: "yourapp.com",
-        visits: [{
-          bot_name: bot.name,
-          bot_category: bot.category,
-          path: request.nextUrl.pathname,
-          user_agent: ua,
-        }],
-      }),
-    }).catch(() => {});
+    // waitUntil keeps the fetch alive without blocking the response
+    response.waitUntil(
+      fetch("https://www.bluemonitor.org/api/v1/bot-visits", {
+        method: "POST",
+        headers: {
+          Authorization: \`Bearer \${process.env.BLUEMONITOR_API_KEY}\`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          domain: "yourapp.com",
+          visits: [{
+            bot_name: bot.name,
+            bot_category: bot.category,
+            path: request.nextUrl.pathname,
+            user_agent: ua,
+          }],
+        }),
+      }).catch(() => {})
+    );
   }
-  return NextResponse.next();
+  return response;
 }
 
 export const config = {
@@ -381,7 +384,11 @@ export const config = {
 };`}</code>
         </pre>
         <p className="mt-3 text-sm text-zinc-500 dark:text-zinc-400">
-          If you already have a{" "}
+          <code className="rounded-md bg-zinc-100 px-1.5 py-0.5 text-xs dark:bg-zinc-800">
+            response.waitUntil()
+          </code>{" "}
+          keeps the fetch alive without blocking the response — your users
+          get zero added latency. If you already have a{" "}
           <code className="rounded-md bg-zinc-100 px-1.5 py-0.5 text-xs dark:bg-zinc-800">
             proxy.ts
           </code>{" "}
@@ -389,15 +396,7 @@ export const config = {
           <code className="rounded-md bg-zinc-100 px-1.5 py-0.5 text-xs dark:bg-zinc-800">
             middleware.ts
           </code>
-          ), add the bot detection to your existing function. Make sure it&apos;s{" "}
-          <code className="rounded-md bg-zinc-100 px-1.5 py-0.5 text-xs dark:bg-zinc-800">
-            async
-          </code>{" "}
-          and uses{" "}
-          <code className="rounded-md bg-zinc-100 px-1.5 py-0.5 text-xs dark:bg-zinc-800">
-            await
-          </code>{" "}
-          on the fetch call. View results in your{" "}
+          ), add the bot detection to your existing function. View results in your{" "}
           <Link
             href="/dashboard"
             className="font-medium text-zinc-900 underline decoration-zinc-300 underline-offset-2 hover:decoration-zinc-900 dark:text-zinc-100 dark:decoration-zinc-600 dark:hover:decoration-zinc-100"

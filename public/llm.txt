@@ -205,8 +205,8 @@ function identifyBot(ua) {
 }
 
 // In your request handler, check user-agent and report:
-// IMPORTANT: Always await the fetch in serverless/edge runtimes (Vercel, Cloudflare Workers, etc.)
-// Unawaited promises may be killed when the response is returned.
+// Preferred: use waitUntil (Next.js, Cloudflare Workers) to send without blocking the response.
+// Fallback: await the fetch — unawaited promises may be killed in serverless/edge runtimes.
 async function handleRequest(req) {
   const ua = req.headers["user-agent"] || "";
   const bot = identifyBot(ua);
