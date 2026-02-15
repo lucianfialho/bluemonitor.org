@@ -260,6 +260,108 @@ export async function notifyLlmUpdate(update: LlmUpdate): Promise<number> {
   return webhooks.length;
 }
 
+// --- Googlebot Inactivity notifications ---
+
+export interface GooglebotInactiveAlert {
+  userId: string;
+  domain: string;
+  lastSeenAt: string | null;
+  hoursInactive: number;
+}
+
+function buildGooglebotDiscordPayload(alert: GooglebotInactiveAlert) {
+  return {
+    embeds: [
+      {
+        title: "Googlebot Inactive",
+        description: `**${alert.domain}** — Googlebot hasn't visited in ${alert.hoursInactive}h`,
+        color: 0xeab308,
+        fields: [
+          {
+            name: "Last Seen",
+            value: alert.lastSeenAt ?? "Never",
+            inline: true,
+          },
+          {
+            name: "Hours Inactive",
+            value: String(alert.hoursInactive),
+            inline: true,
+          },
+        ],
+        timestamp: new Date().toISOString(),
+        footer: { text: "BlueMonitor" },
+      },
+    ],
+  };
+}
+
+function buildGooglebotSlackPayload(alert: GooglebotInactiveAlert) {
+  return {
+    blocks: [
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: `:warning: *Googlebot Inactive* — *${alert.domain}*\nLast seen: ${alert.lastSeenAt ?? "Never"} · Inactive for ${alert.hoursInactive}h`,
+        },
+      },
+      {
+        type: "context",
+        elements: [
+          {
+            type: "mrkdwn",
+            text: `BlueMonitor · ${new Date().toISOString()}`,
+          },
+        ],
+      },
+    ],
+  };
+}
+
+function buildGooglebotCustomPayload(alert: GooglebotInactiveAlert) {
+  return {
+    event: "googlebot_inactive",
+    domain: alert.domain,
+    last_seen_at: alert.lastSeenAt,
+    hours_inactive: alert.hoursInactive,
+    timestamp: new Date().toISOString(),
+  };
+}
+
+function buildGooglebotPayload(type: string, alert: GooglebotInactiveAlert): object {
+  switch (type) {
+    case "discord":
+      return buildGooglebotDiscordPayload(alert);
+    case "slack":
+      return buildGooglebotSlackPayload(alert);
+    default:
+      return buildGooglebotCustomPayload(alert);
+  }
+}
+
+export async function notifyGooglebotInactive(alert: GooglebotInactiveAlert): Promise<number> {
+  const sql = getDb();
+
+  const webhooks = (await sql`
+    SELECT DISTINCT url, type, events
+    FROM webhooks
+    WHERE user_id = ${alert.userId}
+      AND active = true
+      AND 'googlebot_inactive' = ANY(events)
+  `) as WebhookRow[];
+
+  if (webhooks.length === 0) return 0;
+
+  const sends: Promise<void>[] = [];
+  for (const wh of webhooks) {
+    const payload = buildGooglebotPayload(wh.type, alert);
+    sends.push(sendWebhook(wh.url, payload));
+  }
+
+  await Promise.allSettled(sends);
+  return webhooks.length;
+}
+
 export async function sendTestWebhook(
   url: string,
   type: string

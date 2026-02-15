@@ -39,7 +39,7 @@ export const FREE_LIMITS: PlanLimits = {
 export const PRO_LIMITS: PlanLimits = {
   maxWatchlist: Infinity,
   maxWebhooks: 10,
-  allowedWebhookEvents: ["down", "slow", "recovered", "dead", "resurrected", "llm_update"],
+  allowedWebhookEvents: ["down", "slow", "recovered", "dead", "resurrected", "llm_update", "googlebot_inactive"],
   rateLimitAuthenticated: 300,
   historyRetentionDays: 30,
   recheckIntervalMinutes: 1,

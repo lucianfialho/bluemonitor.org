@@ -114,7 +114,7 @@ export default function WebhooksPage() {
     setSavingWebhook(false);
   }
 
-  const allEvents = ["down", "slow", "recovered", "dead", "resurrected", "llm_update"] as const;
+  const allEvents = ["down", "slow", "recovered", "dead", "resurrected", "llm_update", "googlebot_inactive"] as const;
 
   function renderEventCheckboxes(
     selectedEvents: string[],

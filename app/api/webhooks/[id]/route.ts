@@ -3,7 +3,7 @@ import { authServer } from "@/lib/auth/server";
 import { getDb } from "@/lib/db";
 import { getUserPlan } from "@/lib/plans";
 
-const VALID_EVENTS = ["down", "slow", "recovered", "dead", "resurrected"];
+const VALID_EVENTS = ["down", "slow", "recovered", "dead", "resurrected", "llm_update", "googlebot_inactive"];
 
 export async function DELETE(
   _request: NextRequest,

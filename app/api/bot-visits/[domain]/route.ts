@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { authServer } from "@/lib/auth/server";
 import { getDb } from "@/lib/db";
 import { getUserPlan } from "@/lib/plans";
+import { calculateAIVisibility } from "@/lib/ai-visibility";
 
 export async function GET(
   request: NextRequest,
@@ -293,6 +294,38 @@ export async function GET(
     };
   }
 
+  // AI Visibility Score
+  const [aiCurrentRow] = await sql`
+    SELECT COUNT(DISTINCT bot_name)::int AS distinct_bots,
+           COUNT(DISTINCT path)::int AS distinct_pages,
+           COALESCE(SUM(visit_count), 0)::int AS total_visits,
+           array_agg(DISTINCT bot_name) AS visiting_bots
+    FROM bot_visits_hourly
+    WHERE user_id = ${userId} AND domain = ${domain}
+      AND bot_category = 'ai_crawler'
+      AND hour_bucket >= NOW() - make_interval(days => ${period})
+  `;
+
+  const [aiPrevRow] = await sql`
+    SELECT COALESCE(SUM(visit_count), 0)::int AS total_visits
+    FROM bot_visits_hourly
+    WHERE user_id = ${userId} AND domain = ${domain}
+      AND bot_category = 'ai_crawler'
+      AND hour_bucket >= NOW() - make_interval(days => ${period * 2})
+      AND hour_bucket < NOW() - make_interval(days => ${period})
+  `;
+
+  const aiVisibility = calculateAIVisibility(
+    {
+      distinct_bots: aiCurrentRow.distinct_bots ?? 0,
+      distinct_pages: aiCurrentRow.distinct_pages ?? 0,
+      total_visits: aiCurrentRow.total_visits ?? 0,
+      visiting_bots: (aiCurrentRow.visiting_bots as string[] | null)?.filter(Boolean) ?? [],
+      prev_total_visits: aiPrevRow.total_visits ?? 0,
+    },
+    period,
+  );
+
   return NextResponse.json({
     timeline,
     timeline_by_category: timelineByCategory,
@@ -300,6 +333,7 @@ export async function GET(
     by_category: byCategory,
     top_pages: topPages,
     pages_with_bots: pagesWithBots,
+    ai_visibility: aiVisibility,
     ...(comparison ? { comparison } : {}),
   });
 }

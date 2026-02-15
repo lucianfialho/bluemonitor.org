@@ -56,6 +56,10 @@ const BOT_PATTERNS: BotPattern[] = [
   { pattern: /Pingdom/i, name: "pingdom", displayName: "Pingdom", category: "monitoring" },
 ];
 
+export const AI_CRAWLER_BOTS = BOT_PATTERNS
+  .filter((b) => b.category === "ai_crawler")
+  .map((b) => b.name);
+
 const KNOWN_BOT_NAMES = new Set(BOT_PATTERNS.map((b) => b.name));
 
 export function identifyBot(userAgent: string): BotInfo | null {

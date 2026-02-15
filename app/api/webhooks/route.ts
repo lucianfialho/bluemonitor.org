@@ -4,7 +4,7 @@ import { getDb } from "@/lib/db";
 import { getUserPlan } from "@/lib/plans";
 
 const VALID_TYPES = ["discord", "slack", "custom"];
-const VALID_EVENTS = ["down", "slow", "recovered", "dead", "resurrected"];
+const VALID_EVENTS = ["down", "slow", "recovered", "dead", "resurrected", "llm_update", "googlebot_inactive"];
 
 export async function GET() {
   const { data: session } = await authServer.getSession();

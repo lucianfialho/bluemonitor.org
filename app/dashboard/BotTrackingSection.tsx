@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { CATEGORY_LABELS, CATEGORY_COLORS, BOT_ICONS, type BotCategory } from "@/lib/bots";
+import type { AIVisibilityResult } from "@/lib/ai-visibility";
 
 // ---- Types ----
 
@@ -45,6 +46,7 @@ interface BotData {
   by_category: CategoryEntry[];
   top_pages: PageEntry[];
   pages_with_bots: PageWithBots[];
+  ai_visibility?: AIVisibilityResult;
   comparison?: ComparisonData;
 }
 
@@ -951,6 +953,132 @@ function EmptyStateWithFrameworks() {
   );
 }
 
+// ---- AIVisibilityCard ----
+
+function AIVisibilityCard({ data }: { data: AIVisibilityResult }) {
+  const { score, label, trend, trend_pct, visiting_bots, missing_bots, breakdown } = data;
+
+  // Gauge SVG params
+  const radius = 54;
+  const strokeWidth = 10;
+  const circumference = 2 * Math.PI * radius;
+  const progress = (score / 100) * circumference;
+  const gaugeColor = score <= 30 ? "#ef4444" : score <= 60 ? "#eab308" : "#22c55e";
+
+  const trendArrow = trend === "up" ? "\u2197" : trend === "down" ? "\u2198" : "\u2192";
+  const trendColor = trend === "up" ? "text-green-500" : trend === "down" ? "text-red-500" : "text-zinc-400";
+
+  const breakdownItems = [
+    { label: "Diversity", value: breakdown.diversity, max: 30 },
+    { label: "Frequency", value: breakdown.frequency, max: 30 },
+    { label: "Coverage", value: breakdown.coverage, max: 20 },
+    { label: "Trend", value: breakdown.trend, max: 20 },
+  ];
+
+  return (
+    <div className="rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
+      <div className="mb-4 flex items-center justify-between">
+        <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300">AI Visibility Score</h3>
+        <div className={`flex items-center gap-1 ${trendColor}`}>
+          <span className="text-sm">{trendArrow}</span>
+          <span className="text-xs font-medium">
+            {trend_pct > 0 ? "+" : ""}{trend_pct}% vs prev period
+          </span>
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-6 sm:flex-row">
+        {/* Left: Gauge */}
+        <div className="flex shrink-0 justify-center">
+          <div className="relative">
+            <svg width="120" height="120" viewBox="0 0 128 128">
+              <circle
+                cx="64" cy="64" r={radius}
+                fill="none" stroke="currentColor" strokeOpacity="0.08"
+                strokeWidth={strokeWidth}
+              />
+              <circle
+                cx="64" cy="64" r={radius}
+                fill="none" stroke={gaugeColor}
+                strokeWidth={strokeWidth}
+                strokeDasharray={`${progress} ${circumference - progress}`}
+                strokeDashoffset={circumference * 0.25}
+                strokeLinecap="round"
+                transform="rotate(-90 64 64)"
+                className="transition-all duration-500"
+              />
+            </svg>
+            <div className="absolute inset-0 flex flex-col items-center justify-center">
+              <span className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">{score}</span>
+              <span className="text-[10px] font-medium" style={{ color: gaugeColor }}>{label}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Right: Bot lists */}
+        <div className="min-w-0 flex-1 space-y-3">
+          {/* Visiting */}
+          {visiting_bots.length > 0 && (
+            <div>
+              <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
+                Crawling your site ({visiting_bots.length})
+              </p>
+              <div className="flex flex-wrap gap-1.5">
+                {visiting_bots.map((bot) => (
+                  <span key={bot} className="inline-flex items-center gap-1 rounded-full bg-green-50 px-2 py-0.5 text-xs text-green-700 dark:bg-green-950 dark:text-green-300">
+                    <BotIcon botName={bot} size={12} />
+                    {bot}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Missing */}
+          {missing_bots.length > 0 && (
+            <div>
+              <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
+                Not detected ({missing_bots.length})
+              </p>
+              <div className="flex flex-wrap gap-1.5">
+                {missing_bots.map((bot) => (
+                  <span key={bot} className="inline-flex items-center gap-1 rounded-full bg-zinc-100 px-2 py-0.5 text-xs text-zinc-400 dark:bg-zinc-800 dark:text-zinc-500">
+                    <BotIcon botName={bot} size={12} />
+                    {bot}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Bottom: Breakdown bars */}
+      <div className="mt-5 grid grid-cols-2 gap-x-8 gap-y-3 sm:grid-cols-4">
+        {breakdownItems.map((item) => (
+          <div key={item.label}>
+            <div className="mb-1 flex items-center justify-between">
+              <span className="text-[11px] text-zinc-500 dark:text-zinc-400">{item.label}</span>
+              <span className="text-[11px] font-medium tabular-nums text-zinc-700 dark:text-zinc-300">
+                {item.value}/{item.max}
+              </span>
+            </div>
+            <div className="h-1.5 w-full rounded-full bg-zinc-100 dark:bg-zinc-800">
+              <div
+                className="h-1.5 rounded-full transition-all duration-500"
+                style={{
+                  width: `${(item.value / item.max) * 100}%`,
+                  backgroundColor: gaugeColor,
+                }}
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 // ---- Main Component ----
 
 export default function BotTrackingSection({
@@ -1122,6 +1250,11 @@ export default function BotTrackingSection({
           />
 
           <div className="space-y-4">
+            {/* AI Visibility Score */}
+            {data.ai_visibility && data.ai_visibility.score > 0 && (
+              <AIVisibilityCard data={data.ai_visibility} />
+            )}
+
             {/* Timeline chart */}
             <div className="rounded-xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
               <div className="mb-3 flex items-center justify-between">
