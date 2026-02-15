@@ -1,29 +1,46 @@
-import { MetadataRoute } from "next";
 import { getServices, categories } from "@/lib/services";
 
 const BASE_URL = "https://www.bluemonitor.org";
 
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+interface SitemapEntry {
+  url: string;
+  lastModified: Date;
+  changeFrequency: string;
+  priority: number;
+}
+
+function toXml(entries: SitemapEntry[]): string {
+  const urls = entries
+    .map(
+      (e) =>
+        `  <url>\n    <loc>${e.url}</loc>\n    <lastmod>${e.lastModified.toISOString()}</lastmod>\n    <changefreq>${e.changeFrequency}</changefreq>\n    <priority>${e.priority}</priority>\n  </url>`
+    )
+    .join("\n");
+
+  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>`;
+}
+
+export async function GET() {
   const allServices = await getServices();
   const now = new Date();
 
-  const statusPages = allServices.map((service) => ({
+  const statusPages: SitemapEntry[] = allServices.map((service) => ({
     url: `${BASE_URL}/status/${service.slug}`,
     lastModified: service.last_checked_at
       ? new Date(service.last_checked_at)
       : now,
-    changeFrequency: "hourly" as const,
+    changeFrequency: "hourly",
     priority: 0.8,
   }));
 
-  const categoryPages = categories.map((cat) => ({
+  const categoryPages: SitemapEntry[] = categories.map((cat) => ({
     url: `${BASE_URL}/categories/${cat.slug}`,
     lastModified: now,
-    changeFrequency: "daily" as const,
+    changeFrequency: "daily",
     priority: 0.6,
   }));
 
-  return [
+  const entries: SitemapEntry[] = [
     {
       url: BASE_URL,
       lastModified: now,
@@ -82,7 +99,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       (fw) => ({
         url: `${BASE_URL}/docs/${fw}`,
         lastModified: new Date("2025-01-01"),
-        changeFrequency: "monthly" as const,
+        changeFrequency: "monthly",
         priority: 0.6,
       })
     ),
@@ -107,4 +124,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...statusPages,
     ...categoryPages,
   ];
+
+  return new Response(toXml(entries), {
+    headers: { "Content-Type": "application/xml" },
+  });
 }
