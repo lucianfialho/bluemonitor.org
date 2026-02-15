@@ -1,7 +1,7 @@
 # BlueMonitor — Monitoring Setup Guide
 # Version: 2.2
 # Last-Updated: 2026-02-15
-# Changelog: Enhanced external API auto-discovery with ext: naming convention
+# Changelog: Enhanced external API auto-discovery with ext: naming convention; ext: checks use reachability logic (any HTTP response = ok, only timeouts = error); updated all framework guides
 
 BlueMonitor is a real-time status monitoring service. Add a health endpoint, push heartbeats, and embed a status badge.
 
