@@ -1,7 +1,7 @@
 # BlueMonitor — FastAPI Setup Guide
-# Version: 2.1
+# Version: 2.2
 # Last-Updated: 2026-02-15
-# Changelog: Exclude /api/health from heartbeat auto-discover (already monitored via pull check)
+# Changelog: Enhanced external API auto-discovery with ext: naming convention
 
 Add uptime monitoring, heartbeat push, and a status badge to your FastAPI app.
 
@@ -45,7 +45,11 @@ pip install apscheduler httpx
 **Important: Auto-discover checks.** Scan the project for dependencies and routes to build a comprehensive heartbeat. Look for:
 - **Database**: SQLAlchemy, databases, asyncpg, psycopg2, etc. → add a `SELECT 1` check
 - **Redis/Cache**: redis-py, aioredis imports → add a `PING` check
-- **External APIs**: stripe, boto3, httpx calls to third-party services → add lightweight checks
+- **External APIs**: discover ALL external dependencies, not just SDKs:
+  - Scan for SDK imports (stripe, boto3, openai, twilio, etc.)
+  - Scan for httpx/requests/aiohttp calls to external URLs — skip localhost, same-domain, and relative URLs
+  - For each external API found, add a HEAD check to its base URL with a 5s timeout
+  - Name with `ext:` prefix: `ext:google-books`, `ext:openai`, `ext:stripe`
 - **API endpoints**: scan route decorators (`@app.get`, `@router.get`) → add HTTP checks for key endpoints. **Exclude `/api/health`** — BlueMonitor already monitors it via pull check; including it creates a redundant check that often false-alarms.
 
 ```python
@@ -58,6 +62,14 @@ from contextlib import asynccontextmanager
 
 BLUEMONITOR_API_KEY = os.getenv("BLUEMONITOR_API_KEY")
 BASE_URL = os.getenv("APP_URL", "http://localhost:8000")
+
+async def check_external_api(client: httpx.AsyncClient, base_url: str):
+    start = time.monotonic()
+    try:
+        res = await client.head(base_url, timeout=5)
+        return {"status": "ok" if res.is_success else "error", "latency": round((time.monotonic() - start) * 1000)}
+    except Exception:
+        return {"status": "error", "latency": round((time.monotonic() - start) * 1000)}
 
 async def check_endpoint(client: httpx.AsyncClient, url: str):
     start = time.monotonic()
@@ -100,6 +112,10 @@ async def send_heartbeat():
     async with httpx.AsyncClient() as client:
         # checks["api:/api/users"] = await check_endpoint(client, f"{BASE_URL}/api/users")
         # checks["api:/api/products"] = await check_endpoint(client, f"{BASE_URL}/api/products")
+
+        # External API checks — add services your app calls
+        # checks["ext:google-books"] = await check_external_api(client, "https://www.googleapis.com/books/v1/volumes?q=test&maxResults=1")
+        # checks["ext:openai"] = await check_external_api(client, "https://api.openai.com")
 
         has_error = any(c["status"] == "error" for c in checks.values())
 
@@ -153,7 +169,9 @@ Headers: `Authorization: Bearer bm_...`, `Content-Type: application/json`
   "timestamp": "2026-02-12T12:00:00.000Z",
   "checks": {
     "database": { "status": "ok", "latency": 5 },
-    "redis": { "status": "ok", "latency": 2 }
+    "redis": { "status": "ok", "latency": 2 },
+    "ext:google-books": { "status": "ok", "latency": 180 },
+    "api:/api/users": { "status": "ok", "latency": 45 }
   }
 }
 ```

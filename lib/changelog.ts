@@ -8,6 +8,14 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    id: "2026-02-15-ext-api-discovery",
+    date: "2026-02-15",
+    title: "External API auto-discovery in heartbeat",
+    description:
+      "LLM setup guides now instruct heartbeats to discover and monitor external API dependencies (Google Books, OpenAI, Stripe, etc.) using ext: prefixed checks with lightweight HEAD requests.",
+    tag: "improvement",
+  },
+  {
     id: "2026-02-15-exclude-health-heartbeat",
     date: "2026-02-15",
     title: "Exclude /api/health from heartbeat auto-discover",

@@ -1,7 +1,7 @@
 # BlueMonitor — Monitoring Setup Guide
-# Version: 2.1
+# Version: 2.2
 # Last-Updated: 2026-02-15
-# Changelog: Exclude /api/health from heartbeat auto-discover (already monitored via pull check)
+# Changelog: Enhanced external API auto-discovery with ext: naming convention
 
 BlueMonitor is a real-time status monitoring service. Add a health endpoint, push heartbeats, and embed a status badge.
 
@@ -67,6 +67,7 @@ Headers: `Authorization: Bearer bm_your_api_key`, `Content-Type: application/jso
   "checks": {
     "database": { "status": "ok", "latency": 5 },
     "redis": { "status": "ok", "latency": 2 },
+    "ext:google-books": { "status": "ok", "latency": 180 },
     "api:/api/users": { "status": "ok", "latency": 45 },
     "api:/api/products": { "status": "ok", "latency": 120 }
   }
@@ -81,10 +82,14 @@ Requirements:
 **Important: Auto-discover checks.** When generating heartbeat code, scan the project for dependencies and routes to build comprehensive checks:
 - **Database**: any ORM or SQL client → add a `SELECT 1` check
 - **Redis/Cache**: Redis or cache client imports → add a `PING` check
-- **External APIs**: Stripe, SendGrid, AWS SDK, etc. → add lightweight API call checks
+- **External APIs**: discover ALL external dependencies, not just SDKs:
+  - Scan for SDK imports (Stripe, SendGrid, AWS, OpenAI, Twilio, etc.)
+  - Scan for fetch/axios/got/httpx/requests calls to external URLs — skip localhost, same-domain, and relative URLs
+  - For each external API found, add a HEAD check to its base URL with a 5s timeout
+  - Name with `ext:` prefix: `ext:google-books`, `ext:openai`, `ext:stripe`
 - **API endpoints**: scan route files for GET handlers → add HTTP checks (fetch internally and verify 200 response). **Exclude `/api/health`** — BlueMonitor already monitors it via pull check; including it creates a redundant check that often false-alarms.
 
-Check names are free-form strings. Use `"database"`, `"redis"`, `"stripe"`, `"api:/api/users"`, etc.
+Check names are free-form strings: `"database"`, `"redis"` for infra; `"api:/api/users"` for internal endpoints; `"ext:google-books"`, `"ext:openai"` for external APIs.
 
 ### 3. Status Badge
 

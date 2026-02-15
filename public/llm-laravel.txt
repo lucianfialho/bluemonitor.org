@@ -1,7 +1,7 @@
 # BlueMonitor — Laravel Setup Guide
-# Version: 2.1
+# Version: 2.2
 # Last-Updated: 2026-02-15
-# Changelog: Exclude /api/health from heartbeat auto-discover (already monitored via pull check)
+# Changelog: Enhanced external API auto-discovery with ext: naming convention
 
 Add uptime monitoring, heartbeat push, and a status badge to your Laravel app.
 
@@ -45,7 +45,11 @@ Push detailed health data to BlueMonitor using Laravel Scheduler. This checks yo
 **Important: Auto-discover checks.** Scan the project for dependencies and routes to build a comprehensive heartbeat. Look for:
 - **Database**: Eloquent/DB facade → add a `SELECT 1` check
 - **Redis/Cache**: Redis facade, Cache facade → add a `PING` check
-- **External APIs**: Stripe, AWS, mail drivers → add lightweight checks
+- **External APIs**: discover ALL external dependencies, not just SDKs:
+  - Scan for SDK imports (Stripe, AWS, OpenAI, Twilio, mail drivers, etc.)
+  - Scan for Http::get/post/Guzzle calls to external URLs — skip localhost, same-domain, and relative URLs
+  - For each external API found, add a HEAD check to its base URL with a 5s timeout
+  - Name with `ext:` prefix: `ext:google-books`, `ext:openai`, `ext:stripe`
 - **API endpoints**: scan `routes/api.php` for GET routes → add HTTP checks for key endpoints. **Exclude `/api/health`** — BlueMonitor already monitors it via pull check; including it creates a redundant check that often false-alarms.
 
 Create `app/Console/Commands/SendHeartbeat.php`:
@@ -79,6 +83,10 @@ class SendHeartbeat extends Command
         // $this->checkEndpoint('api:/api/users', "{$baseUrl}/api/users", $checks);
         // $this->checkEndpoint('api:/api/products', "{$baseUrl}/api/products", $checks);
 
+        // External API checks — add services your app calls
+        // $this->checkExternalAPI('ext:google-books', 'https://www.googleapis.com/books/v1/volumes?q=test&maxResults=1', $checks);
+        // $this->checkExternalAPI('ext:openai', 'https://api.openai.com', $checks);
+
         $hasError = collect($checks)->contains('status', 'error');
 
         Http::withToken(config('services.bluemonitor.key'))
@@ -107,6 +115,17 @@ class SendHeartbeat extends Command
                 'latency' => round((microtime(true) - $start) * 1000),
                 'message' => $e->getMessage(),
             ];
+        }
+    }
+
+    private function checkExternalAPI(string $name, string $baseUrl, array &$checks): void
+    {
+        $start = microtime(true);
+        try {
+            $res = Http::timeout(5)->head($baseUrl);
+            $checks[$name] = ['status' => $res->successful() ? 'ok' : 'error', 'latency' => round((microtime(true) - $start) * 1000)];
+        } catch (\Exception $e) {
+            $checks[$name] = ['status' => 'error', 'latency' => round((microtime(true) - $start) * 1000)];
         }
     }
 
@@ -182,7 +201,9 @@ Headers: `Authorization: Bearer bm_...`, `Content-Type: application/json`
   "timestamp": "2026-02-12T12:00:00.000Z",
   "checks": {
     "database": { "status": "ok", "latency": 5 },
-    "redis": { "status": "ok", "latency": 2 }
+    "redis": { "status": "ok", "latency": 2 },
+    "ext:google-books": { "status": "ok", "latency": 180 },
+    "api:/api/users": { "status": "ok", "latency": 45 }
   }
 }
 ```

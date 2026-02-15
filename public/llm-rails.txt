@@ -1,7 +1,7 @@
 # BlueMonitor — Rails Setup Guide
-# Version: 2.1
+# Version: 2.2
 # Last-Updated: 2026-02-15
-# Changelog: Exclude /api/health from heartbeat auto-discover (already monitored via pull check)
+# Changelog: Enhanced external API auto-discovery with ext: naming convention
 
 Add uptime monitoring, heartbeat push, and a status badge to your Rails app.
 
@@ -57,7 +57,11 @@ gem "sidekiq-cron"
 **Important: Auto-discover checks.** Scan the project for dependencies and routes to build a comprehensive heartbeat. Look for:
 - **Database**: ActiveRecord, Sequel, etc. → add a `SELECT 1` check
 - **Redis/Cache**: Redis, Sidekiq (implies Redis) → add a `PING` check
-- **External APIs**: Stripe, AWS SDK, HTTParty/Faraday calls → add lightweight checks
+- **External APIs**: discover ALL external dependencies, not just SDKs:
+  - Scan for SDK imports (Stripe, AWS SDK, OpenAI, Twilio, etc.)
+  - Scan for HTTParty/Faraday/Net::HTTP calls to external URLs — skip localhost, same-domain, and relative URLs
+  - For each external API found, add a HEAD check to its base URL with a 5s timeout
+  - Name with `ext:` prefix: `ext:google-books`, `ext:openai`, `ext:stripe`
 - **API endpoints**: scan `config/routes.rb` for GET routes → add HTTP checks for key endpoints. **Exclude `/api/health`** — BlueMonitor already monitors it via pull check; including it creates a redundant check that often false-alarms.
 
 Create `app/jobs/heartbeat_job.rb`:
@@ -78,6 +82,10 @@ class HeartbeatJob < ApplicationJob
     # API endpoint checks — add your key routes here
     # check_endpoint("api:/api/users", "#{base_url}/api/users", checks)
     # check_endpoint("api:/api/products", "#{base_url}/api/products", checks)
+
+    # External API checks — add services your app calls
+    # check_external_api("ext:google-books", "https://www.googleapis.com/books/v1/volumes?q=test&maxResults=1", checks)
+    # check_external_api("ext:openai", "https://api.openai.com", checks)
 
     has_error = checks.values.any? { |c| c[:status] == "error" }
 
@@ -105,6 +113,15 @@ class HeartbeatJob < ApplicationJob
     rescue => e
       checks[name] = { status: "error", latency: ms_since(start), message: e.message }
     end
+  end
+
+  def check_external_api(name, base_url, checks)
+    start = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+    uri = URI(base_url)
+    res = Net::HTTP.start(uri.host, uri.port, use_ssl: true, read_timeout: 5) { |h| h.head(uri.path.empty? ? "/" : uri.path) }
+    checks[name] = { status: res.is_a?(Net::HTTPSuccess) ? "ok" : "error", latency: ms_since(start) }
+  rescue => e
+    checks[name] = { status: "error", latency: ms_since(start) }
   end
 
   def check_endpoint(name, url, checks)
@@ -174,7 +191,9 @@ Headers: `Authorization: Bearer bm_...`, `Content-Type: application/json`
   "timestamp": "2026-02-12T12:00:00.000Z",
   "checks": {
     "database": { "status": "ok", "latency": 5 },
-    "redis": { "status": "ok", "latency": 2 }
+    "redis": { "status": "ok", "latency": 2 },
+    "ext:google-books": { "status": "ok", "latency": 180 },
+    "api:/api/users": { "status": "ok", "latency": 45 }
   }
 }
 ```

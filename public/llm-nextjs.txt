@@ -1,7 +1,7 @@
 # BlueMonitor — Next.js Setup Guide
-# Version: 2.2
+# Version: 2.3
 # Last-Updated: 2026-02-15
-# Changelog: Exclude /api/health from heartbeat auto-discover (already monitored via pull check)
+# Changelog: Enhanced external API auto-discovery with ext: naming convention
 
 Add uptime monitoring, heartbeat push, and a status badge to your Next.js app (App Router).
 
@@ -44,7 +44,11 @@ Push detailed health data to BlueMonitor on a schedule. This checks your databas
 **Important: Auto-discover checks.** Scan the project for dependencies and API routes to build a comprehensive heartbeat. Look for:
 - **Database**: any ORM or SQL client (Prisma, Drizzle, Neon, pg, Knex, etc.) → add a `SELECT 1` check
 - **Redis/Cache**: Redis, Upstash, Memcached imports → add a `PING` check
-- **External APIs**: Stripe, SendGrid, Twilio, OpenAI, S3 SDK imports → add a lightweight API call check
+- **External APIs**: discover ALL external dependencies, not just SDKs:
+  - Scan for SDK imports (Stripe, SendGrid, AWS, OpenAI, Twilio, etc.)
+  - Scan for fetch/axios/got calls to external URLs — skip localhost, same-domain, and relative URLs
+  - For each external API found, add a HEAD check to its base URL with a 5s timeout
+  - Name with `ext:` prefix: `ext:google-books`, `ext:openai`, `ext:stripe`
 - **API endpoints**: scan `app/api/*/route.ts` for GET handlers → add HTTP checks for key endpoints (fetch them internally and verify 200 response). **Exclude `/api/health`** — BlueMonitor already monitors it via pull check; including it creates a redundant check that often false-alarms.
 
 Create `app/api/cron/heartbeat/route.ts`:
@@ -63,6 +67,16 @@ async function checkDependency(name: string, fn: () => Promise<void>) {
       latency: Date.now() - start,
       message: err instanceof Error ? err.message : "Unknown error",
     };
+  }
+}
+
+async function checkExternalAPI(baseUrl: string) {
+  const start = Date.now();
+  try {
+    const res = await fetch(baseUrl, { method: "HEAD", signal: AbortSignal.timeout(5000) });
+    return { status: res.ok ? "ok" : "error", latency: Date.now() - start };
+  } catch {
+    return { status: "error", latency: Date.now() - start };
   }
 }
 
@@ -101,6 +115,10 @@ export async function GET() {
   // API endpoint checks — add your key endpoints here
   // checks["api:/api/users"] = await checkEndpoint(`${baseUrl}/api/users`);
   // checks["api:/api/products"] = await checkEndpoint(`${baseUrl}/api/products`);
+
+  // External API checks — add services your app calls
+  // checks["ext:google-books"] = await checkExternalAPI("https://www.googleapis.com/books/v1/volumes?q=test&maxResults=1");
+  // checks["ext:openai"] = await checkExternalAPI("https://api.openai.com");
 
   const hasError = Object.values(checks).some((c) => c.status === "error");
   const status = hasError ? "error" : "ok";
@@ -175,7 +193,9 @@ Headers: `Authorization: Bearer bm_...`, `Content-Type: application/json`
   "timestamp": "2026-02-12T12:00:00.000Z",
   "checks": {
     "database": { "status": "ok", "latency": 5 },
-    "redis": { "status": "ok", "latency": 2 }
+    "redis": { "status": "ok", "latency": 2 },
+    "ext:google-books": { "status": "ok", "latency": 180 },
+    "api:/api/users": { "status": "ok", "latency": 45 }
   }
 }
 ```
