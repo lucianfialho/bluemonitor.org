@@ -48,7 +48,7 @@ npm install node-cron
 - **External APIs**: discover ALL external dependencies, not just SDKs:
   - Scan for SDK imports (Stripe, SendGrid, AWS, OpenAI, Twilio, etc.)
   - Scan for fetch/axios/got calls to external URLs — skip localhost, same-domain, and relative URLs
-  - For each external API found, add a HEAD check to its base URL with a 5s timeout
+  - For each external API found, add a HEAD check to its base URL with a 5s timeout. Any HTTP response (even 404/421) = reachable = ok; only connection errors/timeouts = down
   - Name with `ext:` prefix: `ext:google-books`, `ext:openai`, `ext:stripe`
 - **API endpoints**: scan route files for GET handlers → add HTTP checks for key endpoints. **Exclude `/api/health`** — BlueMonitor already monitors it via pull check; including it creates a redundant check that often false-alarms.
 
@@ -58,8 +58,10 @@ import cron from "node-cron";
 async function checkExternalAPI(baseUrl: string) {
   const start = Date.now();
   try {
-    const res = await fetch(baseUrl, { method: "HEAD", signal: AbortSignal.timeout(5000) });
-    return { status: res.ok ? "ok" : "error", latency: Date.now() - start };
+    await fetch(baseUrl, { method: "HEAD", signal: AbortSignal.timeout(5000) });
+    // Any HTTP response (even 404/421) means the API is reachable = ok
+    // Only network errors or timeouts (caught below) mean it's down
+    return { status: "ok", latency: Date.now() - start };
   } catch {
     return { status: "error", latency: Date.now() - start };
   }

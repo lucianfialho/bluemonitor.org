@@ -60,7 +60,7 @@ gem "sidekiq-cron"
 - **External APIs**: discover ALL external dependencies, not just SDKs:
   - Scan for SDK imports (Stripe, AWS SDK, OpenAI, Twilio, etc.)
   - Scan for HTTParty/Faraday/Net::HTTP calls to external URLs — skip localhost, same-domain, and relative URLs
-  - For each external API found, add a HEAD check to its base URL with a 5s timeout
+  - For each external API found, add a HEAD check to its base URL with a 5s timeout. Any HTTP response (even 404/421) = reachable = ok; only connection errors/timeouts = down
   - Name with `ext:` prefix: `ext:google-books`, `ext:openai`, `ext:stripe`
 - **API endpoints**: scan `config/routes.rb` for GET routes → add HTTP checks for key endpoints. **Exclude `/api/health`** — BlueMonitor already monitors it via pull check; including it creates a redundant check that often false-alarms.
 
@@ -118,8 +118,10 @@ class HeartbeatJob < ApplicationJob
   def check_external_api(name, base_url, checks)
     start = Process.clock_gettime(Process::CLOCK_MONOTONIC)
     uri = URI(base_url)
-    res = Net::HTTP.start(uri.host, uri.port, use_ssl: true, read_timeout: 5) { |h| h.head(uri.path.empty? ? "/" : uri.path) }
-    checks[name] = { status: res.is_a?(Net::HTTPSuccess) ? "ok" : "error", latency: ms_since(start) }
+    # Any HTTP response (even 404/421) means the API is reachable = ok
+    # Only network errors or timeouts (caught below) mean it's down
+    Net::HTTP.start(uri.host, uri.port, use_ssl: true, read_timeout: 5) { |h| h.head(uri.path.empty? ? "/" : uri.path) }
+    checks[name] = { status: "ok", latency: ms_since(start) }
   rescue => e
     checks[name] = { status: "error", latency: ms_since(start) }
   end

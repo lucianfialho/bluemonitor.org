@@ -48,7 +48,7 @@ Push detailed health data to BlueMonitor using Laravel Scheduler. This checks yo
 - **External APIs**: discover ALL external dependencies, not just SDKs:
   - Scan for SDK imports (Stripe, AWS, OpenAI, Twilio, mail drivers, etc.)
   - Scan for Http::get/post/Guzzle calls to external URLs — skip localhost, same-domain, and relative URLs
-  - For each external API found, add a HEAD check to its base URL with a 5s timeout
+  - For each external API found, add a HEAD check to its base URL with a 5s timeout. Any HTTP response (even 404/421) = reachable = ok; only connection errors/timeouts = down
   - Name with `ext:` prefix: `ext:google-books`, `ext:openai`, `ext:stripe`
 - **API endpoints**: scan `routes/api.php` for GET routes → add HTTP checks for key endpoints. **Exclude `/api/health`** — BlueMonitor already monitors it via pull check; including it creates a redundant check that often false-alarms.
 
@@ -122,8 +122,10 @@ class SendHeartbeat extends Command
     {
         $start = microtime(true);
         try {
-            $res = Http::timeout(5)->head($baseUrl);
-            $checks[$name] = ['status' => $res->successful() ? 'ok' : 'error', 'latency' => round((microtime(true) - $start) * 1000)];
+            // Any HTTP response (even 404/421) means the API is reachable = ok
+            // Only network errors or timeouts (caught below) mean it's down
+            Http::timeout(5)->head($baseUrl);
+            $checks[$name] = ['status' => 'ok', 'latency' => round((microtime(true) - $start) * 1000)];
         } catch (\Exception $e) {
             $checks[$name] = ['status' => 'error', 'latency' => round((microtime(true) - $start) * 1000)];
         }

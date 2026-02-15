@@ -48,7 +48,7 @@ pip install apscheduler httpx
 - **External APIs**: discover ALL external dependencies, not just SDKs:
   - Scan for SDK imports (stripe, boto3, openai, twilio, etc.)
   - Scan for httpx/requests/aiohttp calls to external URLs — skip localhost, same-domain, and relative URLs
-  - For each external API found, add a HEAD check to its base URL with a 5s timeout
+  - For each external API found, add a HEAD check to its base URL with a 5s timeout. Any HTTP response (even 404/421) = reachable = ok; only connection errors/timeouts = down
   - Name with `ext:` prefix: `ext:google-books`, `ext:openai`, `ext:stripe`
 - **API endpoints**: scan route decorators (`@app.get`, `@router.get`) → add HTTP checks for key endpoints. **Exclude `/api/health`** — BlueMonitor already monitors it via pull check; including it creates a redundant check that often false-alarms.
 
@@ -66,8 +66,10 @@ BASE_URL = os.getenv("APP_URL", "http://localhost:8000")
 async def check_external_api(client: httpx.AsyncClient, base_url: str):
     start = time.monotonic()
     try:
-        res = await client.head(base_url, timeout=5)
-        return {"status": "ok" if res.is_success else "error", "latency": round((time.monotonic() - start) * 1000)}
+        await client.head(base_url, timeout=5)
+        # Any HTTP response (even 404/421) means the API is reachable = ok
+        # Only network errors or timeouts (caught below) mean it's down
+        return {"status": "ok", "latency": round((time.monotonic() - start) * 1000)}
     except Exception:
         return {"status": "error", "latency": round((time.monotonic() - start) * 1000)}
 
