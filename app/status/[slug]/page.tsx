@@ -8,7 +8,7 @@ import StatusTimeline from "@/components/StatusTimeline";
 import IncidentList from "@/components/IncidentList";
 import ServiceIcon from "@/components/ServiceIcon";
 import FavoriteButton from "@/components/FavoriteButton";
-import HeartbeatChecks from "@/components/HeartbeatChecks";
+
 
 export async function generateStaticParams() {
   // Don't pre-render at build time to avoid overwhelming the DB.
@@ -287,13 +287,6 @@ export default async function StatusPage({
               This service reports its health directly to BlueMonitor via heartbeat push.
               If no heartbeat is received for 10 minutes, the service is marked as down.
             </p>
-          </div>
-        )}
-
-        {/* Health Checks Detail + Charts */}
-        {service.last_heartbeat_at && (
-          <div className="mb-10">
-            <HeartbeatChecks slug={service.slug} currentChecks={service.last_health_data ?? null} />
           </div>
         )}
 
