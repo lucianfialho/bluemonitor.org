@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import SubmitForm from "./SubmitForm";
 
 export const metadata: Metadata = {
-  title: "Submit your SaaS — BlueMonitor",
+  title: "Submit Your SaaS",
   description:
     "Get your SaaS monitored on BlueMonitor. We track uptime, response time, and notify users when something goes wrong.",
   alternates: {

@@ -3,7 +3,7 @@ import Link from "next/link";
 import CopyButton from "@/components/CopyButton";
 
 export const metadata: Metadata = {
-  title: "FastAPI Monitoring Setup — BlueMonitor",
+  title: "FastAPI Monitoring Setup",
   description:
     "Add uptime monitoring and heartbeat push to your FastAPI app. Health endpoint, APScheduler heartbeats, and status badge.",
   alternates: {

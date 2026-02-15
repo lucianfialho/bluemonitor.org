@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy — BlueMonitor",
+  title: "Privacy Policy",
   description:
     "Learn how BlueMonitor collects, uses, and protects your personal information.",
   alternates: { canonical: "/privacy" },

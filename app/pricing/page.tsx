@@ -19,6 +19,72 @@ export const metadata: Metadata = {
 export default function PricingPage() {
   return (
     <div>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@graph": [
+              {
+                "@type": "Product",
+                name: "BlueMonitor Pro",
+                description:
+                  "Professional SaaS monitoring with unlimited watchlist, 10 webhooks, 300 API req/min, 1-minute recheck interval, 30-day history, and MCP integration.",
+                brand: { "@type": "Brand", name: "BlueMonitor" },
+                offers: [
+                  {
+                    "@type": "Offer",
+                    name: "Pro Monthly",
+                    price: "9",
+                    priceCurrency: "USD",
+                    priceValidUntil: "2026-12-31",
+                    availability: "https://schema.org/InStock",
+                    url: "https://www.bluemonitor.org/pricing",
+                    priceSpecification: {
+                      "@type": "UnitPriceSpecification",
+                      price: "9",
+                      priceCurrency: "USD",
+                      unitText: "MONTH",
+                    },
+                  },
+                  {
+                    "@type": "Offer",
+                    name: "Pro Annual",
+                    price: "84",
+                    priceCurrency: "USD",
+                    priceValidUntil: "2026-12-31",
+                    availability: "https://schema.org/InStock",
+                    url: "https://www.bluemonitor.org/pricing",
+                    priceSpecification: {
+                      "@type": "UnitPriceSpecification",
+                      price: "7",
+                      priceCurrency: "USD",
+                      unitText: "MONTH",
+                    },
+                  },
+                ],
+              },
+              {
+                "@type": "BreadcrumbList",
+                itemListElement: [
+                  {
+                    "@type": "ListItem",
+                    position: 1,
+                    name: "Home",
+                    item: "https://www.bluemonitor.org",
+                  },
+                  {
+                    "@type": "ListItem",
+                    position: 2,
+                    name: "Pricing",
+                    item: "https://www.bluemonitor.org/pricing",
+                  },
+                ],
+              },
+            ],
+          }),
+        }}
+      />
       {/* Hero */}
       <section className="px-4 pt-20 pb-12 text-center sm:px-6 sm:pt-28 sm:pb-16">
         <div className="mx-auto max-w-3xl">

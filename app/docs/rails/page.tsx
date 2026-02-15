@@ -3,7 +3,7 @@ import Link from "next/link";
 import CopyButton from "@/components/CopyButton";
 
 export const metadata: Metadata = {
-  title: "Rails Monitoring Setup — BlueMonitor",
+  title: "Rails Monitoring Setup",
   description:
     "Add uptime monitoring and heartbeat push to your Rails app. Health endpoint, ActiveJob heartbeats, and status badge.",
   alternates: {

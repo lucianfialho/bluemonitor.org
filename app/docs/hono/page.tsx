@@ -3,7 +3,7 @@ import Link from "next/link";
 import CopyButton from "@/components/CopyButton";
 
 export const metadata: Metadata = {
-  title: "Hono Monitoring Setup — BlueMonitor",
+  title: "Hono Monitoring Setup",
   description:
     "Add uptime monitoring and heartbeat push to your Hono app. Health endpoint, scheduled heartbeats, and status badge.",
   alternates: {

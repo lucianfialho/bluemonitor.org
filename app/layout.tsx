@@ -66,9 +66,9 @@ export default function RootLayout({
     <html lang="en">
       <Script
         src="https://www.googletagmanager.com/gtag/js?id=G-0P1450794K"
-        strategy="afterInteractive"
+        strategy="lazyOnload"
       />
-      <Script id="gtag-init" strategy="afterInteractive">
+      <Script id="gtag-init" strategy="lazyOnload">
         {`window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
@@ -77,6 +77,91 @@ gtag('config', 'G-0P1450794K');`}
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@graph": [
+                {
+                  "@type": "Organization",
+                  "@id": "https://www.bluemonitor.org/#organization",
+                  name: "BlueMonitor",
+                  url: "https://www.bluemonitor.org",
+                  logo: {
+                    "@type": "ImageObject",
+                    url: "https://www.bluemonitor.org/icon.svg",
+                    width: 512,
+                    height: 512,
+                  },
+                  description:
+                    "Real-time service status monitoring platform. Check if your favorite services are down with uptime monitoring, heartbeat push, and instant alerts.",
+                },
+                {
+                  "@type": "WebSite",
+                  "@id": "https://www.bluemonitor.org/#website",
+                  url: "https://www.bluemonitor.org",
+                  name: "BlueMonitor",
+                  publisher: {
+                    "@id": "https://www.bluemonitor.org/#organization",
+                  },
+                  potentialAction: {
+                    "@type": "SearchAction",
+                    target: {
+                      "@type": "EntryPoint",
+                      urlTemplate:
+                        "https://www.bluemonitor.org/status/{search_term_string}",
+                    },
+                    "query-input": "required name=search_term_string",
+                  },
+                },
+                {
+                  "@type": "WebApplication",
+                  "@id": "https://www.bluemonitor.org/#application",
+                  name: "BlueMonitor",
+                  url: "https://www.bluemonitor.org",
+                  applicationCategory: "DeveloperApplication",
+                  operatingSystem: "Web",
+                  description:
+                    "Pull-based health checks and push-based heartbeats in one platform with instant alerts and live status badges.",
+                  offers: [
+                    {
+                      "@type": "Offer",
+                      price: "0",
+                      priceCurrency: "USD",
+                      name: "Free",
+                    },
+                    {
+                      "@type": "Offer",
+                      price: "9",
+                      priceCurrency: "USD",
+                      name: "Pro",
+                      priceSpecification: {
+                        "@type": "UnitPriceSpecification",
+                        price: "9",
+                        priceCurrency: "USD",
+                        unitText: "MONTH",
+                      },
+                    },
+                  ],
+                  provider: {
+                    "@id": "https://www.bluemonitor.org/#organization",
+                  },
+                  featureList: [
+                    "Uptime Monitoring",
+                    "Heartbeat Push Monitoring",
+                    "Discord Webhooks",
+                    "Slack Webhooks",
+                    "Custom Webhooks",
+                    "REST API",
+                    "Status Badges",
+                    "MCP Server Integration",
+                  ],
+                },
+              ],
+            }),
+          }}
+        />
         <Providers>
           <HeaderWrapper />
           <main className="min-h-screen">{children}</main>

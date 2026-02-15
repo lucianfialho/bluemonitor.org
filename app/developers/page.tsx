@@ -3,7 +3,7 @@ import Link from "next/link";
 import CopyButton from "@/components/CopyButton";
 
 export const metadata: Metadata = {
-  title: "For Developers — BlueMonitor",
+  title: "For Developers",
   description:
     "Add monitoring to your SaaS in one prompt. Share our llm.txt with your AI coding tool and get a health endpoint + status badge instantly.",
   alternates: {
@@ -25,6 +25,29 @@ const frameworks = [
 export default function DevelopersPage() {
   return (
     <div>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              {
+                "@type": "ListItem",
+                position: 1,
+                name: "Home",
+                item: "https://www.bluemonitor.org",
+              },
+              {
+                "@type": "ListItem",
+                position: 2,
+                name: "For Developers",
+                item: "https://www.bluemonitor.org/developers",
+              },
+            ],
+          }),
+        }}
+      />
       {/* Hero */}
       <section className="px-4 pt-20 pb-12 text-center sm:px-6 sm:pt-28 sm:pb-16">
         <div className="mx-auto max-w-3xl">

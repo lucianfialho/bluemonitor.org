@@ -28,7 +28,7 @@ export async function generateMetadata({
   const service = await getServiceBySlug(slug);
 
   if (!service || service.is_private) {
-    return { title: "Service Not Found — BlueMonitor" };
+    return { title: "Service Not Found" };
   }
 
   return {
@@ -122,43 +122,20 @@ export default async function StatusPage({
   ]);
   const category = getCategoryBySlug(service.category);
 
-  const faqStructuredData = {
+  const webPageStructuredData = {
     "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: [
-      {
-        "@type": "Question",
-        name: `Is ${service.name} down right now?`,
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: `This page shows the real-time status of ${service.name}. The status is checked automatically by pinging ${service.name}'s servers. If the status shows "Down", it means ${service.name} is currently experiencing issues.`,
-        },
-      },
-      {
-        "@type": "Question",
-        name: `Why is ${service.name} not working?`,
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: `${service.name} may not be working due to server outages, scheduled maintenance, network issues, or high traffic. Check the current status above for real-time information.`,
-        },
-      },
-      {
-        "@type": "Question",
-        name: `How do I check if ${service.name} is down for everyone?`,
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: `BlueMonitor checks ${service.name}'s servers from our monitoring infrastructure. If the status shows "Down" here, it's likely down for everyone. If it shows "Up" but you can't access it, the issue may be on your end.`,
-        },
-      },
-      {
-        "@type": "Question",
-        name: `What should I do if ${service.name} is down?`,
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: `If ${service.name} is down, you can: wait a few minutes and try again, check their official social media for updates, clear your browser cache, or try using a different network connection.`,
-        },
-      },
-    ],
+    "@type": "WebPage",
+    name: `Is ${service.name} Down? — Real-Time Status`,
+    description: `Check if ${service.name} is down right now. Real-time status monitoring, response time, and outage history.`,
+    url: `https://www.bluemonitor.org/status/${service.slug}`,
+    isPartOf: {
+      "@id": "https://www.bluemonitor.org/#website",
+    },
+    about: {
+      "@type": "WebApplication",
+      name: service.name,
+      url: `https://${service.domain}`,
+    },
   };
 
   const breadcrumbStructuredData = {
@@ -201,7 +178,7 @@ export default async function StatusPage({
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqStructuredData) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageStructuredData) }}
       />
       <script
         type="application/ld+json"

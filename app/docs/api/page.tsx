@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "API Reference — BlueMonitor",
+  title: "API Reference",
   description:
     "Free REST API to check the status of 500+ services. Get real-time status, response times, and incident history programmatically.",
   alternates: {

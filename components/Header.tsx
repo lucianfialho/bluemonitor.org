@@ -1,5 +1,6 @@
 import Link from "next/link";
 import HeaderAuth from "./HeaderAuth";
+import MobileNav from "./MobileNav";
 
 export default function Header() {
   return (
@@ -16,7 +17,7 @@ export default function Header() {
           </span>
         </Link>
 
-        <nav className="flex items-center gap-6">
+        <nav className="hidden items-center gap-6 md:flex">
           <Link
             href="/"
             className="text-sm font-medium text-zinc-600 transition-colors hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100"
@@ -43,6 +44,8 @@ export default function Header() {
           </Link>
           <HeaderAuth />
         </nav>
+
+        <MobileNav />
       </div>
     </header>
   );

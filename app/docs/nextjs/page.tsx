@@ -3,7 +3,7 @@ import Link from "next/link";
 import CopyButton from "@/components/CopyButton";
 
 export const metadata: Metadata = {
-  title: "Next.js Monitoring Setup — BlueMonitor",
+  title: "Next.js Monitoring Setup",
   description:
     "Add uptime monitoring and heartbeat push to your Next.js app. Health endpoint, Vercel Cron heartbeats, and status badge in minutes.",
   alternates: {

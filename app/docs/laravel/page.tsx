@@ -3,7 +3,7 @@ import Link from "next/link";
 import CopyButton from "@/components/CopyButton";
 
 export const metadata: Metadata = {
-  title: "Laravel Monitoring Setup — BlueMonitor",
+  title: "Laravel Monitoring Setup",
   description:
     "Add uptime monitoring and heartbeat push to your Laravel app. Health endpoint, Laravel Scheduler heartbeats, and status badge.",
   alternates: {

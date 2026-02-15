@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Documentation — BlueMonitor",
+  title: "Documentation",
   description:
     "Get started with BlueMonitor. Framework guides, API reference, and everything you need to monitor your SaaS.",
   alternates: {
@@ -46,6 +46,29 @@ const frameworks = [
 export default function DocsOverview() {
   return (
     <div>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              {
+                "@type": "ListItem",
+                position: 1,
+                name: "Home",
+                item: "https://www.bluemonitor.org",
+              },
+              {
+                "@type": "ListItem",
+                position: 2,
+                name: "Documentation",
+                item: "https://www.bluemonitor.org/docs",
+              },
+            ],
+          }),
+        }}
+      />
       <h1 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 sm:text-4xl">
         Documentation
       </h1>

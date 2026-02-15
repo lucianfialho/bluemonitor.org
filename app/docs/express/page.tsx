@@ -3,7 +3,7 @@ import Link from "next/link";
 import CopyButton from "@/components/CopyButton";
 
 export const metadata: Metadata = {
-  title: "Express Monitoring Setup — BlueMonitor",
+  title: "Express Monitoring Setup",
   description:
     "Add uptime monitoring and heartbeat push to your Express app. Health endpoint, node-cron heartbeats, and status badge.",
   alternates: {

@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import BadgeGenerator from "./BadgeGenerator";
 
 export const metadata: Metadata = {
-  title: "Get Started — Add a Status Badge to Your Website | BlueMonitor",
+  title: "Get Started — Add a Status Badge to Your Website",
   description:
     "Monitor your website for free. Add a real-time status badge that shows if your service is up, slow, or down. No account required — just paste the code.",
   alternates: {

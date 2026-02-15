@@ -22,25 +22,27 @@ export async function generateMetadata({
   const category = getCategoryBySlug(slug);
 
   if (!category) {
-    return { title: "Category Not Found — BlueMonitor" };
+    return { title: "Category Not Found" };
   }
+
+  const label = category.name.toLowerCase().replace(/\s*services?\s*$/i, "");
 
   return {
     title: `${category.name} Status — Is It Down?`,
-    description: `Check the real-time status of ${category.name.toLowerCase()} services. Monitor uptime, response times, and outages for popular ${category.name.toLowerCase()} platforms.`,
+    description: `Check the real-time status of ${label} services. Monitor uptime, response times, and outages for popular ${label} platforms.`,
     alternates: {
       canonical: `/categories/${category.slug}`,
     },
     openGraph: {
       title: `${category.name} Status — BlueMonitor`,
-      description: `Check the real-time status of ${category.name.toLowerCase()} services. Monitor uptime and outages for popular ${category.name.toLowerCase()} platforms.`,
+      description: `Check the real-time status of ${label} services. Monitor uptime and outages for popular ${label} platforms.`,
       url: `https://www.bluemonitor.org/categories/${category.slug}`,
       type: "website",
     },
     twitter: {
       card: "summary",
       title: `${category.name} Status — BlueMonitor`,
-      description: `Real-time status monitoring for ${category.name.toLowerCase()} services.`,
+      description: `Real-time status monitoring for ${label} services.`,
     },
   };
 }
@@ -61,6 +63,29 @@ export default async function CategoryPage({
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-12">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              {
+                "@type": "ListItem",
+                position: 1,
+                name: "Home",
+                item: "https://www.bluemonitor.org",
+              },
+              {
+                "@type": "ListItem",
+                position: 2,
+                name: category.name,
+                item: `https://www.bluemonitor.org/categories/${category.slug}`,
+              },
+            ],
+          }),
+        }}
+      />
       <nav className="mb-6 flex items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400">
         <Link href="/" className="hover:text-zinc-900 dark:hover:text-zinc-100">
           Home

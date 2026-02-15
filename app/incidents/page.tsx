@@ -6,7 +6,7 @@ import IncidentList from "@/components/IncidentList";
 export const revalidate = 60;
 
 export const metadata: Metadata = {
-  title: "Recent Incidents — BlueMonitor",
+  title: "Recent Incidents",
   description:
     "Live feed of service outages and incidents across 500+ platforms. See which services are currently affected.",
   alternates: {
@@ -35,6 +35,29 @@ export default async function IncidentsPage() {
 
   return (
     <div>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: [
+              {
+                "@type": "ListItem",
+                position: 1,
+                name: "Home",
+                item: "https://www.bluemonitor.org",
+              },
+              {
+                "@type": "ListItem",
+                position: 2,
+                name: "Incidents",
+                item: "https://www.bluemonitor.org/incidents",
+              },
+            ],
+          }),
+        }}
+      />
       {/* Hero */}
       <section className="px-4 pt-20 pb-12 sm:px-6 sm:pt-28 sm:pb-16">
         <div className="mx-auto max-w-3xl">

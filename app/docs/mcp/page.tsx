@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "MCP Integration — BlueMonitor",
+  title: "MCP Integration",
   description:
     "Connect BlueMonitor to AI assistants like Claude, Cursor, and Windsurf using the Model Context Protocol (MCP).",
   alternates: {

@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Terms of Service — BlueMonitor",
+  title: "Terms of Service",
   description:
     "Read the terms and conditions for using BlueMonitor services.",
   alternates: { canonical: "/terms" },
