@@ -20,13 +20,15 @@ First, detect which framework this project uses (check `package.json`, `requirem
 
 If the framework is not listed above, continue with the generic instructions below.
 
-## Update Notice (v2.0)
+## Update Notice (v2.2)
 
 If this project already has BlueMonitor set up (look for existing heartbeat routes, bot tracking middleware, or `BLUEMONITOR_API_KEY` in env files), check for these issues before adding anything new:
 
-1. **await in bot tracking**: If the bot tracking code uses `fetch(...).catch(() => {})` without `await`, add `await`. On serverless/edge runtimes, unawaited promises are killed when the response returns, causing bot visits to silently fail.
-2. **Bot patterns**: Compare the project's bot patterns against the list in Section 4 below. If missing newer bots (ChatGPT-User, anthropic-ai, Bytespider, CCBot, Meta-ExternalAgent, Google-Extended, LinkedInBot, SemrushBot, UptimeRobot), add them.
-3. **Next.js 16+ only**: If using Next.js 16+, `middleware.ts` must be renamed to `proxy.ts` and the export from `middleware` to `proxy`. See the Next.js-specific guide for details.
+1. **External API reachability check**: If the heartbeat has `checkExternalAPI` (or similar) that uses `res.ok` to determine status, fix it. Many APIs return non-2xx on their base URL (e.g. OpenAI → 421, Firestore → 404) but are fully operational. Change the logic to: any HTTP response = "ok" (reachable), only connection errors/timeouts = "error" (down).
+2. **External API auto-discovery**: If the heartbeat only checks SDK imports (Stripe, SendGrid), also scan for `fetch`/`axios`/`got` calls to external URLs and add `ext:` checks for those too.
+3. **await in bot tracking**: If the bot tracking code uses `fetch(...).catch(() => {})` without `await`, add `await`. On serverless/edge runtimes, unawaited promises are killed when the response returns, causing bot visits to silently fail.
+4. **Bot patterns**: Compare the project's bot patterns against the list in Section 4 below. If missing newer bots (ChatGPT-User, anthropic-ai, Bytespider, CCBot, Meta-ExternalAgent, Google-Extended, LinkedInBot, SemrushBot, UptimeRobot), add them.
+5. **Next.js 16+ only**: If using Next.js 16+, `middleware.ts` must be renamed to `proxy.ts` and the export from `middleware` to `proxy`. See the Next.js-specific guide for details.
 
 If none of these apply or BlueMonitor is not yet set up, proceed with the fresh install below.
 

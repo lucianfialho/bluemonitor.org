@@ -7,13 +7,15 @@ Add uptime monitoring, heartbeat push, and a status badge to your Next.js app (A
 
 Documentation: https://www.bluemonitor.org/docs/nextjs
 
-## Update Notice (v2.1)
+## Update Notice (v2.3)
 
 If this project already has BlueMonitor set up, check for these issues before adding anything new:
 
-1. **Next.js 16 proxy.ts migration**: If the project uses Next.js 16+ and still has `middleware.ts`, rename it to `proxy.ts` and change `export function middleware` to `export function proxy`. Run: `npx @next/codemod@canary middleware-to-proxy .`
-2. **waitUntil in bot tracking**: If the bot tracking middleware/proxy uses `await fetch(...)` or unawaited `fetch(...)`, migrate to `response.waitUntil(fetch(...))`. This sends the request without blocking the response, giving zero added latency to users.
-3. **Bot patterns**: Compare the project's `BOT_PATTERNS` array against the list in Section 4 below. If missing newer bots (ChatGPT-User, anthropic-ai, Bytespider, CCBot, Meta-ExternalAgent, Google-Extended, LinkedInBot, SemrushBot, UptimeRobot), add them.
+1. **External API reachability check**: If the heartbeat has `checkExternalAPI` that uses `res.ok` to determine status, fix it. Many APIs return non-2xx on their base URL (e.g. OpenAI → 421, Firestore → 404) but are fully operational. Change the logic to: any HTTP response = "ok" (reachable), only connection errors/timeouts = "error" (down).
+2. **External API auto-discovery**: If the heartbeat only checks SDK imports (Stripe, SendGrid), also scan for `fetch`/`axios`/`got` calls to external URLs and add `ext:` checks for those too.
+3. **Next.js 16 proxy.ts migration**: If the project uses Next.js 16+ and still has `middleware.ts`, rename it to `proxy.ts` and change `export function middleware` to `export function proxy`. Run: `npx @next/codemod@canary middleware-to-proxy .`
+4. **waitUntil in bot tracking**: If the bot tracking middleware/proxy uses `await fetch(...)` or unawaited `fetch(...)`, migrate to `response.waitUntil(fetch(...))`. This sends the request without blocking the response, giving zero added latency to users.
+5. **Bot patterns**: Compare the project's `BOT_PATTERNS` array against the list in Section 4 below. If missing newer bots (ChatGPT-User, anthropic-ai, Bytespider, CCBot, Meta-ExternalAgent, Google-Extended, LinkedInBot, SemrushBot, UptimeRobot), add them.
 
 If none of these apply or BlueMonitor is not yet set up, proceed with the fresh install below.
 

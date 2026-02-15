@@ -7,12 +7,14 @@ Add uptime monitoring, heartbeat push, and a status badge to your Laravel app.
 
 Documentation: https://www.bluemonitor.org/docs/laravel
 
-## Update Notice (v2.0)
+## Update Notice (v2.2)
 
 If this project already has BlueMonitor set up, check for these issues before adding anything new:
 
-1. **Bot patterns**: Compare the project's bot patterns against the list in Section 4 below. If missing newer bots (ChatGPT-User, anthropic-ai, Bytespider, CCBot, Meta-ExternalAgent, Google-Extended, LinkedInBot, SemrushBot, UptimeRobot), add them.
-2. **Queue for bot tracking**: If bot visits are sent inline (blocking the request), consider dispatching to a queue job for better performance.
+1. **External API reachability check**: If the heartbeat has `checkExternalAPI` that checks `$res->successful()`, fix it. Many APIs return non-2xx on their base URL (e.g. OpenAI → 421, Firestore → 404) but are fully operational. Change the logic to: any HTTP response = "ok" (reachable), only connection errors/timeouts = "error" (down).
+2. **External API auto-discovery**: If the heartbeat only checks SDK imports (Stripe, AWS), also scan for Http::get/Guzzle calls to external URLs and add `ext:` checks for those too.
+3. **Bot patterns**: Compare the project's bot patterns against the list in Section 4 below. If missing newer bots (ChatGPT-User, anthropic-ai, Bytespider, CCBot, Meta-ExternalAgent, Google-Extended, LinkedInBot, SemrushBot, UptimeRobot), add them.
+4. **Queue for bot tracking**: If bot visits are sent inline (blocking the request), consider dispatching to a queue job for better performance.
 
 If none of these apply or BlueMonitor is not yet set up, proceed with the fresh install below.
 

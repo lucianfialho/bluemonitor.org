@@ -7,12 +7,14 @@ Add uptime monitoring, heartbeat push, and a status badge to your FastAPI app.
 
 Documentation: https://www.bluemonitor.org/docs/fastapi
 
-## Update Notice (v2.0)
+## Update Notice (v2.2)
 
 If this project already has BlueMonitor set up, check for these issues before adding anything new:
 
-1. **Bot patterns**: Compare the project's bot patterns against the list in Section 4 below. If missing newer bots (ChatGPT-User, anthropic-ai, Bytespider, CCBot, Meta-ExternalAgent, Google-Extended, LinkedInBot, SemrushBot, UptimeRobot), add them.
-2. **Async bot tracking**: Ensure the bot tracking middleware uses `await` on the `httpx.post` call. Fire-and-forget calls may silently fail on serverless runtimes.
+1. **External API reachability check**: If the heartbeat has `check_external_api` that checks `res.is_success` to determine status, fix it. Many APIs return non-2xx on their base URL (e.g. OpenAI → 421, Firestore → 404) but are fully operational. Change the logic to: any HTTP response = "ok" (reachable), only connection errors/timeouts = "error" (down).
+2. **External API auto-discovery**: If the heartbeat only checks SDK imports (stripe, boto3), also scan for `httpx`/`requests` calls to external URLs and add `ext:` checks for those too.
+3. **Bot patterns**: Compare the project's bot patterns against the list in Section 4 below. If missing newer bots (ChatGPT-User, anthropic-ai, Bytespider, CCBot, Meta-ExternalAgent, Google-Extended, LinkedInBot, SemrushBot, UptimeRobot), add them.
+4. **Async bot tracking**: Ensure the bot tracking middleware uses `await` on the `httpx.post` call. Fire-and-forget calls may silently fail on serverless runtimes.
 
 If none of these apply or BlueMonitor is not yet set up, proceed with the fresh install below.
 

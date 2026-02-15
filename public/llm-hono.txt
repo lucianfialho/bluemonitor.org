@@ -7,12 +7,14 @@ Add uptime monitoring, heartbeat push, and a status badge to your Hono app. Work
 
 Documentation: https://www.bluemonitor.org/docs/hono
 
-## Update Notice (v2.0)
+## Update Notice (v2.2)
 
 If this project already has BlueMonitor set up, check for these issues before adding anything new:
 
-1. **await/waitUntil in bot tracking**: If the bot tracking middleware uses `fetch(...).catch(() => {})` without `await` or `waitUntil`, fix it. On Cloudflare Workers, use `c.executionCtx.waitUntil(promise)`. On other runtimes (Deno, Bun, Node), use `await` before the fetch call. Without this, bot visits silently fail because the promise is killed when the response returns.
-2. **Bot patterns**: Compare the project's `BOT_PATTERNS` array against the list in Section 4 below. If missing newer bots (ChatGPT-User, anthropic-ai, Bytespider, CCBot, Meta-ExternalAgent, Google-Extended, LinkedInBot, SemrushBot, UptimeRobot), add them.
+1. **External API reachability check**: If the heartbeat has `checkExternalAPI` that uses `res.ok` to determine status, fix it. Many APIs return non-2xx on their base URL (e.g. OpenAI → 421, Firestore → 404) but are fully operational. Change the logic to: any HTTP response = "ok" (reachable), only connection errors/timeouts = "error" (down).
+2. **External API auto-discovery**: If the heartbeat only checks SDK imports (Stripe, OpenAI), also scan for `fetch`/`axios`/`got` calls to external URLs and add `ext:` checks for those too.
+3. **await/waitUntil in bot tracking**: If the bot tracking middleware uses `fetch(...).catch(() => {})` without `await` or `waitUntil`, fix it. On Cloudflare Workers, use `c.executionCtx.waitUntil(promise)`. On other runtimes (Deno, Bun, Node), use `await` before the fetch call. Without this, bot visits silently fail because the promise is killed when the response returns.
+4. **Bot patterns**: Compare the project's `BOT_PATTERNS` array against the list in Section 4 below. If missing newer bots (ChatGPT-User, anthropic-ai, Bytespider, CCBot, Meta-ExternalAgent, Google-Extended, LinkedInBot, SemrushBot, UptimeRobot), add them.
 
 If none of these apply or BlueMonitor is not yet set up, proceed with the fresh install below.
 
