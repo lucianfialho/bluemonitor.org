@@ -1,7 +1,7 @@
 # BlueMonitor — Next.js Setup Guide
-# Version: 2.1
-# Last-Updated: 2026-02-14
-# Changelog: Next.js 16 proxy.ts migration, await fix for edge runtime, bot tracking improvements
+# Version: 2.2
+# Last-Updated: 2026-02-15
+# Changelog: Exclude /api/health from heartbeat auto-discover (already monitored via pull check)
 
 Add uptime monitoring, heartbeat push, and a status badge to your Next.js app (App Router).
 
@@ -45,7 +45,7 @@ Push detailed health data to BlueMonitor on a schedule. This checks your databas
 - **Database**: any ORM or SQL client (Prisma, Drizzle, Neon, pg, Knex, etc.) → add a `SELECT 1` check
 - **Redis/Cache**: Redis, Upstash, Memcached imports → add a `PING` check
 - **External APIs**: Stripe, SendGrid, Twilio, OpenAI, S3 SDK imports → add a lightweight API call check
-- **API endpoints**: scan `app/api/*/route.ts` for GET handlers → add HTTP checks for key endpoints (fetch them internally and verify 200 response)
+- **API endpoints**: scan `app/api/*/route.ts` for GET handlers → add HTTP checks for key endpoints (fetch them internally and verify 200 response). **Exclude `/api/health`** — BlueMonitor already monitors it via pull check; including it creates a redundant check that often false-alarms.
 
 Create `app/api/cron/heartbeat/route.ts`:
 

@@ -8,6 +8,14 @@ export interface ChangelogEntry {
 
 export const changelog: ChangelogEntry[] = [
   {
+    id: "2026-02-15-exclude-health-heartbeat",
+    date: "2026-02-15",
+    title: "Exclude /api/health from heartbeat auto-discover",
+    description:
+      "LLM setup guides no longer instruct heartbeats to include /api/health as a check. BlueMonitor already monitors this endpoint via pull check — including it caused redundant checks that often showed false errors.",
+    tag: "fix",
+  },
+  {
     id: "2026-02-14-30d-uptime-pro",
     date: "2026-02-14",
     title: "30-day uptime window for Pro users",

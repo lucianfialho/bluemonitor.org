@@ -1,7 +1,7 @@
 # BlueMonitor — FastAPI Setup Guide
-# Version: 2.0
-# Last-Updated: 2026-02-14
-# Changelog: Added bot tracking middleware (Pro), API endpoint checks in heartbeat, badge footer placement
+# Version: 2.1
+# Last-Updated: 2026-02-15
+# Changelog: Exclude /api/health from heartbeat auto-discover (already monitored via pull check)
 
 Add uptime monitoring, heartbeat push, and a status badge to your FastAPI app.
 
@@ -46,7 +46,7 @@ pip install apscheduler httpx
 - **Database**: SQLAlchemy, databases, asyncpg, psycopg2, etc. → add a `SELECT 1` check
 - **Redis/Cache**: redis-py, aioredis imports → add a `PING` check
 - **External APIs**: stripe, boto3, httpx calls to third-party services → add lightweight checks
-- **API endpoints**: scan route decorators (`@app.get`, `@router.get`) → add HTTP checks for key endpoints
+- **API endpoints**: scan route decorators (`@app.get`, `@router.get`) → add HTTP checks for key endpoints. **Exclude `/api/health`** — BlueMonitor already monitors it via pull check; including it creates a redundant check that often false-alarms.
 
 ```python
 import os

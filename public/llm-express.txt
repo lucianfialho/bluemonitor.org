@@ -1,7 +1,7 @@
 # BlueMonitor — Express Setup Guide
-# Version: 2.0
-# Last-Updated: 2026-02-14
-# Changelog: Added bot tracking middleware (Pro), API endpoint checks in heartbeat, badge footer placement
+# Version: 2.1
+# Last-Updated: 2026-02-15
+# Changelog: Exclude /api/health from heartbeat auto-discover (already monitored via pull check)
 
 Add uptime monitoring, heartbeat push, and a status badge to your Express app.
 
@@ -46,7 +46,7 @@ npm install node-cron
 - **Database**: any ORM or SQL client (Sequelize, Knex, pg, TypeORM, etc.) → add a `SELECT 1` check
 - **Redis/Cache**: Redis, ioredis imports → add a `PING` check
 - **External APIs**: Stripe, SendGrid, Twilio, AWS SDK imports → add a lightweight API call check
-- **API endpoints**: scan route files for GET handlers → add HTTP checks for key endpoints
+- **API endpoints**: scan route files for GET handlers → add HTTP checks for key endpoints. **Exclude `/api/health`** — BlueMonitor already monitors it via pull check; including it creates a redundant check that often false-alarms.
 
 ```ts
 import cron from "node-cron";

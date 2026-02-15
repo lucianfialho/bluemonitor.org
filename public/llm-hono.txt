@@ -1,7 +1,7 @@
 # BlueMonitor — Hono Setup Guide
-# Version: 2.0
-# Last-Updated: 2026-02-14
-# Changelog: Added bot tracking middleware (Pro), API endpoint checks in heartbeat, badge footer placement
+# Version: 2.1
+# Last-Updated: 2026-02-15
+# Changelog: Exclude /api/health from heartbeat auto-discover (already monitored via pull check)
 
 Add uptime monitoring, heartbeat push, and a status badge to your Hono app. Works on Cloudflare Workers, Deno, Bun, and Node.js.
 
@@ -48,7 +48,7 @@ Push detailed health data to BlueMonitor on a schedule. This checks your databas
 - **Database**: D1, Turso, Neon, or any SQL client → add a `SELECT 1` check
 - **KV/Cache**: Cloudflare KV, Redis, Upstash imports → add a read check
 - **External APIs**: Stripe, OpenAI, AWS SDK imports → add a lightweight API call check
-- **API endpoints**: scan route definitions for GET handlers → add HTTP checks for key endpoints
+- **API endpoints**: scan route definitions for GET handlers → add HTTP checks for key endpoints. **Exclude `/api/health`** — BlueMonitor already monitors it via pull check; including it creates a redundant check that often false-alarms.
 
 ### Cloudflare Workers
 

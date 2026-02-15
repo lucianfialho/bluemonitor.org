@@ -1,7 +1,7 @@
 # BlueMonitor — Monitoring Setup Guide
-# Version: 2.0
-# Last-Updated: 2026-02-14
-# Changelog: Added bot tracking (Pro), API endpoint checks in heartbeat, badge footer placement
+# Version: 2.1
+# Last-Updated: 2026-02-15
+# Changelog: Exclude /api/health from heartbeat auto-discover (already monitored via pull check)
 
 BlueMonitor is a real-time status monitoring service. Add a health endpoint, push heartbeats, and embed a status badge.
 
@@ -82,7 +82,7 @@ Requirements:
 - **Database**: any ORM or SQL client → add a `SELECT 1` check
 - **Redis/Cache**: Redis or cache client imports → add a `PING` check
 - **External APIs**: Stripe, SendGrid, AWS SDK, etc. → add lightweight API call checks
-- **API endpoints**: scan route files for GET handlers → add HTTP checks (fetch internally and verify 200 response)
+- **API endpoints**: scan route files for GET handlers → add HTTP checks (fetch internally and verify 200 response). **Exclude `/api/health`** — BlueMonitor already monitors it via pull check; including it creates a redundant check that often false-alarms.
 
 Check names are free-form strings. Use `"database"`, `"redis"`, `"stripe"`, `"api:/api/users"`, etc.
 
