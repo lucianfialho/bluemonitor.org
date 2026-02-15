@@ -67,6 +67,7 @@ export default function ServiceDetailPage() {
   const [uptimePeriod, setUptimePeriod] = useState("24h");
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+  const [activeTab, setActiveTab] = useState<"health" | "bots">("health");
 
   const fetchService = useCallback(async () => {
     const res = await fetch("/api/watchlist");
@@ -202,20 +203,46 @@ export default function ServiceDetailPage() {
         </div>
       </div>
 
-      {/* Status Timeline — 24h overview */}
-      <div className="mb-6 rounded-2xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
-        <StatusTimeline slug={service.slug} />
+      {/* Tabs */}
+      <div className="mb-6 flex gap-1 rounded-lg border border-zinc-200 bg-zinc-100 p-1 dark:border-zinc-800 dark:bg-zinc-800/50">
+        {(["health", "bots"] as const).map((t) => (
+          <button
+            key={t}
+            onClick={() => setActiveTab(t)}
+            className={`flex-1 rounded-md px-4 py-2 text-sm font-medium transition-colors ${
+              activeTab === t
+                ? "bg-white text-zinc-900 shadow-sm dark:bg-zinc-900 dark:text-zinc-100"
+                : "text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200"
+            }`}
+          >
+            {t === "health" ? "Health & Status" : "Bot Tracking"}
+            {t === "bots" && plan?.tier === "pro" && (
+              <span className="ml-1.5 rounded bg-purple-100 px-1 py-0.5 text-[9px] font-semibold text-purple-600 dark:bg-purple-900 dark:text-purple-300">
+                PRO
+              </span>
+            )}
+          </button>
+        ))}
       </div>
 
-      {/* Health Checks — latency charts per check */}
-      {service.last_heartbeat_at && (
-        <div className="mb-6">
-          <HeartbeatChecks slug={service.slug} currentChecks={null} />
-        </div>
-      )}
+      {activeTab === "health" ? (
+        <>
+          {/* Status Timeline — 24h overview */}
+          <div className="mb-6 rounded-2xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
+            <StatusTimeline slug={service.slug} />
+          </div>
 
-      {/* Bot Tracking */}
-      <BotTrackingSection isPro={plan?.tier === "pro"} domains={[service.domain]} />
+          {/* Health Checks — latency charts per check */}
+          {service.last_heartbeat_at && (
+            <div className="mb-6">
+              <HeartbeatChecks slug={service.slug} currentChecks={null} />
+            </div>
+          )}
+        </>
+      ) : (
+        /* Bot Tracking */
+        <BotTrackingSection isPro={plan?.tier === "pro"} domains={[service.domain]} />
+      )}
     </div>
   );
 }

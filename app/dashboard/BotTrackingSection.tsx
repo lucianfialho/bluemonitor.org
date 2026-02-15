@@ -1097,6 +1097,9 @@ export default function BotTrackingSection({
   const [showComparison, setShowComparison] = useState(false);
   const [chartMode, setChartMode] = useState<"total" | "by_category">("total");
   const [expandedPages, setExpandedPages] = useState<Set<string>>(new Set());
+  const [pageSearch, setPageSearch] = useState("");
+  const [pageSize, setPageSize] = useState(10);
+  const [currentPage, setCurrentPage] = useState(0);
 
   const fetchData = useCallback(async () => {
     if (!selectedDomain || !isPro) return;
@@ -1334,23 +1337,93 @@ export default function BotTrackingSection({
             </div>
 
             {/* Top pages (expandable) */}
-            {data.pages_with_bots.length > 0 && (
-              <div className="rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
-                <div className="border-b border-zinc-200 px-5 py-3 dark:border-zinc-800">
-                  <h3 className="text-sm font-medium text-zinc-700 dark:text-zinc-300">Top Pages</h3>
+            {data.pages_with_bots.length > 0 && (() => {
+              const filtered = data.pages_with_bots.filter(
+                (page) => !pageSearch || page.path.toLowerCase().includes(pageSearch.toLowerCase())
+              );
+              const totalPages = Math.ceil(filtered.length / pageSize);
+              const safePage = Math.min(currentPage, Math.max(totalPages - 1, 0));
+              const paginated = filtered.slice(safePage * pageSize, (safePage + 1) * pageSize);
+
+              return (
+                <div className="rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
+                  <div className="flex items-center gap-3 border-b border-zinc-200 px-5 py-3 dark:border-zinc-800">
+                    <h3 className="shrink-0 text-sm font-medium text-zinc-700 dark:text-zinc-300">Top Pages</h3>
+                    <div className="relative ml-auto max-w-xs flex-1">
+                      <svg className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-zinc-400" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                      </svg>
+                      <input
+                        type="text"
+                        placeholder="Filter pages..."
+                        value={pageSearch}
+                        onChange={(e) => { setPageSearch(e.target.value); setCurrentPage(0); }}
+                        className="w-full rounded-md border border-zinc-200 bg-transparent py-1 pl-8 pr-2 text-xs text-zinc-700 placeholder:text-zinc-400 focus:border-zinc-400 focus:outline-none dark:border-zinc-700 dark:text-zinc-300 dark:placeholder:text-zinc-500 dark:focus:border-zinc-500"
+                      />
+                    </div>
+                  </div>
+                  <div className="divide-y divide-zinc-100 dark:divide-zinc-800">
+                    {paginated.map((page) => (
+                      <ExpandablePageRow
+                        key={page.path}
+                        page={page}
+                        expanded={expandedPages.has(page.path)}
+                        onToggle={() => togglePage(page.path)}
+                      />
+                    ))}
+                    {filtered.length === 0 && (
+                      <div className="px-5 py-4 text-center text-xs text-zinc-400">
+                        No pages matching &ldquo;{pageSearch}&rdquo;
+                      </div>
+                    )}
+                  </div>
+                  {/* Pagination footer */}
+                  {filtered.length > 0 && (
+                    <div className="flex items-center justify-between border-t border-zinc-200 px-5 py-2.5 dark:border-zinc-800">
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-xs text-zinc-500 dark:text-zinc-400">Show</span>
+                        {([10, 25, 50] as const).map((size) => (
+                          <button
+                            key={size}
+                            onClick={() => { setPageSize(size); setCurrentPage(0); }}
+                            className={`rounded px-1.5 py-0.5 text-xs font-medium transition-colors ${
+                              pageSize === size
+                                ? "bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900"
+                                : "text-zinc-500 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800"
+                            }`}
+                          >
+                            {size}
+                          </button>
+                        ))}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs tabular-nums text-zinc-500 dark:text-zinc-400">
+                          {safePage * pageSize + 1}&ndash;{Math.min((safePage + 1) * pageSize, filtered.length)} of {filtered.length}
+                        </span>
+                        <button
+                          onClick={() => setCurrentPage((p) => Math.max(0, p - 1))}
+                          disabled={safePage === 0}
+                          className="rounded p-0.5 text-zinc-500 transition-colors hover:bg-zinc-100 disabled:opacity-30 dark:text-zinc-400 dark:hover:bg-zinc-800"
+                        >
+                          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+                          </svg>
+                        </button>
+                        <button
+                          onClick={() => setCurrentPage((p) => Math.min(totalPages - 1, p + 1))}
+                          disabled={safePage >= totalPages - 1}
+                          className="rounded p-0.5 text-zinc-500 transition-colors hover:bg-zinc-100 disabled:opacity-30 dark:text-zinc-400 dark:hover:bg-zinc-800"
+                        >
+                          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
-                <div className="divide-y divide-zinc-100 dark:divide-zinc-800">
-                  {data.pages_with_bots.map((page) => (
-                    <ExpandablePageRow
-                      key={page.path}
-                      page={page}
-                      expanded={expandedPages.has(page.path)}
-                      onToggle={() => togglePage(page.path)}
-                    />
-                  ))}
-                </div>
-              </div>
-            )}
+              );
+            })()}
           </div>
         </>
       )}
