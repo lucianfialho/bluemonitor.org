@@ -186,10 +186,22 @@ Add bot detection middleware:
 
 ```ts
 const BOT_PATTERNS = [
+  // Search engines
   { pattern: /Googlebot/i, name: "googlebot", category: "search_engine" },
   { pattern: /bingbot/i, name: "bingbot", category: "search_engine" },
+  { pattern: /YandexBot/i, name: "yandexbot", category: "search_engine" },
+  { pattern: /Baiduspider/i, name: "baiduspider", category: "search_engine" },
+  { pattern: /DuckDuckBot/i, name: "duckduckbot", category: "search_engine" },
+  { pattern: /Applebot/i, name: "applebot", category: "search_engine" },
+  { pattern: /PetalBot/i, name: "petalbot", category: "search_engine" },
+  { pattern: /Sogou/i, name: "sogoubot", category: "search_engine" },
+  { pattern: /NaverBot/i, name: "naverbot", category: "search_engine" },
+  { pattern: /Seznambot/i, name: "seznambot", category: "search_engine" },
+
+  // AI crawlers
   { pattern: /GPTBot/i, name: "gptbot", category: "ai_crawler" },
   { pattern: /ChatGPT-User/i, name: "chatgpt-user", category: "ai_crawler" },
+  { pattern: /OAI-SearchBot/i, name: "oai-searchbot", category: "ai_crawler" },
   { pattern: /ClaudeBot/i, name: "claudebot", category: "ai_crawler" },
   { pattern: /anthropic-ai/i, name: "anthropic-ai", category: "ai_crawler" },
   { pattern: /PerplexityBot/i, name: "perplexitybot", category: "ai_crawler" },
@@ -197,12 +209,38 @@ const BOT_PATTERNS = [
   { pattern: /CCBot/i, name: "ccbot", category: "ai_crawler" },
   { pattern: /Meta-ExternalAgent/i, name: "meta-externalagent", category: "ai_crawler" },
   { pattern: /Google-Extended/i, name: "google-extended", category: "ai_crawler" },
+  { pattern: /Amazonbot/i, name: "amazonbot", category: "ai_crawler" },
+  { pattern: /cohere-ai/i, name: "cohere-ai", category: "ai_crawler" },
+  { pattern: /DeepSeekBot/i, name: "deepseekbot", category: "ai_crawler" },
+  { pattern: /YouBot/i, name: "youbot", category: "ai_crawler" },
+  { pattern: /AI2Bot/i, name: "ai2bot", category: "ai_crawler" },
+  { pattern: /Timpibot/i, name: "timpibot", category: "ai_crawler" },
+
+  // Social
   { pattern: /Twitterbot/i, name: "twitterbot", category: "social" },
   { pattern: /facebookexternalhit/i, name: "facebookbot", category: "social" },
   { pattern: /LinkedInBot/i, name: "linkedinbot", category: "social" },
+  { pattern: /Slackbot/i, name: "slackbot", category: "social" },
+  { pattern: /Discordbot/i, name: "discordbot", category: "social" },
+  { pattern: /TelegramBot/i, name: "telegrambot", category: "social" },
+  { pattern: /WhatsApp/i, name: "whatsapp", category: "social" },
+  { pattern: /Pinterestbot/i, name: "pinterestbot", category: "social" },
+
+  // SEO
   { pattern: /AhrefsBot/i, name: "ahrefsbot", category: "seo" },
   { pattern: /SemrushBot/i, name: "semrushbot", category: "seo" },
+  { pattern: /DotBot/i, name: "dotbot", category: "seo" },
+  { pattern: /MJ12bot/i, name: "mj12bot", category: "seo" },
+  { pattern: /DataForSeoBot/i, name: "dataforseobot", category: "seo" },
+  { pattern: /Screaming Frog/i, name: "screamingfrog", category: "seo" },
+  { pattern: /BLEXBot/i, name: "blexbot", category: "seo" },
+
+  // Monitoring
   { pattern: /UptimeRobot/i, name: "uptimerobot", category: "monitoring" },
+  { pattern: /Pingdom/i, name: "pingdom", category: "monitoring" },
+  { pattern: /NewRelicPinger/i, name: "newrelicpinger", category: "monitoring" },
+  { pattern: /Datadog/i, name: "datadoghq", category: "monitoring" },
+  { pattern: /Site24x7/i, name: "site24x7", category: "monitoring" },
 ];
 
 function identifyBot(ua: string) {

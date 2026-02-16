@@ -198,10 +198,22 @@ import httpx
 from starlette.middleware.base import BaseHTTPMiddleware
 
 BOT_PATTERNS = [
+    # Search engines
     (re.compile(r"Googlebot", re.I), "googlebot", "search_engine"),
     (re.compile(r"bingbot", re.I), "bingbot", "search_engine"),
+    (re.compile(r"YandexBot", re.I), "yandexbot", "search_engine"),
+    (re.compile(r"Baiduspider", re.I), "baiduspider", "search_engine"),
+    (re.compile(r"DuckDuckBot", re.I), "duckduckbot", "search_engine"),
+    (re.compile(r"Applebot", re.I), "applebot", "search_engine"),
+    (re.compile(r"PetalBot", re.I), "petalbot", "search_engine"),
+    (re.compile(r"Sogou", re.I), "sogoubot", "search_engine"),
+    (re.compile(r"NaverBot", re.I), "naverbot", "search_engine"),
+    (re.compile(r"Seznambot", re.I), "seznambot", "search_engine"),
+
+    # AI crawlers
     (re.compile(r"GPTBot", re.I), "gptbot", "ai_crawler"),
     (re.compile(r"ChatGPT-User", re.I), "chatgpt-user", "ai_crawler"),
+    (re.compile(r"OAI-SearchBot", re.I), "oai-searchbot", "ai_crawler"),
     (re.compile(r"ClaudeBot", re.I), "claudebot", "ai_crawler"),
     (re.compile(r"anthropic-ai", re.I), "anthropic-ai", "ai_crawler"),
     (re.compile(r"PerplexityBot", re.I), "perplexitybot", "ai_crawler"),
@@ -209,12 +221,38 @@ BOT_PATTERNS = [
     (re.compile(r"CCBot", re.I), "ccbot", "ai_crawler"),
     (re.compile(r"Meta-ExternalAgent", re.I), "meta-externalagent", "ai_crawler"),
     (re.compile(r"Google-Extended", re.I), "google-extended", "ai_crawler"),
+    (re.compile(r"Amazonbot", re.I), "amazonbot", "ai_crawler"),
+    (re.compile(r"cohere-ai", re.I), "cohere-ai", "ai_crawler"),
+    (re.compile(r"DeepSeekBot", re.I), "deepseekbot", "ai_crawler"),
+    (re.compile(r"YouBot", re.I), "youbot", "ai_crawler"),
+    (re.compile(r"AI2Bot", re.I), "ai2bot", "ai_crawler"),
+    (re.compile(r"Timpibot", re.I), "timpibot", "ai_crawler"),
+
+    # Social
     (re.compile(r"Twitterbot", re.I), "twitterbot", "social"),
     (re.compile(r"facebookexternalhit", re.I), "facebookbot", "social"),
     (re.compile(r"LinkedInBot", re.I), "linkedinbot", "social"),
+    (re.compile(r"Slackbot", re.I), "slackbot", "social"),
+    (re.compile(r"Discordbot", re.I), "discordbot", "social"),
+    (re.compile(r"TelegramBot", re.I), "telegrambot", "social"),
+    (re.compile(r"WhatsApp", re.I), "whatsapp", "social"),
+    (re.compile(r"Pinterestbot", re.I), "pinterestbot", "social"),
+
+    # SEO
     (re.compile(r"AhrefsBot", re.I), "ahrefsbot", "seo"),
     (re.compile(r"SemrushBot", re.I), "semrushbot", "seo"),
+    (re.compile(r"DotBot", re.I), "dotbot", "seo"),
+    (re.compile(r"MJ12bot", re.I), "mj12bot", "seo"),
+    (re.compile(r"DataForSeoBot", re.I), "dataforseobot", "seo"),
+    (re.compile(r"Screaming Frog", re.I), "screamingfrog", "seo"),
+    (re.compile(r"BLEXBot", re.I), "blexbot", "seo"),
+
+    # Monitoring
     (re.compile(r"UptimeRobot", re.I), "uptimerobot", "monitoring"),
+    (re.compile(r"Pingdom", re.I), "pingdom", "monitoring"),
+    (re.compile(r"NewRelicPinger", re.I), "newrelicpinger", "monitoring"),
+    (re.compile(r"Datadog", re.I), "datadoghq", "monitoring"),
+    (re.compile(r"Site24x7", re.I), "site24x7", "monitoring"),
 ]
 
 def identify_bot(ua: str):

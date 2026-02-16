@@ -7,6 +7,7 @@ import ServiceIcon from "@/components/ServiceIcon";
 import StatusTimeline from "@/components/StatusTimeline";
 import HeartbeatChecks from "@/components/HeartbeatChecks";
 import BotTrackingSection from "../../BotTrackingSection";
+import BotVisitsScatter from "../../BotVisitsScatter";
 import { useDashboard } from "../../DashboardContext";
 import { Category } from "@/lib/types";
 
@@ -241,7 +242,10 @@ export default function ServiceDetailPage() {
         </>
       ) : (
         /* Bot Tracking */
-        <BotTrackingSection isPro={plan?.tier === "pro"} domains={[service.domain]} />
+        <>
+          <BotVisitsScatter isPro={plan?.tier === "pro"} domain={service.domain} />
+          <BotTrackingSection isPro={plan?.tier === "pro"} domains={[service.domain]} />
+        </>
       )}
     </div>
   );

@@ -213,14 +213,57 @@ end`}</code>
         <pre className="overflow-x-auto rounded-xl bg-zinc-900 p-4 text-sm text-zinc-300 dark:bg-zinc-950">
           <code>{`class BotTrackingMiddleware
   BOT_PATTERNS = [
+    # Search engines
     [/Googlebot/i, "googlebot", "search_engine"],
     [/bingbot/i, "bingbot", "search_engine"],
+    [/YandexBot/i, "yandexbot", "search_engine"],
+    [/Baiduspider/i, "baiduspider", "search_engine"],
+    [/DuckDuckBot/i, "duckduckbot", "search_engine"],
+    [/Applebot/i, "applebot", "search_engine"],
+    [/PetalBot/i, "petalbot", "search_engine"],
+    [/Sogou/i, "sogoubot", "search_engine"],
+    [/NaverBot/i, "naverbot", "search_engine"],
+    [/Seznambot/i, "seznambot", "search_engine"],
+    # AI crawlers
     [/GPTBot/i, "gptbot", "ai_crawler"],
+    [/ChatGPT-User/i, "chatgpt-user", "ai_crawler"],
+    [/OAI-SearchBot/i, "oai-searchbot", "ai_crawler"],
     [/ClaudeBot/i, "claudebot", "ai_crawler"],
+    [/anthropic-ai/i, "anthropic-ai", "ai_crawler"],
     [/PerplexityBot/i, "perplexitybot", "ai_crawler"],
+    [/Bytespider/i, "bytespider", "ai_crawler"],
+    [/CCBot/i, "ccbot", "ai_crawler"],
+    [/Meta-ExternalAgent/i, "meta-externalagent", "ai_crawler"],
+    [/Google-Extended/i, "google-extended", "ai_crawler"],
+    [/Amazonbot/i, "amazonbot", "ai_crawler"],
+    [/cohere-ai/i, "cohere-ai", "ai_crawler"],
+    [/DeepSeekBot/i, "deepseekbot", "ai_crawler"],
+    [/YouBot/i, "youbot", "ai_crawler"],
+    [/AI2Bot/i, "ai2bot", "ai_crawler"],
+    [/Timpibot/i, "timpibot", "ai_crawler"],
+    # Social
     [/Twitterbot/i, "twitterbot", "social"],
     [/facebookexternalhit/i, "facebookbot", "social"],
+    [/LinkedInBot/i, "linkedinbot", "social"],
+    [/Slackbot/i, "slackbot", "social"],
+    [/Discordbot/i, "discordbot", "social"],
+    [/TelegramBot/i, "telegrambot", "social"],
+    [/WhatsApp/i, "whatsapp", "social"],
+    [/Pinterestbot/i, "pinterestbot", "social"],
+    # SEO
     [/AhrefsBot/i, "ahrefsbot", "seo"],
+    [/SemrushBot/i, "semrushbot", "seo"],
+    [/DotBot/i, "dotbot", "seo"],
+    [/MJ12bot/i, "mj12bot", "seo"],
+    [/DataForSeoBot/i, "dataforseobot", "seo"],
+    [/Screaming Frog/i, "screamingfrog", "seo"],
+    [/BLEXBot/i, "blexbot", "seo"],
+    # Monitoring
+    [/UptimeRobot/i, "uptimerobot", "monitoring"],
+    [/Pingdom/i, "pingdom", "monitoring"],
+    [/NewRelicPinger/i, "newrelicpinger", "monitoring"],
+    [/Datadog/i, "datadoghq", "monitoring"],
+    [/Site24x7/i, "site24x7", "monitoring"],
   ].freeze
 
   def initialize(app)
