@@ -1,7 +1,7 @@
 # BlueMonitor — Monitoring Setup Guide
-# Version: 2.2
-# Last-Updated: 2026-02-15
-# Changelog: Enhanced external API auto-discovery with ext: naming convention; ext: checks use reachability logic (any HTTP response = ok, only timeouts = error); updated all framework guides
+# Version: 2.3
+# Last-Updated: 2026-02-16
+# Changelog: Expanded bot list from 17 to 48 entries across 5 categories (search_engine, ai_crawler, social, seo, monitoring); synced across all framework guides
 
 BlueMonitor is a real-time status monitoring service. Add a health endpoint, push heartbeats, and embed a status badge.
 
@@ -27,7 +27,7 @@ If this project already has BlueMonitor set up (look for existing heartbeat rout
 1. **External API reachability check**: If the heartbeat has `checkExternalAPI` (or similar) that uses `res.ok` to determine status, fix it. Many APIs return non-2xx on their base URL (e.g. OpenAI → 421, Firestore → 404) but are fully operational. Change the logic to: any HTTP response = "ok" (reachable), only connection errors/timeouts = "error" (down).
 2. **External API auto-discovery**: If the heartbeat only checks SDK imports (Stripe, SendGrid), also scan for `fetch`/`axios`/`got` calls to external URLs and add `ext:` checks for those too.
 3. **await in bot tracking**: If the bot tracking code uses `fetch(...).catch(() => {})` without `await`, add `await`. On serverless/edge runtimes, unawaited promises are killed when the response returns, causing bot visits to silently fail.
-4. **Bot patterns**: Compare the project's bot patterns against the list in Section 4 below. If missing newer bots (ChatGPT-User, anthropic-ai, Bytespider, CCBot, Meta-ExternalAgent, Google-Extended, LinkedInBot, SemrushBot, UptimeRobot), add them.
+4. **Bot patterns**: Compare the project's bot patterns against the list in Section 4 below. The list now has 48 bots across 5 categories — ensure all are present, especially newer additions like OAI-SearchBot, DeepSeekBot, Amazonbot, Timpibot, WhatsApp, Pinterestbot, DataForSeoBot, Screaming Frog, Pingdom, Datadog, and Site24x7.
 5. **Next.js 16+ only**: If using Next.js 16+, `middleware.ts` must be renamed to `proxy.ts` and the export from `middleware` to `proxy`. See the Next.js-specific guide for details.
 
 If none of these apply or BlueMonitor is not yet set up, proceed with the fresh install below.
@@ -175,7 +175,7 @@ Headers: `Authorization: Bearer bm_your_api_key`, `Content-Type: application/jso
 }
 ```
 
-Known bot names: googlebot, bingbot, yandexbot, baiduspider, duckduckbot, gptbot, chatgpt-user, claudebot, anthropic-ai, perplexitybot, bytespider, ccbot, meta-externalagent, google-extended, twitterbot, facebookbot, linkedinbot, slackbot, discordbot, telegrambot, ahrefsbot, semrushbot, dotbot, mj12bot, uptimerobot, pingdom.
+Known bot names: googlebot, bingbot, yandexbot, baiduspider, duckduckbot, applebot, petalbot, sogoubot, naverbot, seznambot, gptbot, chatgpt-user, oai-searchbot, claudebot, anthropic-ai, perplexitybot, bytespider, ccbot, meta-externalagent, google-extended, amazonbot, cohere-ai, deepseekbot, youbot, ai2bot, timpibot, twitterbot, facebookbot, linkedinbot, slackbot, discordbot, telegrambot, whatsapp, pinterestbot, ahrefsbot, semrushbot, dotbot, mj12bot, dataforseobot, screamingfrog, blexbot, uptimerobot, pingdom, newrelicpinger, datadoghq, site24x7.
 
 Categories: search_engine, ai_crawler, social, seo, monitoring.
 
